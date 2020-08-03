@@ -1,23 +1,56 @@
 import 'react-native-gesture-handler';
+import Home from "./components/Home";
 
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {useState} from 'react';
+import {NavigationContainer} from "@react-navigation/native";
+import {createStackNavigator} from "@react-navigation/stack";
+import Login from "./components/Login";
+import Registration from "./components/Registration";
+import Logout from "./components/Logout";
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+const Stack = createStackNavigator<RootStackParamList>();
+
+export type RootStackParamList = {
+  Home: undefined;
+  Login: undefined;
+  Registration: undefined;
+  Logout: undefined;
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function App() {
+  const [isSignedIn, setSignedIn] = useState(false)
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName={isSignedIn ? "Home" : "Login"}>
+        {isSignedIn ? (
+          <>
+            <Stack.Screen
+              name="Home"
+              component={Home}
+              options={{title: 'Welcome'}}
+            />
+            <Stack.Screen
+              name="Logout"
+              component={Logout}
+              options={{title: 'Log out'}}
+            />
+          </>
+        ) : (
+          <>
+            <Stack.Screen
+              name="Login"
+              component={Login}
+              options={{title: 'Log in'}}
+            />
+            <Stack.Screen
+              name="Registration"
+              component={Registration}
+              options={{title: 'Sign up'}}
+            />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
