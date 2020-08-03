@@ -14,7 +14,3 @@ $ npm run web
 
 **Please note that starting the iOS or Android simulator may require a significant amount of time, which is
 related to the way React Native works and not to this code base itself.**
-
-```shell script
-$ expo install react-native-reanimated react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view
-```
