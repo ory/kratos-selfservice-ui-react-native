@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
 import React from 'react';
-import Entrypoint from "./src/components/Entrypoint";
+import Navigation from "./src/components/Navigation";
 
 export type RootStackParamList = {
   Home: undefined;
@@ -11,5 +11,5 @@ export type RootStackParamList = {
 }
 
 export default function App() {
-  return <Entrypoint />
+  return <Navigation />
 }
