@@ -1,75 +1,88 @@
 // This file renders the Login screen
-import React, { useEffect, useState } from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
 import { RootStackParamList } from '../../App';
 import { StackScreenProps } from '@react-navigation/stack';
-import { FormField, LoginFlow } from '@oryd/kratos-client';
+import { LoginFlow } from '@oryd/kratos-client';
 import Form from './Form/Form';
-import { fieldsToProto, methodConfig } from '../helpers/form';
-import { AxiosError } from 'axios';
+import { handleFormSubmitError, methodConfig } from '../helpers/form';
 import { setAuthenticatedSession } from '../helpers/auth';
 import kratos from '../helpers/sdk';
+import Button from './Styled/StyledButton';
+import Layout from './Layout';
+import { CompleteSelfServiceLoginFlowWithPasswordMethod } from '@oryd/kratos-client/api';
+import StyledText from './Styled/StyledText';
+import { ThemeContext } from 'styled-components/native';
+import StyledCard from './Styled/StyledCard';
+import { TouchableHighlight, TouchableOpacity, View } from 'react-native';
 
-type Props = StackScreenProps<RootStackParamList, 'Login'>
+type Props = StackScreenProps<RootStackParamList, 'Login'>;
 
 const Login = ({ navigation }: Props) => {
   const [config, setConfig] = useState<LoginFlow | undefined>(undefined);
+  const theme = useContext(ThemeContext);
 
   // Initializes the login flow.
   useEffect(() => {
-    kratos.initializeSelfServiceLoginViaAPIFlow().then(({ data: flow }) => {
-      setConfig(flow);
-    });
+    kratos
+      .initializeSelfServiceLoginViaAPIFlow()
+      .then(({ data: flow }) => {
+        setConfig(flow);
+      })
+      .catch(console.error);
   }, []);
 
   if (!config) {
     return null;
   }
 
-  const loginPassword = (fields: Array<FormField>) => {
-    const keys = fieldsToProto({ password: '', identifier: '' }, fields);
-
+  const loginPassword = (
+    body: CompleteSelfServiceLoginFlowWithPasswordMethod
+  ) => {
     kratos
-      .completeSelfServiceLoginFlowWithPasswordMethod(config.id, keys.identifier, keys.password)
+      .completeSelfServiceLoginFlowWithPasswordMethod(config.id, body)
       .then(({ data }) => {
         return setAuthenticatedSession(data);
-      }).catch((err: AxiosError) => {
-      if (err.response?.status === 400) {
-        console.log(err.response.data);
-        setConfig(err.response.data);
-        return;
-      }
-
-      console.error(err, err.response?.data);
-      return;
-    });
+      })
+      .catch(handleFormSubmitError(setConfig));
   };
 
   const passwordMethod = methodConfig(config, 'password');
   return (
-    <View style={styles.container}>
-      <Text>Login</Text>
+    <Layout>
+      <StyledCard>
+        <StyledText
+          variant="h2"
+          style={{
+            color: theme.primary60,
+            marginBottom: 15,
+          }}
+        >
+          Sign in to your LoginApp account
+        </StyledText>
 
-      {passwordMethod && (
-        <Form config={passwordMethod}
-              submitLabel="Sign in"
-              onSubmit={loginPassword} />)}
+        {passwordMethod && (
+          <Form
+            config={passwordMethod}
+            submitLabel="Sign in"
+            onSubmit={loginPassword}
+          />
+        )}
+      </StyledCard>
 
-      <Button
-        title="Sign Up"
-        onPress={() => navigation.navigate('Registration')}
-      />
-    </View>
+      <StyledCard>
+        <TouchableHighlight onPress={() => navigation.navigate('Registration')}>
+          <View>
+            <StyledText variant="h3" style={{ textAlign: 'center' }}>
+              Need an account?{' '}
+              <StyledText variant="h3" style={{ color: theme.primary60 }}>
+                Sign up!
+              </StyledText>
+            </StyledText>
+          </View>
+        </TouchableHighlight>
+      </StyledCard>
+    </Layout>
   );
 };
 
 export default Login;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

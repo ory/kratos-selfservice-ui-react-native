@@ -1,13 +1,13 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import kratos from '../helpers/sdk'
+import { StyleSheet, Text, View } from 'react-native';
+import kratos from '../helpers/sdk';
 
 export default function Logout() {
   return (
     <View style={styles.container}>
       <Text>Logout</Text>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({

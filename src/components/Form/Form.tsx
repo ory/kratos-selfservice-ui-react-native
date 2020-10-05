@@ -1,56 +1,49 @@
-import React, {useState} from 'react'
-import {FormField, FlowMethodConfig} from "@oryd/kratos-client";
-import {Button} from "react-native";
-import PasswordField from "./PasswordField";
-import TextField from "./TextField";
-import EmailField from './EmailField';
+import React, { useState } from 'react';
+import { FormField, FlowMethodConfig } from '@oryd/kratos-client';
+import Button from '../Styled/StyledButton';
+import Messages from './Messages';
+import { camelize } from '../../helpers/form';
+import Field from './Field';
 
 interface Props {
-  config: FlowMethodConfig
-  onSubmit: (config: Array<FormField>) => void
-  submitLabel: string
+  config: FlowMethodConfig;
+  onSubmit: <T>(payload: T) => void;
+  submitLabel: string;
 }
 
-const Form = ({config, onSubmit, submitLabel}: Props) => {
-  const [fields, setFields] = useState(config.fields)
+const Form = ({ config, onSubmit, submitLabel }: Props) => {
+  const initialState: { [key: string]: any } = {};
+  config.fields.forEach((field) => {
+    initialState[camelize(field.name)] = field.value || '';
+  });
+
+  const [values, setValues] = useState(initialState);
 
   const onChange = (name: string) => (value: any) => {
-    setFields(fields.map((field) => field.name === name
-      ? {
-        ...field,
-        value: value
-      }
-      : field
-    ))
-  }
+    setValues((values) => ({
+      ...values,
+      [camelize(name)]: value,
+    }));
+  };
+
+  const getValue = (name: string) => values[camelize(name)];
 
   return (
     <>
-      {fields.map((field) => {
-        if (field.name === 'identifier') {
+      <Messages messages={config.messages} />
 
-        }
+      {config.fields.map((field) => (
+        <Field
+          key={field.name}
+          value={getValue(field.name)}
+          onChange={onChange(field.name)}
+          field={field}
+        />
+      ))}
 
-        switch (field.type) {
-          case 'hidden':
-            return null
-          case 'email':
-            return <EmailField key={field.name} field={field} onChange={onChange(field.name)}/>
-          case 'submit':
-            return null
-          case 'password':
-            return <PasswordField key={field.name} field={field} onChange={onChange(field.name)}/>
-          default:
-            return <TextField key={field.name} field={field} onChange={onChange(field.name)}/>
-        }
-      })}
-
-      <Button
-        title={submitLabel}
-        onPress={() => onSubmit(fields)}
-      />
+      <Button title={submitLabel} onPress={() => onSubmit(values)} />
     </>
-  )
-}
+  );
+};
 
-export default Form
+export default Form;
