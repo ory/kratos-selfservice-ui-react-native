@@ -6,7 +6,10 @@ import { ThemeProvider } from 'styled-components/native';
 
 import { theme } from '@oryd/themes';
 import { Session } from '@oryd/kratos-client';
-import { useFonts as useFontsRoboto, Roboto_400Regular } from '@expo-google-fonts/roboto';
+import {
+  useFonts as useFontsRoboto,
+  Roboto_400Regular,
+} from '@expo-google-fonts/roboto';
 import {
   useFonts as useFontsRubik,
   Rubik_300Light,

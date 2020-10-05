@@ -33,7 +33,9 @@ const Registration = ({ navigation }: Props) => {
       config.id,
       setConfig
     )(payload).then((session) => {
-      navigation.navigate('Home');
+      if (session) {
+        navigation.navigate('Home');
+      }
       return session;
     });
 
