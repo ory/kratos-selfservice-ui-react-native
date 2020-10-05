@@ -6,6 +6,8 @@ import {
   Session as KratosSession,
 } from '@oryd/kratos-client';
 import * as SecureStore from 'expo-secure-store';
+import AsyncStore from '@react-native-community/async-storage';
+import { Platform } from 'react-native';
 
 // The key under which the session is being stored
 const userSessionName = 'user_session';
@@ -20,17 +22,25 @@ interface Session extends KratosSession {
 // user is authenticated or null is the user is not authenticated.
 //
 // If an error (e.g. network error) occurs, the promise rejects with an error.
-export const getAuthenticatedSession = (): Promise<Session | null> =>
-  SecureStore.getItemAsync(userSessionName).then(
-    (sessionRaw: string | null) => {
-      if (!sessionRaw) {
-        return null;
-      }
-
-      // sessionRaw is a JSON String that needs to be parsed.
-      return JSON.parse(sessionRaw);
+export const getAuthenticatedSession = (): Promise<Session | null> => {
+  const parse = (sessionRaw: string | null) => {
+    if (!sessionRaw) {
+      return null;
     }
-  );
+
+    // sessionRaw is a JSON String that needs to be parsed.
+    return JSON.parse(sessionRaw);
+  };
+
+  if (Platform.OS === 'web') {
+    // SecureStore is not available on the web platform. We need to use AsyncStore
+    // instead.
+
+    return AsyncStore.getItem(userSessionName).then(parse);
+  }
+
+  return SecureStore.getItemAsync(userSessionName).then(parse);
+};
 
 // Sets the session.
 export const setAuthenticatedSession = (
@@ -44,6 +54,15 @@ export const setAuthenticatedSession = (
     );
   }
 
+  if (Platform.OS === 'web') {
+    // SecureStore is not available on the web platform. We need to use AsyncStore
+    // instead.
+
+    return AsyncStore.setItem(userSessionName, JSON.stringify(session)).then(
+      getAuthenticatedSession
+    );
+  }
+
   return (
     SecureStore
       // The SecureStore only supports strings so we encode the session.
@@ -53,5 +72,13 @@ export const setAuthenticatedSession = (
 };
 
 // Removes the session from the store.
-export const killAuthenticatedSession = () =>
-  SecureStore.deleteItemAsync(userSessionName);
+export const killAuthenticatedSession = () => {
+  if (Platform.OS === 'web') {
+    // SecureStore is not available on the web platform. We need to use AsyncStore
+    // instead.
+
+    return AsyncStore.removeItem(userSessionName);
+  }
+
+  return SecureStore.deleteItemAsync(userSessionName);
+};
