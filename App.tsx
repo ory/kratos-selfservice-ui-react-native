@@ -5,6 +5,9 @@ import Navigation from './src/components/Navigation';
 import { ThemeProvider } from 'styled-components/native';
 import { theme } from '@oryd/themes';
 import ErrorBoundary from './src/components/ErrorBoundary';
+import Constants from 'expo-constants';
+
+console.log({ Constants })
 
 export type RootStackParamList = {
   Home: undefined;
