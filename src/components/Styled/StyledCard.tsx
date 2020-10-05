@@ -4,10 +4,10 @@ const StyledCard = styled.View`
   flex: 1;
   padding: 20px;
 
-  marginleft: 20px;
-  marginright: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
 
-  marginbottom: 18px;
+  margin-bottom: 18px;
   align-self: stretch;
 
   background-color: ${({ theme }) => theme.grey0};
