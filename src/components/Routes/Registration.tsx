@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { RootStackParamList } from '../../App';
+import { RootStackParamList } from '../../../App';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RegistrationFlow } from '@oryd/kratos-client';
-import Form from './Form/Form';
-import kratos, { registrationWithPassword } from '../helpers/sdk';
-import StyledCard from './Styled/StyledCard';
-import NavigationCard from './Styled/NavigationCard';
-import Layout from './Layout';
-import AuthSubTitle from './Styled/AuthSubTitle';
+import Form from '../Form/Form';
+import kratos, { registrationWithPassword } from '../../helpers/sdk';
+import StyledCard from '../Styled/StyledCard';
+import NavigationCard from '../Styled/NavigationCard';
+import Layout from '../Layout';
+import AuthSubTitle from '../Styled/AuthSubTitle';
 
 type Props = StackScreenProps<RootStackParamList, 'Registration'>;
 

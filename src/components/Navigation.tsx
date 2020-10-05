@@ -1,25 +1,13 @@
 import 'react-native-gesture-handler';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Session } from '@oryd/kratos-client';
 
-import Login from './Login';
-import Registration from './Registration';
-import Home from './Home';
-import { getAuthenticatedSession } from '../helpers/auth';
-import { AppLoading } from 'expo';
-import {
-  useFonts as useFontsRoboto,
-  Roboto_400Regular,
-} from '@expo-google-fonts/roboto';
-import {
-  useFonts as useFontsRubik,
-  Rubik_300Light,
-  Rubik_400Regular,
-  Rubik_500Medium,
-} from '@expo-google-fonts/rubik';
+import Login from './Routes/Login';
+import Registration from './Routes/Registration';
+import Home from './Routes/Home';
 
 const Stack = createStackNavigator<RootStackParamList>();
 

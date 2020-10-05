@@ -1,8 +1,9 @@
-import StyledCard from './StyledCard';
-import { TouchableHighlight, View } from 'react-native';
-import StyledText from './StyledText';
 import React, { useContext } from 'react';
+import { TouchableHighlight, View } from 'react-native';
 import { ThemeContext } from 'styled-components/native';
+
+import StyledCard from './StyledCard';
+import StyledText from './StyledText';
 
 interface Props {
   onPress(): void;

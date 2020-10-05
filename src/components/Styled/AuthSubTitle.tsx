@@ -1,9 +1,8 @@
-import StyledText from './StyledText';
-import StyledCard from './StyledCard';
-import React, { ReactNode, useContext } from 'react';
-import { useTheme } from '@react-navigation/native';
-import styled, { ThemeContext } from 'styled-components/native';
+import React, { ReactNode } from 'react';
+import styled from 'styled-components/native';
 import { ThemeProps } from '@oryd/themes';
+
+import StyledText from './StyledText';
 
 interface Props {
   children?: ReactNode;
