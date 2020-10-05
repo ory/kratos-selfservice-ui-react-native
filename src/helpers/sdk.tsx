@@ -1,7 +1,7 @@
 import { Configuration, PublicApi } from '@oryd/kratos-client';
 import Constants from 'expo-constants';
 
-console.log( Constants)
+console.log(Constants.manifest.extra);
 
 const url = Constants.manifest?.extra?.kratosUrl || '';
 
@@ -12,5 +12,5 @@ const canonicalize = (url: string = '') => url.replace(/\/+$/, '/');
 export default new PublicApi(
   new Configuration({
     basePath: canonicalize(url),
-  })
+  }),
 );
