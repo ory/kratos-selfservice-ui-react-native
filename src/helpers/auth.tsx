@@ -35,8 +35,8 @@ export const getAuthenticatedSession = (): Promise<Session | null> =>
 // Sets the session.
 export const setAuthenticatedSession = (
   session: RegistrationViaApiResponse | LoginViaApiResponse
-) => {
-  if (!session.sessionToken) {
+): Promise<Session | null> => {
+  if (!session.session_token) {
     return Promise.reject(
       new Error(
         'Expected the session to have a session token but received none.'
@@ -53,6 +53,5 @@ export const setAuthenticatedSession = (
 };
 
 // Removes the session from the store.
-export const killAuthenticatedSession = () => {
-  return SecureStore.deleteItemAsync(userSessionName);
-};
+export const killAuthenticatedSession = () =>
+  SecureStore.deleteItemAsync(userSessionName);

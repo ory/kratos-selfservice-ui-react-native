@@ -1,17 +1,22 @@
+import React, { ReactNode } from 'react';
 import styled from 'styled-components/native';
+import { GridRow } from './Grid';
+import { ViewProps } from 'react-native';
+import { ThemeProps } from '@oryd/themes';
 
 const StyledCard = styled.View`
-  flex: 1;
   padding: 20px;
 
-  margin-left: 20px;
-  margin-right: 20px;
-
-  margin-bottom: 18px;
-  align-self: stretch;
-
-  background-color: ${({ theme }) => theme.grey0};
-  border: 1px solid ${({ theme }) => theme.grey10};
+  background-color: ${({ theme }: ThemeProps) => theme.grey0};
+  border: 1px solid ${({ theme }: ThemeProps) => theme.grey10};
 `;
 
-export default StyledCard;
+interface Props extends ViewProps {
+  children: ReactNode;
+}
+
+export default (props: Props) => (
+  <GridRow>
+    <StyledCard {...props} />
+  </GridRow>
+);

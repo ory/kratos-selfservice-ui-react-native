@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { RootStackParamList } from '../../App';
 import { StackScreenProps } from '@react-navigation/stack';
-import {
-  fieldsToKeyMap,
-  handleFormSubmitError,
-  methodConfig,
-} from '../helpers/form';
-import { FormField, RegistrationFlow } from '@oryd/kratos-client';
+import { RegistrationFlow } from '@oryd/kratos-client';
 import Form from './Form/Form';
-import { setAuthenticatedSession } from '../helpers/auth';
-import kratos from '../helpers/sdk';
+import kratos, { registrationWithPassword } from '../helpers/sdk';
+import StyledCard from './Styled/StyledCard';
+import NavigationCard from './Styled/NavigationCard';
+import Layout from './Layout';
+import AuthSubTitle from './Styled/AuthSubTitle';
 
 type Props = StackScreenProps<RootStackParamList, 'Registration'>;
 
@@ -22,45 +20,42 @@ const Registration = ({ navigation }: Props) => {
       .initializeSelfServiceRegistrationViaAPIFlow()
       .then(({ data: flow }) => {
         setConfig(flow);
-      });
+      })
+      .catch(console.error);
   }, []);
 
   if (!config) {
     return null;
   }
 
-  const registrationPassword = (fields: Array<FormField>) => {
-    kratos
-      .completeSelfServiceRegistrationFlowWithPasswordMethod(
-        config.id,
-        fieldsToKeyMap(fields)
-      )
-      .then(({ data }) => {
-        if (!data.sessionToken) {
-          navigation.navigate('Login');
-          return;
-        }
+  const onSubmit = (payload: Object) =>
+    registrationWithPassword(
+      config.id,
+      setConfig
+    )(payload).then((session) => {
+      navigation.navigate('Home');
+      return session;
+    });
 
-        return setAuthenticatedSession(data);
-      })
-      .catch(handleFormSubmitError);
-  };
-
-  const passwordMethod = methodConfig(config, 'password');
   return (
-    <View style={styles.container}>
-      <Text>Registration</Text>
+    <Layout>
+      <StyledCard>
+        <AuthSubTitle>Create your LoginApp account</AuthSubTitle>
 
-      {passwordMethod && (
         <Form
-          config={passwordMethod}
-          submitLabel="Sign Up"
-          onSubmit={registrationPassword}
+          config={config}
+          method="password"
+          submitLabel="Sign up"
+          onSubmit={onSubmit}
         />
-      )}
+      </StyledCard>
 
-      <Button title="Sign In" onPress={() => navigation.navigate('Login')} />
-    </View>
+      <NavigationCard
+        description="Already have an account?"
+        cta="Sign in!"
+        onPress={() => navigation.navigate('Login')}
+      />
+    </Layout>
   );
 };
 

@@ -5,12 +5,13 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "format": "prettier -w \"{src/**/,}*.{ts,tsx,json,js}\""
   },
   "dependencies": {
     "@expo-google-fonts/roboto": "^0.1.0",
     "@expo-google-fonts/rubik": "^0.1.0",
-    "@oryd/kratos-client": "0.0.0-next.323d061c9bd2",
+    "@oryd/kratos-client": "0.0.0-next.0f00452b7a47",
     "@oryd/themes": "0.0.17",
     "@react-native-community/masked-view": "0.1.10",
     "@react-navigation/native": "5.7.2",
@@ -36,6 +37,7 @@
     "@babel/core": "^7.8.6",
     "@types/react": "~16.9.35",
     "@types/react-native": "~0.63.2",
+    "prettier": "^2.1.2",
     "typescript": "~3.9.2"
   },
   "private": true
