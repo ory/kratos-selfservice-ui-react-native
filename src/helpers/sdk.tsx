@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 
 console.log( Constants)
 
-const url = Constants.manifest.extra.kratosUrl || '';
+const url = Constants.manifest?.extra?.kratosUrl || '';
 
 // canonicalize removes the trailing slash from URLs.
 const canonicalize = (url: string = '') => url.replace(/\/+$/, '/');
