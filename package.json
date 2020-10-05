@@ -8,15 +8,20 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "@oryd/kratos-client": "0.0.0-next.fdfd3b05c65e",
+    "@expo-google-fonts/roboto": "^0.1.0",
+    "@expo-google-fonts/rubik": "^0.1.0",
+    "@oryd/kratos-client": "0.0.0-next.323d061c9bd2",
+    "@oryd/themes": "0.0.17",
     "@react-native-community/masked-view": "0.1.10",
     "@react-navigation/native": "5.7.2",
     "@react-navigation/stack": "5.8.0",
     "@types/node": "^14.11.2",
     "babel-plugin-transform-inline-environment-variables": "^0.4.3",
-    "expo": "38.0.8",
+    "expo": "^38.0.10",
+    "expo-constants": "~9.1.1",
     "expo-secure-store": "~9.0.1",
     "expo-status-bar": "1.0.2",
+    "font": "0.0.4",
     "react": "16.11.0",
     "react-dom": "16.11.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-38.0.2.tar.gz",
@@ -30,7 +35,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",
-    "@types/react": "~16.9.41",
+    "@types/react": "^16.9.50",
     "@types/react-native": "~0.62.13",
     "typescript": "~3.9.5"
   },
