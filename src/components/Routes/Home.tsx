@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
-import { killAuthenticatedSession } from '../helpers/auth';
+import { killAuthenticatedSession } from '../../helpers/auth';
 import { StackScreenProps } from '@react-navigation/stack';
-import { RootStackParamList } from '../../App';
+import { RootStackParamList } from '../../../App';
 
 type Props = StackScreenProps<RootStackParamList, 'Home'>;
 

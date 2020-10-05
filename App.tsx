@@ -1,28 +1,22 @@
 import 'react-native-gesture-handler';
 
 import React, { useEffect, useState } from 'react';
-import Navigation from './src/components/Navigation';
+import { AppLoading } from 'expo';
 import { ThemeProvider } from 'styled-components/native';
+
 import { theme } from '@oryd/themes';
-import ErrorBoundary from './src/components/ErrorBoundary';
 import { Session } from '@oryd/kratos-client';
-import { useFonts as useFontsRoboto } from '@expo-google-fonts/roboto/useFonts';
-import { Roboto_400Regular } from '@expo-google-fonts/roboto';
-import { useFonts as useFontsRubik } from '@expo-google-fonts/rubik/useFonts';
+import { useFonts as useFontsRoboto, Roboto_400Regular } from '@expo-google-fonts/roboto';
 import {
+  useFonts as useFontsRubik,
   Rubik_300Light,
   Rubik_400Regular,
   Rubik_500Medium,
 } from '@expo-google-fonts/rubik';
-import { getAuthenticatedSession } from './src/helpers/auth';
-import { AppLoading } from 'expo';
 
-export type RootStackParamList = {
-  Home: undefined;
-  Login: undefined;
-  Registration: undefined;
-  Logout: undefined;
-};
+import Navigation from './src/components/Navigation';
+import ErrorBoundary from './src/components/ErrorBoundary';
+import { getAuthenticatedSession } from './src/helpers/auth';
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -53,3 +47,10 @@ export default function App() {
     </ThemeProvider>
   );
 }
+
+export type RootStackParamList = {
+  Home: undefined;
+  Login: undefined;
+  Registration: undefined;
+  Logout: undefined;
+};

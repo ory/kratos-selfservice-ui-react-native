@@ -1,14 +1,14 @@
 // This file renders the Login screen
 import React, { useEffect, useState } from 'react';
-import { RootStackParamList } from '../../App';
+import { RootStackParamList } from '../../../App';
 import { StackScreenProps } from '@react-navigation/stack';
 import { LoginFlow } from '@oryd/kratos-client';
-import Form from './Form/Form';
-import kratos, { loginWithPassword } from '../helpers/sdk';
-import StyledCard from './Styled/StyledCard';
-import Layout from './Layout';
-import NavigationCard from './Styled/NavigationCard';
-import AuthSubTitle from './Styled/AuthSubTitle';
+import Form from '../Form/Form';
+import kratos, { loginWithPassword } from '../../helpers/sdk';
+import StyledCard from '../Styled/StyledCard';
+import Layout from '../Layout';
+import NavigationCard from '../Styled/NavigationCard';
+import AuthSubTitle from '../Styled/AuthSubTitle';
 import { CompleteSelfServiceLoginFlowWithPasswordMethod } from '@oryd/kratos-client/api';
 
 type Props = StackScreenProps<RootStackParamList, 'Login'>;
