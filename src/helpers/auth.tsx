@@ -6,8 +6,6 @@ import {
   Session as KratosSession,
 } from '@oryd/kratos-client';
 import * as SecureStore from 'expo-secure-store';
-import { AxiosError } from 'axios';
-import kratos from './sdk';
 
 // The key under which the session is being stored
 const userSessionName = 'user_session';
