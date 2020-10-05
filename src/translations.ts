@@ -24,17 +24,17 @@ const translations = {
     title: 'Your email address',
     position: 0,
   },
-}
+};
 
-type Translations = typeof translations
+type Translations = typeof translations;
 
 export const getTitle = (key: string): string =>
-  key in translations ? translations[key as keyof Translations].title : key
+  key in translations ? translations[key as keyof Translations].title : key;
 
 const getPosition = (field: FormField) =>
   field.name && field.name in translations
     ? translations[field.name as keyof Translations].position
-    : Infinity
+    : Infinity;
 
 // This helper returns a flow method config (e.g. for the password flow).
 // If active is set and not the given flow method key, it wil be omitted.
@@ -53,22 +53,22 @@ export const methodConfig = (
 ) => {
   if (flow.active && flow.active !== key) {
     // The flow has an active method but it is not the one we're looking at -> return empty
-    return
+    return;
   }
 
   if (!flow.methods[key]) {
     // The flow method is apparently not configured -> return empty
-    return
+    return;
   }
 
-  const config = flow.methods[key].config
+  const config = flow.methods[key].config;
 
   // We want the form fields to be sorted so that the email address is first, the
   // password second, and so on.
-  config.fields.sort(
+  config?.fields.sort(
     (first: FormField, second: FormField) =>
       getPosition(first) - getPosition(second)
-  )
+  );
 
-  return config
-}
+  return config;
+};
