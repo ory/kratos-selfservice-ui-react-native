@@ -24,57 +24,28 @@ import {
 const Stack = createStackNavigator<RootStackParamList>();
 
 export type RootStackParamList = {
-  Home: { session: Session };
+  Home: {
+    session: Session | null;
+  };
   Login: undefined;
   Registration: undefined;
 };
 
-export default function Navigation() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [hasLoaded, setHasLoaded] = useState(false);
-  const [robotoLoaded] = useFontsRoboto({ Roboto_400Regular });
-  const [rubikLoaded] = useFontsRubik({
-    Rubik_300Light,
-    Rubik_400Regular,
-    Rubik_500Medium,
-  });
-
-  // Fetches the authentication session.
-  useEffect(() => {
-    getAuthenticatedSession()
-      .then(setSession)
-      .then(() => setHasLoaded(true));
-  }, []);
-
-  if (!hasLoaded || !rubikLoaded || !robotoLoaded) {
-    return <AppLoading />;
-  }
-
-  return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName={session ? 'Home' : 'Login'}
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        {session ? (
-          // If a session is available, we render the following screens only:
-          <>
-            <Stack.Screen
-              name="Home"
-              component={Home}
-              options={{ title: 'Welcome' }}
-            />
-          </>
-        ) : (
-          // If a session is not available, we render the login, registration, ... screens:
-          <>
-            <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Registration" component={Registration} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+interface Props {
+  session: Session | null;
 }
+
+export default ({ session }: Props) => (
+  <NavigationContainer>
+    <Stack.Navigator
+      initialRouteName={session ? 'Home' : 'Login'}
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="Registration" component={Registration} />
+    </Stack.Navigator>
+  </NavigationContainer>
+);

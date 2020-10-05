@@ -1,9 +1,22 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
+import { killAuthenticatedSession } from '../helpers/auth';
+import { StackScreenProps } from '@react-navigation/stack';
+import { RootStackParamList } from '../../App';
 
-const Home = () => (
+type Props = StackScreenProps<RootStackParamList, 'Home'>;
+
+const Home = ({ navigation }: Props) => (
   <View style={styles.container}>
-    <Text>Welcome home!</Text>
+    <Text>Welcome asdf home!</Text>
+    <Button
+      title={'Logout'}
+      onPress={() => {
+        killAuthenticatedSession().then(() => {
+          navigation.navigate('Login');
+        });
+      }}
+    />
   </View>
 );
 

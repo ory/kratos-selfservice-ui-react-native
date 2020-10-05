@@ -16,6 +16,22 @@ const translations = {
     title: 'E-Mail',
     position: 1,
   },
+  'traits.name.first': {
+    title: 'First Name',
+    position: 2,
+  },
+  'traits.name.last': {
+    title: 'Last Name',
+    position: 3,
+  },
+  'traits.name.birthday': {
+    title: 'My Birthday',
+    position: 4,
+  },
+  'traits.website': {
+    title: 'Website',
+    position: 4,
+  },
   identifier: {
     title: 'E-Mail',
     position: 0,
@@ -31,44 +47,7 @@ type Translations = typeof translations;
 export const getTitle = (key: string): string =>
   key in translations ? translations[key as keyof Translations].title : key;
 
-const getPosition = (field: FormField) =>
+export const getPosition = (field: FormField) =>
   field.name && field.name in translations
     ? translations[field.name as keyof Translations].position
     : Infinity;
-
-// This helper returns a flow method config (e.g. for the password flow).
-// If active is set and not the given flow method key, it wil be omitted.
-// This prevents the user from e.g. signing up with email but still seeing
-// other sign up form elements when an input is incorrect.
-//
-// It also sorts the form fields so that e.g. the email address is first.
-export const methodConfig = (
-  flow:
-    | LoginFlow
-    | RegistrationFlow
-    | RecoveryFlow
-    | SettingsFlow
-    | VerificationFlow,
-  key: string
-) => {
-  if (flow.active && flow.active !== key) {
-    // The flow has an active method but it is not the one we're looking at -> return empty
-    return;
-  }
-
-  if (!flow.methods[key]) {
-    // The flow method is apparently not configured -> return empty
-    return;
-  }
-
-  const config = flow.methods[key].config;
-
-  // We want the form fields to be sorted so that the email address is first, the
-  // password second, and so on.
-  config?.fields.sort(
-    (first: FormField, second: FormField) =>
-      getPosition(first) - getPosition(second)
-  );
-
-  return config;
-};
