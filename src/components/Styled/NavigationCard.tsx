@@ -1,19 +1,19 @@
-import React, { useContext } from 'react';
-import { TouchableHighlight, View } from 'react-native';
-import { ThemeContext } from 'styled-components/native';
+import React, { useContext } from 'react'
+import { TouchableHighlight, View } from 'react-native'
+import { ThemeContext } from 'styled-components/native'
 
-import StyledCard from './StyledCard';
-import StyledText from './StyledText';
+import StyledCard from './StyledCard'
+import StyledText from './StyledText'
 
 interface Props {
-  onPress(): void;
+  onPress(): void
 
-  cta: string;
-  description: string;
+  cta: string
+  description: string
 }
 
 export default ({ onPress, cta, description }: Props) => {
-  const theme = useContext(ThemeContext);
+  const theme = useContext(ThemeContext)
   return (
     <StyledCard>
       <TouchableHighlight onPress={onPress}>
@@ -27,5 +27,5 @@ export default ({ onPress, cta, description }: Props) => {
         </View>
       </TouchableHighlight>
     </StyledCard>
-  );
-};
+  )
+}

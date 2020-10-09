@@ -1,5 +1,6 @@
 {
   "main": "node_modules/expo/AppEntry.js",
+  "prettier": "ory-prettier-styles",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -11,8 +12,9 @@
   "dependencies": {
     "@expo-google-fonts/roboto": "^0.1.0",
     "@expo-google-fonts/rubik": "^0.1.0",
-    "@oryd/kratos-client": "0.0.0-next.0f00452b7a47",
+    "@oryd/kratos-client": "0.0.0-next.b279b1f1b2a7",
     "@oryd/themes": "0.0.17",
+    "@react-native-community/async-storage": "~1.12.0",
     "@react-native-community/masked-view": "0.1.10",
     "@react-navigation/native": "5.7.2",
     "@react-navigation/stack": "5.8.0",
@@ -25,19 +27,20 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-39.0.0.tar.gz",
+    "react-native-flash-message": "^0.1.16",
     "react-native-gesture-handler": "~1.7.0",
     "react-native-reanimated": "~1.13.0",
-    "react-native-safe-area-context": "3.1.4",
+    "react-native-safe-area-context": "^3.1.4",
     "react-native-screens": "~2.10.1",
     "react-native-web": "~0.13.7",
     "styled-components": "^5.2.0",
-    "url": "^0.11.0",
-    "@react-native-community/async-storage": "~1.12.0"
+    "url": "^0.11.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",
     "@types/react": "~16.9.35",
     "@types/react-native": "~0.63.2",
+    "ory-prettier-styles": "^1.0.1",
     "prettier": "^2.1.2",
     "typescript": "~3.9.2"
   },

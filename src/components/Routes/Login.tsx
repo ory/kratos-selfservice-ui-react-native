@@ -1,48 +1,52 @@
-// This file renders the Login screen
-import React, { useEffect, useState } from 'react';
-import { RootStackParamList } from '../../../App';
-import { StackScreenProps } from '@react-navigation/stack';
-import { LoginFlow } from '@oryd/kratos-client';
-import Form from '../Form/Form';
-import kratos, { loginWithPassword } from '../../helpers/sdk';
-import StyledCard from '../Styled/StyledCard';
-import Layout from '../Layout';
-import NavigationCard from '../Styled/NavigationCard';
-import AuthSubTitle from '../Styled/AuthSubTitle';
-import { CompleteSelfServiceLoginFlowWithPasswordMethod } from '@oryd/kratos-client/api';
+// This file renders the Login screen.
 
-type Props = StackScreenProps<RootStackParamList, 'Login'>;
+import React, { useContext, useEffect, useState } from 'react'
+import { StackScreenProps } from '@react-navigation/stack'
+import { LoginFlow } from '@oryd/kratos-client'
+import Form from '../Form/Form'
+import kratos from '../../helpers/sdk'
+import StyledCard from '../Styled/StyledCard'
+import AuthLayout from '../Layout/AuthLayout'
+import NavigationCard from '../Styled/NavigationCard'
+import AuthSubTitle from '../Styled/AuthSubTitle'
+import { CompleteSelfServiceLoginFlowWithPasswordMethod } from '@oryd/kratos-client/api'
+import { RootStackParamList } from '../Navigation'
+import { AuthContext } from '../AuthProvider'
+import { handleFormSubmitError } from '../../helpers/form'
+import { AxiosError } from 'axios'
+
+type Props = StackScreenProps<RootStackParamList, 'Login'>
 
 const Login = ({ navigation }: Props) => {
-  const [config, setConfig] = useState<LoginFlow | undefined>(undefined);
+  const { setSession } = useContext(AuthContext)
 
-  // Initializes the login flow.
-  useEffect(() => {
+  const [config, setConfig] = useState<LoginFlow | undefined>(undefined)
+  const initializeFlow = () =>
     kratos
       .initializeSelfServiceLoginViaAPIFlow()
       .then(({ data: flow }) => {
-        setConfig(flow);
+        setConfig(flow)
       })
-      .catch(console.error);
-  }, []);
+      .catch(console.error)
+
+  // Initializes the login flow.
+  useEffect(() => {
+    initializeFlow()
+  }, [])
 
   if (!config) {
-    return null;
+    return null
   }
 
   const onSubmit = (payload: CompleteSelfServiceLoginFlowWithPasswordMethod) =>
-    loginWithPassword<LoginFlow>(
-      config.id,
-      setConfig
-    )(payload).then((session) => {
-      if (session) {
-        navigation.navigate('Home');
-      }
-      return session;
-    });
+    kratos
+      .completeSelfServiceLoginFlowWithPasswordMethod(config.id, payload)
+      .then(({ data }) => Promise.resolve(data))
+      .then(setSession)
+      .catch(handleFormSubmitError(setConfig, initializeFlow))
 
   return (
-    <Layout>
+    <AuthLayout>
       <StyledCard>
         <AuthSubTitle>Sign in to your LoginApp account</AuthSubTitle>
 
@@ -59,8 +63,8 @@ const Login = ({ navigation }: Props) => {
         cta="Sign up!"
         onPress={() => navigation.navigate('Registration')}
       />
-    </Layout>
-  );
-};
+    </AuthLayout>
+  )
+}
 
-export default Login;
+export default Login

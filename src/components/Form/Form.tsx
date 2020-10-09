@@ -1,63 +1,81 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import {
+  FormField,
   LoginFlow,
   RegistrationFlow,
-  Session,
-  SettingsFlow,
-} from '@oryd/kratos-client';
-import Button from '../Styled/StyledButton';
-import Messages from './Messages';
-import { camelize, methodConfig } from '../../helpers/form';
-import Field from './Field';
+  SettingsFlow
+} from '@oryd/kratos-client'
+import Button from '../Styled/StyledButton'
+import Messages from './Messages'
+import { camelize, methodConfig } from '../../helpers/form'
+import Field from './Field'
+import {
+  CompleteSelfServiceLoginFlowWithPasswordMethod,
+  CompleteSelfServiceSettingsFlowWithPasswordMethod
+} from '@oryd/kratos-client/api'
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  View
+} from 'react-native'
 
-interface Props {
-  config: LoginFlow | RegistrationFlow | SettingsFlow;
-  method: 'password' | 'profile' | 'link';
-  onSubmit: <T>(payload: T) => Promise<Session | null>;
-  submitLabel: string;
+interface Props<T> {
+  config: LoginFlow | RegistrationFlow | SettingsFlow
+  method: 'password' | 'profile' | 'link'
+  onSubmit: (payload: T) => Promise<void>
+  submitLabel: string
 }
 
-interface AnyMap {
-  [name: string]: any;
-}
-
-const Form = ({ config, onSubmit, submitLabel, method }: Props) => {
+const Form = <
+  T extends
+    | object
+    | CompleteSelfServiceSettingsFlowWithPasswordMethod
+    | CompleteSelfServiceLoginFlowWithPasswordMethod
+>({
+  config,
+  onSubmit,
+  submitLabel,
+  method
+}: Props<T>) => {
   // The Form component keeps track of all the field values in the form.
   // To do so, we initialize
-  const initialState: AnyMap = {};
-  const inner = methodConfig(config, method);
+  const inner = methodConfig(config, method)
 
   if (!inner) {
-    return null;
+    return null
   }
 
-  inner.fields.forEach((field) => {
-    initialState[field.name] = field.value || '';
-  });
+  const initialState: Partial<T> = {}
+  inner.fields.forEach((field: FormField) => {
+    const key = field.name as keyof T
+    initialState[key] = (field.value || '') as any // value can be string, number, ... - any is ok here!
+  })
 
-  const [values, setValues] = useState(initialState);
-  const [inProgress, setInProgress] = useState(false);
+  const [values, setValues] = useState<T>(initialState as T)
+  const [inProgress, setInProgress] = useState(false)
 
   const onChange = (name: string) => (value: any) => {
     setValues((values) => ({
       ...values,
-      [name]: value,
-    }));
-  };
+      [name]: value
+    }))
+  }
 
-  const getValue = (name: string) => values[camelize(name)];
+  const getValue = (name: string) => values[camelize<T>(name)]
   const onPress = () => {
-    setInProgress(true);
+    setInProgress(true)
     onSubmit(values).then(() => {
-      setInProgress(false);
-    });
-  };
+      setInProgress(false)
+    })
+  }
 
   return (
     <>
       <Messages messages={inner.messages} />
 
-      {inner.fields.map((field) => (
+      {inner.fields.map((field: FormField) => (
         <Field
           disabled={inProgress}
           key={field.name}
@@ -69,7 +87,7 @@ const Form = ({ config, onSubmit, submitLabel, method }: Props) => {
 
       <Button disabled={inProgress} title={submitLabel} onPress={onPress} />
     </>
-  );
-};
+  )
+}
 
-export default Form;
+export default Form

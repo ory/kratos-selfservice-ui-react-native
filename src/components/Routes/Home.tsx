@@ -1,32 +1,42 @@
-import React from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
-import { killAuthenticatedSession } from '../../helpers/auth';
-import { StackScreenProps } from '@react-navigation/stack';
-import { RootStackParamList } from '../../../App';
+import React, { useContext } from 'react'
+import StyledText from '../Styled/StyledText'
+import CodeBox from '../Styled/CodeBox'
+import { AuthContext } from '../AuthProvider'
+import Layout from '../Layout/Layout'
+import StyledCard from '../Styled/StyledCard'
 
-type Props = StackScreenProps<RootStackParamList, 'Home'>;
+const Home = () => {
+  const { session, sessionToken } = useContext(AuthContext)
+  if (!session) {
+    return null
+  }
 
-const Home = ({ navigation }: Props) => (
-  <View style={styles.container}>
-    <Text>Welcome asdf home!</Text>
-    <Button
-      title={'Logout'}
-      onPress={() => {
-        killAuthenticatedSession().then(() => {
-          navigation.navigate('Login');
-        });
-      }}
-    />
-  </View>
-);
+  const email =
+    (session.identity.traits as any).email || String(session.identity.id)
+  return (
+    <Layout>
+      <StyledCard>
+        <StyledText style={{ marginBottom: 14 }} variant="h1">
+          Welcome back, {email}!
+        </StyledText>
+        <StyledText variant="lead">
+          Hello, nice to have you! You signed up with this data:
+        </StyledText>
+        <CodeBox>
+          {JSON.stringify(session.identity.traits || '{}', null, 2)}
+        </CodeBox>
+        <StyledText variant="lead">
+          You are signed in using an ORY Kratos Session Token:
+        </StyledText>
+        <CodeBox>{sessionToken}</CodeBox>
+        <StyledText variant="lead">
+          This app makes REST requests to ORY Kratos' Public API to validate and
+          decode the ORY Kratos Session payload:
+        </StyledText>
+        <CodeBox>{JSON.stringify(session || '{}', null, 2)}</CodeBox>
+      </StyledCard>
+    </Layout>
+  )
+}
 
-export default Home;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default Home

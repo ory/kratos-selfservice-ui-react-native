@@ -1,73 +1,102 @@
-import { FormField } from '@oryd/kratos-client';
-import React from 'react';
-import { TextInputProps } from 'react-native';
-import StyledText from '../Styled/StyledText';
-import { getTitle } from '../../translations';
-import StyledTextInput from '../Styled/StyledTextInput';
-import Messages from './Messages';
+import { FormField } from '@oryd/kratos-client'
+import React from 'react'
+import { TextInputProps } from 'react-native'
+import StyledText from '../Styled/StyledText'
+import { getTitle } from '../../translations'
+import StyledTextInput from '../Styled/StyledTextInput'
+import Messages from './Messages'
+import styled from 'styled-components/native'
+import { textInputSubtitleStyles, textInputTitleStyles } from '@oryd/themes'
 
 interface FieldProps {
-  field: FormField;
-  onChange: (value: any) => void;
-  value: any;
-  disabled?: boolean;
+  field: FormField
+  onChange: (value: any) => void
+  value: any
+  disabled?: boolean
 }
 
 const guessVariant = (field: FormField) => {
   if (field.name === 'identifier') {
-    return 'username';
+    return 'username'
   }
 
   switch (field.type) {
     case 'hidden':
-      return null;
+      return null
     case 'email':
-      return 'email';
+      return 'email'
     case 'submit':
-      return null;
+      return null
     case 'password':
-      return 'password';
+      return 'password'
     default:
-      return 'text';
+      return 'text'
   }
-};
+}
+
+const Title = styled.Text(textInputTitleStyles)
+const Subtitle = styled.Text(textInputSubtitleStyles)
+
+const typeToState = ({
+  type,
+  disabled
+}: {
+  type?: string
+  disabled?: boolean
+}) => {
+  if (disabled) {
+    return 'disabled'
+  }
+  switch (type) {
+    case 'error':
+      return 'error'
+  }
+  return undefined
+}
 
 export default ({ field, value, onChange, disabled }: FieldProps) => {
-  const variant = guessVariant(field);
+  const variant = guessVariant(field)
   if (!variant) {
-    return null;
+    return null
   }
 
-  const extraProps: TextInputProps = {};
+  const extraProps: TextInputProps = {}
   switch (variant) {
     case 'email':
-      extraProps.autoCompleteType = 'email';
-      extraProps.keyboardType = 'email-address';
-      extraProps.textContentType = 'emailAddress';
-      break;
+      extraProps.autoCompleteType = 'email'
+      extraProps.keyboardType = 'email-address'
+      extraProps.textContentType = 'emailAddress'
+      break
     case 'password':
-      extraProps.autoCompleteType = 'password';
-      extraProps.textContentType = 'password';
-      extraProps.secureTextEntry = true;
-      break;
+      extraProps.autoCompleteType = 'password'
+      extraProps.textContentType = 'password'
+      extraProps.secureTextEntry = true
+      break
     case 'username':
-      extraProps.autoCompleteType = 'username';
-      extraProps.textContentType = 'username';
-      break;
+      extraProps.autoCompleteType = 'username'
+      extraProps.textContentType = 'username'
+      break
   }
 
   return (
     <>
-      <StyledText variant="h3">{getTitle(field.name)}</StyledText>
+      <Title>{getTitle(field.name)}</Title>
       <StyledTextInput
         key={field.name}
         onChange={onChange}
         value={value ? String(value) : ''}
         editable={!disabled}
         onChangeText={onChange}
+        state={disabled ? 'disabled' : undefined}
         {...extraProps}
       />
-      <Messages messages={field.messages} />
+      <>
+        {field.messages?.map(({ text, id, type }, k) => (
+          <Subtitle key={`${id}${k}`} state={typeToState({ type, disabled })}>
+            {text}
+          </Subtitle>
+        ))}
+      </>
     </>
-  );
-};
+  )
+}

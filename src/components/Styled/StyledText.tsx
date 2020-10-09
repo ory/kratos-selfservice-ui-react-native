@@ -1,62 +1,59 @@
-import React, { ReactNode } from 'react';
-import styled from 'styled-components/native';
-import { ThemeProps } from '@oryd/themes/theme/index';
+import React, { ReactNode } from 'react'
+import styled from 'styled-components/native'
 import {
   typographyCaptionStyles,
+  typographyCodeStyles,
   typographyH1Styles,
   typographyH2Styles,
   typographyH3Styles,
-  typographyParagraphStyles,
-} from '@oryd/themes/lib/theme/native/typographyStyles';
-import { TextProps } from 'react-native';
+  typographyLeadStyles,
+  typographyParagraphStyles
+} from '@oryd/themes'
+import { TextProps } from 'react-native'
 
 interface StyledTextProps extends TextProps {
-  variant?: 'p' | 'h1' | 'h2' | 'h3' | 'caption';
-  children: ReactNode;
+  variant?:
+    | 'p'
+    | 'h1'
+    | 'h2'
+    | 'h3'
+    | 'caption'
+    | 'lead'
+    | 'code'
+    | 'code-block'
+  children: ReactNode
 }
 
-const Paragraph = styled.Text`
-  ${typographyParagraphStyles}
+const Paragraph = styled.Text(typographyParagraphStyles)
 
-  font-family: "Rubik_300Light";
-`;
+const H1 = styled.Text(typographyH1Styles)
 
-const H1 = styled.Text`
-  ${typographyH1Styles}
+const H2 = styled.Text(typographyH2Styles)
 
-  font-family: "Rubik_500Medium";
-`;
+const H3 = styled.Text(typographyH3Styles)
 
-const H2 = styled.Text`
-  ${typographyH2Styles}
+const Caption = styled.Text(typographyCaptionStyles)
 
-  font-family: "Rubik_400Regular";
-`;
+const Lead = styled.Text(typographyLeadStyles)
 
-const H3 = styled.Text`
-  ${typographyH3Styles}
-
-  font-family: "Rubik_400Regular";
-`;
-
-const Caption = styled.Text`
-  ${typographyCaptionStyles}
-
-  font-family: "Rubik_400Regular";
-`;
+const Code = styled.Text(typographyCodeStyles)
 
 export default ({ variant, ...props }: StyledTextProps) => {
   switch (variant) {
     case 'h1':
-      return <H1 {...props} />;
+      return <H1 {...props} />
     case 'h2':
-      return <H2 {...props} />;
+      return <H2 {...props} />
     case 'h3':
-      return <H3 {...props} />;
+      return <H3 {...props} />
     case 'caption':
-      return <Caption {...props} />;
+      return <Caption {...props} />
+    case 'lead':
+      return <Lead {...props} />
+    case 'code':
+      return <Code {...props} />
     case 'p':
     default:
-      return <Paragraph {...props} />;
+      return <Paragraph {...props} />
   }
-};
+}
