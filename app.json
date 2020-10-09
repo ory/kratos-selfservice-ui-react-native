@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ORY Kratos SelfService UI",
+    "name": "ORY Kratos React Native Self-Service UI Reference",
     "slug": "kratos-selfservice-ui-react-native",
     "scheme": "kratos-selfservice-ui-react-native",
     "version": "1.0.0",
@@ -16,10 +16,15 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ory.kratos-selfservice-ui-react-native"
+    },
+    "android": {
+      "package": "com.ory.kratos_self_service_ui_react_native"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": ""
   }
 }
