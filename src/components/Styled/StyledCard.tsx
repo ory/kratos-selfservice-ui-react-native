@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react'
 import styled from 'styled-components/native'
-import { GridRow } from './Grid'
+import { GridRow } from '../Layout/Grid'
 import { ViewProps } from 'react-native'
 import { ThemeProps } from '@oryd/themes'
 
