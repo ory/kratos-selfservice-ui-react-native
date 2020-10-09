@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { GridContainer } from '../Styled/Grid'
+import { GridContainer } from './Grid'
 
 import { SafeAreaView, ScrollView } from 'react-native'
 import ForkMe from '../Styled/ForkMe'
