@@ -1,7 +1,7 @@
-import React from 'react';
-import styled from 'styled-components/native';
-import { NativeSyntheticEvent, NativeTouchEvent } from 'react-native';
-import { ThemeProps } from '@oryd/themes';
+import React from 'react'
+import styled from 'styled-components/native'
+import { NativeSyntheticEvent, NativeTouchEvent } from 'react-native'
+import { ThemeProps } from '@oryd/themes'
 
 const StyledText = styled.Text`
   font-family: 'Rubik_400Regular';
@@ -12,7 +12,7 @@ const StyledText = styled.Text`
   text-align: center;
   color: ${({ disabled, theme }: ThemeProps & StyleProps) =>
     disabled ? theme.grey30 : theme.grey0};
-`;
+`
 
 const StyledContainer = styled.TouchableOpacity`
   background-color: ${({ disabled, theme }: ThemeProps & StyleProps) =>
@@ -24,16 +24,16 @@ const StyledContainer = styled.TouchableOpacity`
   padding: 5px 12px;
   margin: 7px 0;
   border: 2px solid transparent;
-`;
+`
 
 interface StyleProps {
-  disabled?: boolean;
-  big?: boolean;
+  disabled?: boolean
+  big?: boolean
 }
 
 interface ButtonProps extends StyleProps {
-  title: string;
-  onPress: (ev: NativeSyntheticEvent<NativeTouchEvent>) => void;
+  title: string
+  onPress: (ev: NativeSyntheticEvent<NativeTouchEvent>) => void
 }
 
 const StyledButton = ({ onPress, title, big, disabled }: ButtonProps) => (
@@ -42,6 +42,6 @@ const StyledButton = ({ onPress, title, big, disabled }: ButtonProps) => (
       {title}
     </StyledText>
   </StyledContainer>
-);
+)
 
-export default StyledButton;
+export default StyledButton
