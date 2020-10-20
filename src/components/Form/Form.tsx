@@ -13,13 +13,6 @@ import {
   CompleteSelfServiceLoginFlowWithPasswordMethod,
   CompleteSelfServiceSettingsFlowWithPasswordMethod
 } from '@oryd/kratos-client/api'
-import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
-  View
-} from 'react-native'
 
 interface Props<T> {
   config: LoginFlow | RegistrationFlow | SettingsFlow

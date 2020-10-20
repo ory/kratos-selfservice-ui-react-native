@@ -1,4 +1,4 @@
-// This file renders the Login screen.
+// This file renders the settings screen.
 
 import React, { useContext, useEffect, useState } from 'react'
 import { SettingsFlow } from '@oryd/kratos-client'
