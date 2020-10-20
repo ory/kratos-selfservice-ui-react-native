@@ -1,4 +1,4 @@
-// This file renders the Login screen.
+// This file renders the registration screen.
 
 import React, { useContext, useEffect, useState } from 'react'
 import { StackScreenProps } from '@react-navigation/stack'
@@ -12,7 +12,6 @@ import AuthSubTitle from '../Styled/AuthSubTitle'
 import { RootStackParamList } from '../Navigation'
 import { AuthContext } from '../AuthProvider'
 import { handleFormSubmitError } from '../../helpers/form'
-import { AxiosError } from 'axios'
 
 type Props = StackScreenProps<RootStackParamList, 'Registration'>
 
