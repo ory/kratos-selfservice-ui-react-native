@@ -11,7 +11,7 @@ import { SessionContext, setAuthenticatedSession } from './auth'
 import { handleFormSubmitError } from './form'
 
 // canonicalize removes the trailing slash from URLs.
-const canonicalize = (url: string = '') => url.replace(/\/+$/, '/')
+const canonicalize = (url: string = '') => url.replace(/\/+$/, '')
 
 export const kratosUrl =
   canonicalize(Constants.manifest?.extra?.kratosUrl) || ''
