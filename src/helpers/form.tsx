@@ -1,6 +1,7 @@
 import React from 'react'
 import {
   FormField,
+  GenericError,
   LoginFlow,
   LoginFlowMethodConfig,
   RecoveryFlow,
@@ -52,6 +53,18 @@ export function handleFormSubmitError<T>(
     if (err.response) {
       switch (err.response.status) {
         case 400:
+          if (typeof err.response.data.error === 'object') {
+            console.warn(err.response.data)
+
+            const ge: GenericError = err.response.data
+            showMessage({
+              message: `${ge.error?.message}: ${ge.error?.reason}`,
+              type: 'danger'
+            })
+
+            return Promise.resolve()
+          }
+
           console.warn('Form validation failed:', err.response.data)
           setConfig(err.response.data)
           return Promise.resolve()
