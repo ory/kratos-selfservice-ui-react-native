@@ -3,9 +3,11 @@
     "name": "ORY Kratos React Native Self-Service UI Reference",
     "slug": "kratos-selfservice-ui-react-native",
     "scheme": "kratos-selfservice-ui-react-native",
-    "version": "1.0.0",
+    "version": "0.5.0",
     "orientation": "portrait",
+    "githubUrl": "https://github.com/ory/kratos-selfservice-ui-react-native",
     "icon": "./assets/icon.png",
+    "privacy": "public",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -14,7 +16,9 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.ory.kratos-selfservice-ui-react-native"
@@ -25,6 +29,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "description": ""
+    "description": "An example app demonstrating login, registration, profile settings, 2fa, account recovery, and more using the ORY Kratos open source project."
   }
 }
