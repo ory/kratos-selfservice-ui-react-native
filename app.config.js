@@ -4,7 +4,8 @@ export default (parent) => ({
   ...parent.config,
   extra: {
     kratosUrl:
-      process.env.KRATOS_URL || 'https://public.api.stage.projects.oryapis.dev/'
+      process.env.KRATOS_URL ||
+      'https://public.api.staging.projects.oryapis.dev'
   },
   splash: {
     ...parent.config.splash,
