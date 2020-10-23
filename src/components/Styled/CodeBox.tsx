@@ -9,12 +9,13 @@ const StyledCodeBox = styled.View(codeBoxStyles)
 
 interface Props extends TextProps {
   children: ReactNode
+  testID?: string
 }
 
-export default (props: Props) => (
+export default ({ testID, ...props }: Props) => (
   <GridRow>
     <StyledCodeBox>
-      <StyledText variant="code" {...props} />
+      <StyledText testID={testID} variant="code" {...props} />
     </StyledCodeBox>
   </GridRow>
 )

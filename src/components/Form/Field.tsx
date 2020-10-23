@@ -1,6 +1,6 @@
 import { FormField } from '@oryd/kratos-client'
 import React from 'react'
-import { TextInputProps } from 'react-native'
+import { TextInput, TextInputProps, View } from 'react-native'
 import StyledText from '../Styled/StyledText'
 import { getTitle } from '../../translations'
 import StyledTextInput from '../Styled/StyledTextInput'
@@ -79,9 +79,10 @@ export default ({ field, value, onChange, disabled }: FieldProps) => {
   }
 
   return (
-    <>
+    <View testID={`field/${field.name}`}>
       <Title>{getTitle(field.name)}</Title>
       <StyledTextInput
+        testID={field.name}
         key={field.name}
         onChange={onChange}
         value={value ? String(value) : ''}
@@ -97,6 +98,6 @@ export default ({ field, value, onChange, disabled }: FieldProps) => {
           </Subtitle>
         ))}
       </>
-    </>
+    </View>
   )
 }

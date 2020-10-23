@@ -28,6 +28,7 @@ const StyledContainer = styled.TouchableOpacity`
 
 interface StyleProps {
   disabled?: boolean
+  testID?: string
   big?: boolean
 }
 
@@ -36,8 +37,19 @@ interface ButtonProps extends StyleProps {
   onPress: (ev: NativeSyntheticEvent<NativeTouchEvent>) => void
 }
 
-const StyledButton = ({ onPress, title, big, disabled }: ButtonProps) => (
-  <StyledContainer big={big} disabled={disabled} onPress={onPress}>
+const StyledButton = ({
+  onPress,
+  testID,
+  title,
+  big,
+  disabled
+}: ButtonProps) => (
+  <StyledContainer
+    testID={testID}
+    big={big}
+    disabled={disabled}
+    onPress={onPress}
+  >
     <StyledText big={big} disabled={disabled}>
       {title}
     </StyledText>

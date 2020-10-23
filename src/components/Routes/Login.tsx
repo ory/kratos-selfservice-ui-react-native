@@ -58,6 +58,7 @@ const Login = ({ navigation }: Props) => {
       </StyledCard>
 
       <NavigationCard
+        testID="nav-signup"
         description="Need an account?"
         cta="Sign up!"
         onPress={() => navigation.navigate('Registration')}

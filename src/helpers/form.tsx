@@ -44,6 +44,10 @@ export const fieldsToKeyMap = (fields: Array<FormField>) => {
   return proto
 }
 
+export function handleFlowInitError(err: AxiosError) {
+  return
+}
+
 export function handleFormSubmitError<T>(
   setConfig: (p: T) => void,
   initialize: () => void,
@@ -78,7 +82,11 @@ export function handleFormSubmitError<T>(
         case 403:
         case 401:
           if (!logout) {
-            console.error(err)
+            console.error(
+              `Received unexpected 401/403 status code: `,
+              err,
+              err.response.data
+            )
             return Promise.resolve()
           }
 

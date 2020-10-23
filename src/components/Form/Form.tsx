@@ -66,7 +66,7 @@ const Form = <
 
   return (
     <>
-      <Messages messages={inner.messages} />
+      <Messages testID="form-messages" messages={inner.messages} />
 
       {inner.fields.map((field: FormField) => (
         <Field
@@ -78,7 +78,12 @@ const Form = <
         />
       ))}
 
-      <Button disabled={inProgress} title={submitLabel} onPress={onPress} />
+      <Button
+        testID="submit-form"
+        disabled={inProgress}
+        title={submitLabel}
+        onPress={onPress}
+      />
     </>
   )
 }

@@ -13,6 +13,7 @@ const Home = () => {
 
   const email =
     (session.identity.traits as any).email || String(session.identity.id)
+
   return (
     <Layout>
       <StyledCard>
@@ -28,12 +29,14 @@ const Home = () => {
         <StyledText variant="lead">
           You are signed in using an ORY Kratos Session Token:
         </StyledText>
-        <CodeBox>{sessionToken}</CodeBox>
+        <CodeBox testID="session-token">{sessionToken}</CodeBox>
         <StyledText variant="lead">
           This app makes REST requests to ORY Kratos' Public API to validate and
           decode the ORY Kratos Session payload:
         </StyledText>
-        <CodeBox>{JSON.stringify(session || '{}', null, 2)}</CodeBox>
+        <CodeBox testID="session-content">
+          {JSON.stringify(session || '{}', null, 2)}
+        </CodeBox>
       </StyledCard>
     </Layout>
   )

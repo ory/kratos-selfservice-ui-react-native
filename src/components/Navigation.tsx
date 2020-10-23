@@ -35,6 +35,11 @@ const options = {
   header: () => <Header />
 }
 
+const linking = {
+  // This is only used for e2e testing.
+  prefixes: ['http://127.0.0.1:4457/']
+}
+
 export default () => {
   const { isAuthenticated } = useContext(AuthContext)
   return (
@@ -43,7 +48,7 @@ export default () => {
       behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <NavigationContainer>
+        <NavigationContainer linking={linking}>
           <Stack.Navigator
             screenOptions={{
               headerShown: isAuthenticated
