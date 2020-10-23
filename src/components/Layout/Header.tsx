@@ -56,7 +56,7 @@ const Header = () => {
         <TouchableOpacity onPress={navigate('Settings')}>
           <HeaderButton source={require('../../assets/gear.png')} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={logout}>
+        <TouchableOpacity testID={'logout'} onPress={logout}>
           <HeaderButton source={require('../../assets/sign-out.png')} />
         </TouchableOpacity>
       </Buttons>

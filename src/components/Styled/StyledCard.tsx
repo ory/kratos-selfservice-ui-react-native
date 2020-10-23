@@ -13,10 +13,11 @@ const StyledCard = styled.View`
 
 interface Props extends ViewProps {
   children: ReactNode
+  testID?: string
 }
 
-export default (props: Props) => (
-  <GridRow>
+export default ({ testID, ...props }: Props) => (
+  <GridRow testID={testID}>
     <StyledCard {...props} />
   </GridRow>
 )

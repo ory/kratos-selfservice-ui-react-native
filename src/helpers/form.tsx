@@ -130,11 +130,6 @@ export const methodConfig = (
   | SettingsFlowMethodConfig
   | VerificationFlowMethodConfig
   | undefined => {
-  if (flow.active && flow.active !== key) {
-    // The flow has an active method but it is not the one we're looking at -> return empty
-    return
-  }
-
   if (!flow.methods[key]) {
     // The flow method is apparently not configured -> return empty
     return

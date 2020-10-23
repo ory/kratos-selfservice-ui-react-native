@@ -13,7 +13,7 @@ import StyledText from '../Styled/StyledText'
 import styled from 'styled-components/native'
 import { CompleteSelfServiceSettingsFlowWithPasswordMethod } from '@oryd/kratos-client/api'
 import { handleFormSubmitError } from '../../helpers/form'
-import { Button } from 'react-native'
+import { Button, View } from 'react-native'
 
 const CardTitle = styled.View`
   margin-bottom: 15px;
@@ -72,9 +72,9 @@ const Settings = () => {
 
   return (
     <Layout>
-      <StyledCard>
+      <StyledCard testID={'settings-password'}>
         <CardTitle>
-          <StyledText variant={'h2'}>User settings</StyledText>
+          <StyledText variant={'h2'}>Change password</StyledText>
         </CardTitle>
         <Form
           config={config}
@@ -83,10 +83,9 @@ const Settings = () => {
           onSubmit={onSubmitPassword}
         />
       </StyledCard>
-
-      <StyledCard>
+      <StyledCard testID={'settings-profile'}>
         <CardTitle>
-          <StyledText variant={'h2'}>User settings</StyledText>
+          <StyledText variant={'h2'}>Profile settings</StyledText>
         </CardTitle>
         <Form
           config={config}

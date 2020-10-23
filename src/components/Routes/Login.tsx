@@ -48,7 +48,6 @@ const Login = ({ navigation }: Props) => {
     <AuthLayout>
       <StyledCard>
         <AuthSubTitle>Sign in to your LoginApp account</AuthSubTitle>
-
         <Form
           config={config}
           method="password"

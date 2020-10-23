@@ -1,8 +1,6 @@
+import { ScrollView } from 'react-native'
 import React, { ReactNode } from 'react'
 import { GridContainer } from './Grid'
-
-import { SafeAreaView, ScrollView } from 'react-native'
-import ForkMe from '../Styled/ForkMe'
 
 const Layout = ({ children }: { children: ReactNode }) => (
   <ScrollView>
