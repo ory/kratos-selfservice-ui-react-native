@@ -1,5 +1,3 @@
-import { theme } from '@oryd/themes'
-
 export default (parent) => ({
   ...parent.config,
   extra: {
@@ -9,7 +7,7 @@ export default (parent) => ({
   },
   splash: {
     ...parent.config.splash,
-    backgroundColor: theme.grey5
+    backgroundColor: '#F0F0F1' // @oryd/themes/theme.grey5:
   },
   platforms: ['ios', 'android']
 })
