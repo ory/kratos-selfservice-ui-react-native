@@ -15,11 +15,7 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "src/assets/*",
-      "src/assets/**/*",
-      "assets/*"
-    ],
+    "assetBundlePatterns": ["src/assets/*", "src/assets/**/*", "assets/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.ory.kratos-selfservice-ui-react-native"

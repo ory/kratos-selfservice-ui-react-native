@@ -1,8 +1,7 @@
 import React, { ReactNode } from 'react'
 import styled from 'styled-components/native'
 import { GridContainer, GridRow } from './Grid'
-import { SafeAreaView, ScrollView } from 'react-native'
-import ForkMe from '../Styled/ForkMe'
+import { ScrollView } from 'react-native'
 
 const StyledImage = styled.Image`
   margin-top: 55px;
@@ -17,7 +16,10 @@ const AuthLayout = ({ children }: { children: ReactNode }) => (
   <ScrollView>
     <GridContainer>
       <GridRow>
-        <StyledImage source={require('../../assets/logo.png')} />
+        <StyledImage
+          resizeMode="contain"
+          source={require('../../assets/logo.png')}
+        />
       </GridRow>
       {children}
     </GridContainer>

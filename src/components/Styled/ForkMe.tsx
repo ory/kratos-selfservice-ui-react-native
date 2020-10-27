@@ -22,11 +22,17 @@ const fork = () => Linking.openURL('https://github.com/ory')
 
 export default () => (
   <Container>
-    <StyledImage source={require('../../assets/ory.png')} />
+    <StyledImage
+      resizeMode="contain"
+      source={require('../../assets/ory.png')}
+    />
     <StyledText>
       Fork me on{' '}
       <Link onPress={fork}>
-        <Fork source={require('../../assets/repo-forked.png')} />
+        <Fork
+          resizeMode="contain"
+          source={require('../../assets/repo-forked.png')}
+        />
         GitHub!
       </Link>
     </StyledText>

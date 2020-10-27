@@ -50,14 +50,23 @@ const Header = () => {
   return (
     <Container>
       <TouchableOpacity onPress={navigate('Home')}>
-        <StyledImage source={require('../../assets/logo.png')} />
+        <StyledImage
+          resizeMode="contain"
+          source={require('../../assets/logo.png')}
+        />
       </TouchableOpacity>
       <Buttons>
         <TouchableOpacity onPress={navigate('Settings')}>
-          <HeaderButton source={require('../../assets/gear.png')} />
+          <HeaderButton
+            resizeMode="contain"
+            source={require('../../assets/gear.png')}
+          />
         </TouchableOpacity>
         <TouchableOpacity testID={'logout'} onPress={logout}>
-          <HeaderButton source={require('../../assets/sign-out.png')} />
+          <HeaderButton
+            resizeMode="contain"
+            source={require('../../assets/sign-out.png')}
+          />
         </TouchableOpacity>
       </Buttons>
     </Container>
