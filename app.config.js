@@ -3,7 +3,7 @@ export default (parent) => ({
   extra: {
     kratosUrl:
       process.env.KRATOS_URL ||
-      'https://public.api.staging.projects.oryapis.dev'
+      'https://demo.tenants.staging.oryapis.dev/api/kratos/public'
   },
   splash: {
     ...parent.config.splash,
