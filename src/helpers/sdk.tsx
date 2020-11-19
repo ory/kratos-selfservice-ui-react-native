@@ -1,6 +1,12 @@
 import { Configuration, PublicApi } from '@oryd/kratos-client'
 import Constants from 'expo-constants'
 
+import axiosFactory from 'axios'
+import { resilience } from './axios'
+
+const axios = axiosFactory.create()
+resilience(axios)
+
 // canonicalize removes the trailing slash from URLs.
 const canonicalize = (url: string = '') => url.replace(/\/+$/, '')
 
@@ -14,9 +20,12 @@ const kratos = new PublicApi(
     baseOptions: {
       // Setting this is very important as axios will send the CSRF cookie otherwise
       // which causes problems with ORY Kratos' security detection.
-      withCredentials: false
+      withCredentials: false,
+      timeout: 1000
     }
-  })
+  }),
+  '',
+  axios
 )
 
 export const kratosWithSessionToken = (token: string) =>
@@ -27,9 +36,12 @@ export const kratosWithSessionToken = (token: string) =>
       baseOptions: {
         // Setting this is very important as axios will send the CSRF cookie otherwise
         // which causes problems with ORY Kratos' security detection.
-        withCredentials: false
+        withCredentials: false,
+        timeout: 1000
       }
-    })
+    }),
+    '',
+    axios
   )
 
 // This exports the ORY Kratos SDK
