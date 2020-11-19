@@ -21,7 +21,7 @@ const kratos = new PublicApi(
       // Setting this is very important as axios will send the CSRF cookie otherwise
       // which causes problems with ORY Kratos' security detection.
       withCredentials: false,
-      timeout: 1000
+      timeout: 5000
     }
   }),
   '',
@@ -37,7 +37,7 @@ export const kratosWithSessionToken = (token: string) =>
         // Setting this is very important as axios will send the CSRF cookie otherwise
         // which causes problems with ORY Kratos' security detection.
         withCredentials: false,
-        timeout: 1000
+        timeout: 5000
       }
     }),
     '',
