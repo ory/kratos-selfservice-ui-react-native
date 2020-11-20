@@ -37,6 +37,7 @@ const linking = {
 }
 
 export default () => {
+  // import { AuthContext } from './AuthProvider'
   const { isAuthenticated } = useContext(AuthContext)
   return (
     <KeyboardAvoidingView

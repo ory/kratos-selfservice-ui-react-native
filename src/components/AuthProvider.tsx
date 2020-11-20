@@ -8,7 +8,7 @@ import {
   setAuthenticatedSession
 } from '../helpers/auth'
 import { AxiosError } from 'axios'
-import kratos  from '../helpers/sdk'
+import { newKratosSdk } from '../helpers/sdk';
 import { Session } from '@oryd/kratos-client'
 
 interface Context {
@@ -46,14 +46,16 @@ export default ({ children }: AuthContextProps) => {
       return setAuth(null)
     }
 
-    // Uses the ORY Kratos SDK to fetch
-    return kratos
-      .whoami(undefined,undefined,{
-        // Use the session token from the auth session:
-        apiKey: auth.session_token,
-      })
+    // Use the session token from the auth session:
+    return newKratosSdk(auth.session_token)
+      // whoami() returns the session belonging to the session_token:
+      .whoami()
       .then(({ data: session }) => {
         // This means that the session is still valid! The user is logged in.
+        //
+        // Here you could print the user's email using e.g.:
+        //
+        //  console.log(session.identity.traits.email)
         setSessionContext({ session, session_token: auth.session_token })
         return Promise.resolve()
       })
