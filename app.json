@@ -10,7 +10,8 @@
     "privacy": "public",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "contain"
+      "resizeMode": "contain",
+      "backgroundColor": "#f0f0f1"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -21,11 +22,13 @@
       "bundleIdentifier": "com.ory.kratos-selfservice-ui-react-native"
     },
     "android": {
-      "package": "com.ory.kratos_self_service_ui_react_native"
+      "package": "com.ory.kratos_self_service_ui_react_native",
+      "versionCode": 56
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "platforms": ["ios", "android"],
     "description": "An example app demonstrating login, registration, profile settings, 2fa, account recovery, and more using the ORY Kratos open source project."
   }
 }

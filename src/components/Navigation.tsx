@@ -9,18 +9,14 @@ import Registration from './Routes/Registration'
 import Home from './Routes/Home'
 import { AuthContext } from './AuthProvider'
 import Settings from './Routes/Settings'
-import ForkMe from './Styled/ForkMe'
 import FlashMessage from 'react-native-flash-message'
 import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
-  TouchableWithoutFeedback,
-  View
+  TouchableWithoutFeedback
 } from 'react-native'
 import Header from './Layout/Header'
-import { theme } from '@oryd/themes'
 
 const Stack = createStackNavigator<RootStackParamList>()
 

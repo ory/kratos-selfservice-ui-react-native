@@ -8,7 +8,7 @@ import {
   setAuthenticatedSession
 } from '../helpers/auth'
 import { AxiosError } from 'axios'
-import { kratosWithSessionToken } from '../helpers/sdk'
+import { newKratosSdk } from '../helpers/sdk'
 import { Session } from '@oryd/kratos-client'
 
 interface Context {
@@ -48,7 +48,7 @@ export default ({ children }: AuthContextProps) => {
 
     // setAuth({ session: null, session_token: auth.session_token });
     // hasFetched(false);
-    return kratosWithSessionToken(auth.session_token)
+    return newKratosSdk(auth.session_token)
       .whoami()
       .then(({ data: session }) => {
         setSessionContext({ session, session_token: auth.session_token })

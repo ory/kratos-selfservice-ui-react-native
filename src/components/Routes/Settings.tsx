@@ -1,19 +1,18 @@
 // This file renders the settings screen.
 
 import React, { useContext, useEffect, useState } from 'react'
-import { SettingsFlow } from '@oryd/kratos-client'
 import { showMessage } from 'react-native-flash-message'
+import styled from 'styled-components/native'
+import { SettingsFlow } from '@oryd/kratos-client'
+import { CompleteSelfServiceSettingsFlowWithPasswordMethod } from '@oryd/kratos-client/api'
 
 import Form from '../Form/Form'
-import { kratosWithSessionToken } from '../../helpers/sdk'
+import { newKratosSdk } from '../../helpers/sdk'
 import StyledCard from '../Styled/StyledCard'
 import { AuthContext } from '../AuthProvider'
 import Layout from '../Layout/Layout'
 import StyledText from '../Styled/StyledText'
-import styled from 'styled-components/native'
-import { CompleteSelfServiceSettingsFlowWithPasswordMethod } from '@oryd/kratos-client/api'
 import { handleFormSubmitError } from '../../helpers/form'
-import { Button, View } from 'react-native'
 
 const CardTitle = styled.View`
   margin-bottom: 15px;
@@ -27,7 +26,7 @@ const Settings = () => {
 
   const [config, setConfig] = useState<SettingsFlow | undefined>(undefined)
 
-  const kratos = kratosWithSessionToken(sessionToken)
+  const kratos = newKratosSdk(sessionToken)
   const initializeFlow = () =>
     kratos
       .initializeSelfServiceSettingsViaAPIFlow()

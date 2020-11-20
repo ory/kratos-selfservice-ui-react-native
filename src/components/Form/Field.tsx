@@ -1,10 +1,8 @@
 import { FormField } from '@oryd/kratos-client'
 import React from 'react'
-import { TextInput, TextInputProps, View } from 'react-native'
-import StyledText from '../Styled/StyledText'
+import { TextInputProps, View } from 'react-native'
 import { getTitle } from '../../translations'
 import StyledTextInput from '../Styled/StyledTextInput'
-import Messages from './Messages'
 import styled from 'styled-components/native'
 import { textInputSubtitleStyles, textInputTitleStyles } from '@oryd/themes'
 

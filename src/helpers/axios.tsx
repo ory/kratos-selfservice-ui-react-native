@@ -12,7 +12,7 @@ export const resilience = (axios: AxiosInstance) => {
 
       if (
         error.response &&
-        (error.response.status === 401 || error.response.status === 403)
+        (error.response.status >= 400 || error.response.status <= 500)
       ) {
         // 401 status is ok
         return Promise.reject(error)
