@@ -7,7 +7,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "format": "prettier -w \"{src/**/,}*.{ts,tsx,json,js}\""
+    "format": "prettier -w \"{src/**/,}*.{ts,tsx,json,js}\"",
+    "postinstall": "expo install expo-constants expo-secure-store @react-native-community/async-storage react-native-safe-area-context react-native-reanimated react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view && (npx pod-install || true)"
   },
   "dependencies": {
     "@expo-google-fonts/roboto": "^0.1.0",
@@ -34,7 +35,6 @@
     "react-native-safe-area-context": "^3.1.4",
     "react-native-screens": "~2.10.1",
     "react-native-web": "~0.13.7",
-    "retry-axios": "^2.3.0",
     "styled-components": "^5.2.0",
     "url": "^0.11.0"
   },
@@ -46,6 +46,6 @@
     "prettier": "^2.1.2",
     "typescript": "~3.9.2"
   },
-  "private": true,
-  "name": "kratos-selfservice-ui-react-native"
+  "version": "v0.5.4-alpha.1.pre.1",
+  "name": "@oryd/expo-login-registration-template"
 }
