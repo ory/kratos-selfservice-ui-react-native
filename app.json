@@ -23,7 +23,8 @@
     },
     "android": {
       "package": "com.ory.kratos_self_service_ui_react_native",
-      "versionCode": 56
+      "versionCode": 56,
+      "permissions": []
     },
     "web": {
       "favicon": "./assets/favicon.png"
