@@ -18,14 +18,17 @@ type Props = StackScreenProps<RootStackParamList, 'Registration'>
 const Registration = ({ navigation }: Props) => {
   const [config, setConfig] = useState<RegistrationFlow | undefined>(undefined)
   const { setSession } = useContext(AuthContext)
+
   const initializeFlow = () =>
     kratos
       .initializeSelfServiceRegistrationViaAPIFlow()
+      // The flow was initialized successfully, let's set the form data:
       .then(({ data: flow }) => {
         setConfig(flow)
       })
       .catch(console.error)
 
+  // When the component is mounted, we initialize a new use login flow:
   useEffect(() => {
     initializeFlow()
   }, [])
@@ -34,6 +37,7 @@ const Registration = ({ navigation }: Props) => {
     return null
   }
 
+  // This will update the registration flow with the user provided input:
   const onSubmit = (payload: object): Promise<void> =>
     kratos
       .completeSelfServiceRegistrationFlowWithPasswordMethod(config.id, payload)
@@ -48,11 +52,13 @@ const Registration = ({ navigation }: Props) => {
           return Promise.reject(err)
         }
 
+        // Looks like we got a session!
         return Promise.resolve({
           session: data.session,
           session_token: data.session_token
         })
       })
+      // Let's log the user in!
       .then(setSession)
       .catch(
         handleFormSubmitError<RegistrationFlow | undefined>(
@@ -64,7 +70,7 @@ const Registration = ({ navigation }: Props) => {
   return (
     <AuthLayout>
       <StyledCard>
-        <AuthSubTitle>Create your LoginApp account</AuthSubTitle>
+        <AuthSubTitle>Create your ORY Demo account</AuthSubTitle>
 
         <Form
           config={config}
