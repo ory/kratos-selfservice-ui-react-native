@@ -8,7 +8,7 @@ import {
   setAuthenticatedSession
 } from '../helpers/auth'
 import { AxiosError } from 'axios'
-import { newKratosSdk } from '../helpers/sdk';
+import { newKratosSdk } from '../helpers/sdk'
 import { Session } from '@oryd/kratos-client'
 
 interface Context {
@@ -47,30 +47,32 @@ export default ({ children }: AuthContextProps) => {
     }
 
     // Use the session token from the auth session:
-    return newKratosSdk(auth.session_token)
-      // whoami() returns the session belonging to the session_token:
-      .whoami()
-      .then(({ data: session }) => {
-        // This means that the session is still valid! The user is logged in.
-        //
-        // Here you could print the user's email using e.g.:
-        //
-        //  console.log(session.identity.traits.email)
-        setSessionContext({ session, session_token: auth.session_token })
-        return Promise.resolve()
-      })
-      .catch((err: AxiosError) => {
-        if (err.response?.status === 401) {
-          // The user is no longer logged in (hence 401)
-          console.log('Session is not authenticated:', err)
-        } else {
-          // A network or some other error occurred
-          console.error(err)
-        }
+    return (
+      newKratosSdk(auth.session_token)
+        // whoami() returns the session belonging to the session_token:
+        .whoami()
+        .then(({ data: session }) => {
+          // This means that the session is still valid! The user is logged in.
+          //
+          // Here you could print the user's email using e.g.:
+          //
+          //  console.log(session.identity.traits.email)
+          setSessionContext({ session, session_token: auth.session_token })
+          return Promise.resolve()
+        })
+        .catch((err: AxiosError) => {
+          if (err.response?.status === 401) {
+            // The user is no longer logged in (hence 401)
+            console.log('Session is not authenticated:', err)
+          } else {
+            // A network or some other error occurred
+            console.error(err)
+          }
 
-        // Remove the session / log the user out.
-        setSessionContext(null)
-      })
+          // Remove the session / log the user out.
+          setSessionContext(null)
+        })
+    )
   }
 
   const setAuth = (session: SessionContext) => {
