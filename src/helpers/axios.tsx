@@ -6,6 +6,8 @@ export const resilience = (axios: AxiosInstance) => {
   axios.interceptors.response.use(
     (v) => Promise.resolve(v),
     (error) => {
+      console.info('Received network error', error)
+
       if (!error.config) {
         return Promise.reject(error)
       }
@@ -20,15 +22,10 @@ export const resilience = (axios: AxiosInstance) => {
 
       const config = {
         ...error.config,
-        retryAttempt: (error.config.retryAttempt || 0) + 1,
-        timeout: error.config.timeout + 1000
+        timeout: 1000
       }
 
-      if (config.retryAttempt > 15) {
-        console.warn('Aborting request after 15 retries:', { config, error })
-        return Promise.reject(error)
-      }
-
+      console.info('Retrying network error', error)
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           axios.request(config).then(resolve).catch(reject)

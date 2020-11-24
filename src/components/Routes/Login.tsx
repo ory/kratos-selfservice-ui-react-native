@@ -54,7 +54,7 @@ const Login = ({ navigation }: Props) => {
         <Form
           config={config}
           method="password"
-          submitLabel="Sign in"
+          submitLabel="Sign In"
           onSubmit={onSubmit}
         />
       </StyledCard>

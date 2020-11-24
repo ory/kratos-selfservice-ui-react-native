@@ -75,7 +75,7 @@ const Registration = ({ navigation }: Props) => {
         <Form
           config={config}
           method="password"
-          submitLabel="Sign up"
+          submitLabel="Sign Up"
           onSubmit={onSubmit}
         />
       </StyledCard>

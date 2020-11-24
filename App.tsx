@@ -4,6 +4,8 @@ import React from 'react'
 import { Text } from 'react-native'
 import { ThemeProvider } from 'styled-components/native'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import * as Sentry from 'sentry-expo'
+import { CaptureConsole } from '@sentry/integrations'
 
 import { theme } from '@oryd/themes'
 import {
@@ -22,6 +24,18 @@ import ErrorBoundary from './src/components/ErrorBoundary'
 import AuthProvider from './src/components/AuthProvider'
 import ForkMe from './src/components/Styled/ForkMe'
 
+Sentry.init({
+  dsn:
+    'https://8be94c41dbe34ce1b244935c68165eab@o481709.ingest.sentry.io/5530799',
+  enableInExpoDevelopment: true,
+  debug: false,
+  integrations: [
+    new CaptureConsole({
+      levels: ['error', 'warn', 'log']
+    })
+  ]
+})
+
 export default function App() {
   const [robotoLoaded] = useFontsRoboto({ Roboto_400Regular })
   const [rubikLoaded] = useFontsRubik({
@@ -29,10 +43,6 @@ export default function App() {
     Rubik_400Regular,
     Rubik_500Medium
   })
-
-  if (!rubikLoaded || !robotoLoaded) {
-    return <Text>Loading...</Text>
-  }
 
   return (
     <SafeAreaProvider>
@@ -47,10 +57,10 @@ export default function App() {
           <ThemeProvider
             theme={{
               ...theme,
-              regularFont300: 'Rubik_300Light',
-              regularFont400: 'Rubik_400Regular',
-              regularFont500: 'Rubik_500Medium',
-              codeFont400: 'Roboto_400Regular',
+              regularFont300: rubikLoaded ? 'Rubik_300Light' : 'sans-serif',
+              regularFont400: rubikLoaded ? 'Rubik_400Regular' : 'sans-serif',
+              regularFont500: rubikLoaded ? 'Rubik_500Medium' : 'sans-serif',
+              codeFont400: robotoLoaded ? 'Roboto_400Regular' : 'sans-serif',
               platform: 'react-native'
             }}
           >
