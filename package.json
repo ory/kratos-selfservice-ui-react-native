@@ -1,6 +1,14 @@
 {
   "main": "node_modules/expo/AppEntry.js",
   "prettier": "ory-prettier-styles",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ory/kratos-selfservice-ui-react-native.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ory/kratos-selfservice-ui-react-native/issues"
+  },
+  "homepage": "https://github.com/ory/kratos-selfservice-ui-react-native",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
