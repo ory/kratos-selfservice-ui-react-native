@@ -48,6 +48,6 @@
     "prettier": "^2.1.2",
     "typescript": "3.9.2"
   },
-  "version": "v0.5.4-alpha.1.pre.2",
+  "version": "v0.5.4-alpha.1.pre.3",
   "name": "@oryd/expo-login-registration-template"
 }
