@@ -57,10 +57,10 @@ export default function App() {
           <ThemeProvider
             theme={{
               ...theme,
-              regularFont300: rubikLoaded ? 'Rubik_300Light' : 'sans-serif',
-              regularFont400: rubikLoaded ? 'Rubik_400Regular' : 'sans-serif',
-              regularFont500: rubikLoaded ? 'Rubik_500Medium' : 'sans-serif',
-              codeFont400: robotoLoaded ? 'Roboto_400Regular' : 'sans-serif',
+              regularFont300: rubikLoaded ? 'Rubik_300Light' : 'Arial',
+              regularFont400: rubikLoaded ? 'Rubik_400Regular' : 'Arial',
+              regularFont500: rubikLoaded ? 'Rubik_500Medium' : 'Arial',
+              codeFont400: robotoLoaded ? 'Roboto_400Regular' : 'Arial',
               platform: 'react-native'
             }}
           >
