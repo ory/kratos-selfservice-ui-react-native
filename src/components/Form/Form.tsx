@@ -16,7 +16,7 @@ import {
 import { TextInputProps } from 'react-native'
 
 interface Props<T> {
-  config: LoginFlow | RegistrationFlow | SettingsFlow
+  config?: LoginFlow | RegistrationFlow | SettingsFlow
   method: 'password' | 'profile' | 'link'
   onSubmit: (payload: T) => Promise<void>
   submitLabel: string
@@ -38,6 +38,10 @@ const Form = <
   method,
   fieldTypeOverride
 }: Props<T>) => {
+  if (!config) {
+    return null
+  }
+
   // The Form component keeps track of all the field values in the form.
   // To do so, we initialize
   const inner = methodConfig(config, method)
@@ -73,10 +77,9 @@ const Form = <
   return (
     <>
       <Messages testID="form-messages" messages={inner.messages} />
-
-      {inner.fields.map((field: FormField) => (
+      {inner.fields.map((field: FormField, k) => (
         <Field
-          key={`form-field-${field.name}`}
+          key={`form-field-${inner?.action || ''}-${field.name}-${k}`}
           fieldTypeOverride={fieldTypeOverride}
           disabled={inProgress}
           value={getValue(field.name)}
