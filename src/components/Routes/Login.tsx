@@ -1,7 +1,8 @@
 // This file renders the login screen.
 
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { StackScreenProps } from '@react-navigation/stack'
+import { useFocusEffect } from '@react-navigation/native'
 import { LoginFlow } from '@oryd/kratos-client'
 import Form from '../Form/Form'
 import kratos from '../../helpers/sdk'
@@ -30,22 +31,26 @@ const Login = ({ navigation }: Props) => {
       .catch(console.error)
 
   // When the component is mounted, we initialize a new use login flow:
-  useEffect(() => {
-    initializeFlow()
-  }, [])
+  useFocusEffect(
+    React.useCallback(() => {
+      initializeFlow()
 
-  if (!config) {
-    return null
-  }
+      return () => {
+        setConfig(undefined)
+      }
+    }, [])
+  )
 
   // This will update the login flow with the user provided input:
   const onSubmit = (payload: CompleteSelfServiceLoginFlowWithPasswordMethod) =>
-    kratos
-      .completeSelfServiceLoginFlowWithPasswordMethod(config.id, payload)
-      .then(({ data }) => Promise.resolve(data))
-      // Looks like everything worked and we have a session!
-      .then(setSession)
-      .catch(handleFormSubmitError(setConfig, initializeFlow))
+    config
+      ? kratos
+          .completeSelfServiceLoginFlowWithPasswordMethod(config.id, payload)
+          .then(({ data }) => Promise.resolve(data))
+          // Looks like everything worked and we have a session!
+          .then(setSession)
+          .catch(handleFormSubmitError(setConfig, initializeFlow))
+      : Promise.resolve()
 
   return (
     <AuthLayout>
