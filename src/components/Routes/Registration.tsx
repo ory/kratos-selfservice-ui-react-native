@@ -1,41 +1,41 @@
 // This file renders the registration screen.
 
-import React, { useContext, useEffect, useState } from 'react';
-import { StackScreenProps } from '@react-navigation/stack';
-import { RegistrationFlow } from '@oryd/kratos-client';
-import Form from '../Form/Form';
-import kratos from '../../helpers/sdk';
-import StyledCard from '../Styled/StyledCard';
-import NavigationCard from '../Styled/NavigationCard';
-import AuthLayout from '../Layout/AuthLayout';
-import AuthSubTitle from '../Styled/AuthSubTitle';
-import { RootStackParamList } from '../Navigation';
-import { AuthContext } from '../AuthProvider';
-import { handleFormSubmitError } from '../../helpers/form';
-import { Platform, TextInputProps } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react'
+import { StackScreenProps } from '@react-navigation/stack'
+import { RegistrationFlow } from '@oryd/kratos-client'
+import Form from '../Form/Form'
+import kratos from '../../helpers/sdk'
+import StyledCard from '../Styled/StyledCard'
+import NavigationCard from '../Styled/NavigationCard'
+import AuthLayout from '../Layout/AuthLayout'
+import AuthSubTitle from '../Styled/AuthSubTitle'
+import { RootStackParamList } from '../Navigation'
+import { AuthContext } from '../AuthProvider'
+import { handleFormSubmitError } from '../../helpers/form'
+import { Platform, TextInputProps } from 'react-native'
 
 type Props = StackScreenProps<RootStackParamList, 'Registration'>
 
 const Registration = ({ navigation }: Props) => {
-  const [config, setConfig] = useState<RegistrationFlow | undefined>(undefined);
-  const { setSession } = useContext(AuthContext);
+  const [config, setConfig] = useState<RegistrationFlow | undefined>(undefined)
+  const { setSession } = useContext(AuthContext)
 
   const initializeFlow = () =>
     kratos
       .initializeSelfServiceRegistrationViaAPIFlow()
       // The flow was initialized successfully, let's set the form data:
       .then(({ data: flow }) => {
-        setConfig(flow);
+        setConfig(flow)
       })
-      .catch(console.error);
+      .catch(console.error)
 
   // When the component is mounted, we initialize a new use login flow:
   useEffect(() => {
-    initializeFlow();
-  }, []);
+    initializeFlow()
+  }, [])
 
   if (!config) {
-    return null;
+    return null
   }
 
   // This will update the registration flow with the user provided input:
@@ -48,25 +48,25 @@ const Registration = ({ navigation }: Props) => {
         // but for simplicity we'll just print an error here:
         if (!data.session_token || !data.session) {
           const err = new Error(
-            'It looks like you configured ORY Kratos to not issue a session automatically after registration. This edge-case is currently not supported in this example app. You can find more information on enabling this feature here: https://www.ory.sh/kratos/docs/next/self-service/flows/user-registration#successful-registration',
-          );
-          return Promise.reject(err);
+            'It looks like you configured ORY Kratos to not issue a session automatically after registration. This edge-case is currently not supported in this example app. You can find more information on enabling this feature here: https://www.ory.sh/kratos/docs/next/self-service/flows/user-registration#successful-registration'
+          )
+          return Promise.reject(err)
         }
 
         // Looks like we got a session!
         return Promise.resolve({
           session: data.session,
-          session_token: data.session_token,
-        });
+          session_token: data.session_token
+        })
       })
       // Let's log the user in!
       .then(setSession)
       .catch(
         handleFormSubmitError<RegistrationFlow | undefined>(
           setConfig,
-          initializeFlow,
-        ),
-      );
+          initializeFlow
+        )
+      )
 
   return (
     <AuthLayout>
@@ -76,15 +76,23 @@ const Registration = ({ navigation }: Props) => {
         <Form
           fieldTypeOverride={(field, props) => {
             switch (field.name) {
+              case 'traits.email':
+                return {
+                  autoCapitalize: 'none',
+                  autoCompleteType: 'username',
+                  textContentType: 'emailAddress',
+                  autoCorrect: false
+                }
               case 'password':
                 return {
+                  autoCapitalize: 'none',
                   autoCompleteType: 'password',
                   textContentType: Platform.OS === 'ios' && parseInt(String(Platform.Version), 10) >= 12 ? 'newPassword' : 'password',
                   secureTextEntry: true,
-                  passwordRules: 'required: lower; required: upper; required: digit; required: [-]; minlength: 1;',
-                };
+                  autoCorrect: false
+                }
             }
-            return props;
+            return props
           }}
           config={config}
           method="password"
@@ -99,7 +107,7 @@ const Registration = ({ navigation }: Props) => {
         onPress={() => navigation.navigate('Login')}
       />
     </AuthLayout>
-  );
-};
+  )
+}
 
-export default Registration;
+export default Registration

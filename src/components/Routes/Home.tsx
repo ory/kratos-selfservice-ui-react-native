@@ -1,23 +1,20 @@
-import React, { useContext } from 'react';
-import StyledText from '../Styled/StyledText';
-import CodeBox from '../Styled/CodeBox';
-import { AuthContext } from '../AuthProvider';
-import Layout from '../Layout/Layout';
-import StyledCard from '../Styled/StyledCard';
+import React, { useContext } from 'react'
+import StyledText from '../Styled/StyledText'
+import CodeBox from '../Styled/CodeBox'
+import { AuthContext } from '../AuthProvider'
+import Layout from '../Layout/Layout'
+import StyledCard from '../Styled/StyledCard'
 
 const Home = () => {
-  const { session, sessionToken } = useContext(AuthContext);
+  const { session, sessionToken } = useContext(AuthContext)
   if (!session) {
-    return null;
+    return null
   }
 
   // Get the name, or if it does not exist in the traits, use the
   // identity's ID
-  const {
-    name: {
-      first = String(session.identity.id),
-    } = {},
-  } = session.identity.traits as any;
+  const { name: { first = String(session.identity.id) } = {} } = session
+    .identity.traits as any
 
   return (
     <Layout>
@@ -44,7 +41,7 @@ const Home = () => {
         </CodeBox>
       </StyledCard>
     </Layout>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home
