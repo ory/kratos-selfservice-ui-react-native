@@ -3,7 +3,7 @@
     "name": "ORY Profile App",
     "slug": "kratos-selfservice-ui-react-native",
     "scheme": "kratos-selfservice-ui-react-native",
-    "version": "0.5.7",
+    "version": "0.5.8",
     "orientation": "portrait",
     "githubUrl": "https://github.com/ory/kratos-selfservice-ui-react-native",
     "icon": "./assets/icon.png",
@@ -14,7 +14,7 @@
       "backgroundColor": "#f0f0f1"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 1000
     },
     "assetBundlePatterns": ["src/assets/*", "src/assets/**/*", "assets/*"],
     "ios": {
@@ -23,7 +23,7 @@
     },
     "android": {
       "package": "com.ory.kratos_self_service_ui_react_native",
-      "versionCode": 57,
+      "versionCode": 58,
       "permissions": []
     },
     "web": {
