@@ -13,12 +13,14 @@ import {
   CompleteSelfServiceLoginFlowWithPasswordMethod,
   CompleteSelfServiceSettingsFlowWithPasswordMethod
 } from '@oryd/kratos-client/api'
+import { TextInputProps } from 'react-native';
 
 interface Props<T> {
   config: LoginFlow | RegistrationFlow | SettingsFlow
   method: 'password' | 'profile' | 'link'
   onSubmit: (payload: T) => Promise<void>
   submitLabel: string
+  fieldTypeOverride?: (field: FormField, props: TextInputProps) => TextInputProps
 }
 
 const Form = <
@@ -30,7 +32,8 @@ const Form = <
   config,
   onSubmit,
   submitLabel,
-  method
+  method,
+                 fieldTypeOverride
 }: Props<T>) => {
   // The Form component keeps track of all the field values in the form.
   // To do so, we initialize
@@ -70,6 +73,7 @@ const Form = <
 
       {inner.fields.map((field: FormField) => (
         <Field
+          fieldTypeOverride={fieldTypeOverride}
           disabled={inProgress}
           key={field.name}
           value={getValue(field.name)}

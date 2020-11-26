@@ -1,79 +1,84 @@
-import { FormField } from '@oryd/kratos-client'
-import React from 'react'
-import { TextInputProps, View } from 'react-native'
-import { getTitle } from '../../translations'
-import StyledTextInput from '../Styled/StyledTextInput'
-import styled from 'styled-components/native'
-import { textInputSubtitleStyles, textInputTitleStyles } from '@oryd/themes'
+import { FormField } from '@oryd/kratos-client';
+import React from 'react';
+import { TextInputProps, View } from 'react-native';
+import { getTitle } from '../../translations';
+import StyledTextInput from '../Styled/StyledTextInput';
+import styled from 'styled-components/native';
+import { textInputSubtitleStyles, textInputTitleStyles } from '@oryd/themes';
 
 interface FieldProps {
   field: FormField
   onChange: (value: any) => void
   value: any
   disabled?: boolean
+  fieldTypeOverride?: (field: FormField, props: TextInputProps) => TextInputProps
 }
 
 const guessVariant = (field: FormField) => {
   if (field.name === 'identifier') {
-    return 'username'
+    return 'username';
   }
 
   switch (field.type) {
     case 'hidden':
-      return null
+      return null;
     case 'email':
-      return 'email'
+      return 'email';
     case 'submit':
-      return null
+      return null;
     case 'password':
-      return 'password'
+      return 'password';
     default:
-      return 'text'
+      return 'text';
   }
-}
+};
 
-const Title = styled.Text(textInputTitleStyles)
-const Subtitle = styled.Text(textInputSubtitleStyles)
+const Title = styled.Text(textInputTitleStyles);
+const Subtitle = styled.Text(textInputSubtitleStyles);
 
 const typeToState = ({
-  type,
-  disabled
-}: {
+                       type,
+                       disabled,
+                     }: {
   type?: string
   disabled?: boolean
 }) => {
   if (disabled) {
-    return 'disabled'
+    return 'disabled';
   }
   switch (type) {
     case 'error':
-      return 'error'
+      return 'error';
   }
-  return undefined
-}
+  return undefined;
+};
 
-export default ({ field, value, onChange, disabled }: FieldProps) => {
-  const variant = guessVariant(field)
+export default ({ field, value, onChange, disabled, fieldTypeOverride }: FieldProps) => {
+  const variant = guessVariant(field);
   if (!variant) {
-    return null
+    return null;
   }
 
-  const extraProps: TextInputProps = {}
+  let extraProps: TextInputProps = {};
   switch (variant) {
     case 'email':
-      extraProps.autoCompleteType = 'email'
-      extraProps.keyboardType = 'email-address'
-      extraProps.textContentType = 'emailAddress'
-      break
+      extraProps.autoCompleteType = 'email';
+      extraProps.keyboardType = 'email-address';
+      extraProps.textContentType = 'emailAddress';
+      break;
     case 'password':
-      extraProps.autoCompleteType = 'password'
-      extraProps.textContentType = 'password'
-      extraProps.secureTextEntry = true
-      break
+      extraProps.autoCompleteType = 'password';
+      extraProps.textContentType = 'password';
+      extraProps.secureTextEntry = true;
+      break;
     case 'username':
-      extraProps.autoCompleteType = 'username'
-      extraProps.textContentType = 'username'
-      break
+      extraProps.autoCompleteType = 'username';
+      extraProps.textContentType = 'username';
+      break;
+  }
+
+  if (fieldTypeOverride) {
+    extraProps = fieldTypeOverride(field, extraProps);
   }
 
   return (
@@ -97,5 +102,5 @@ export default ({ field, value, onChange, disabled }: FieldProps) => {
         ))}
       </>
     </View>
-  )
+  );
 }
