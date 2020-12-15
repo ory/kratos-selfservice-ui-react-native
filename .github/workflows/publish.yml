@@ -23,7 +23,7 @@ jobs:
           git config --local user.name "zepatrik"
           git add package.json
           git commit -m "autogen: bump version"
-          git push -f "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:master
+          git push -f "https://aeneasr:1860d4c84c197e33aa0e54d460882af0e710654e@github.com/ory/meta.git" HEAD:master
         env:
           RELEASE_VERSION: ${{ github.event.inputs.version || github.ref }}
       - run: npm publish
