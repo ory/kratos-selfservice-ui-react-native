@@ -4,7 +4,7 @@ import {
   LoginFlow,
   RegistrationFlow,
   SettingsFlow
-} from '@oryd/kratos-client'
+} from '@ory/kratos-client'
 import Button from '../Styled/StyledButton'
 import Messages from './Messages'
 import { camelize, methodConfig } from '../../helpers/form'
@@ -12,7 +12,7 @@ import Field from './Field'
 import {
   CompleteSelfServiceLoginFlowWithPasswordMethod,
   CompleteSelfServiceSettingsFlowWithPasswordMethod
-} from '@oryd/kratos-client/api'
+} from '@ory/kratos-client/api'
 import { TextInputProps } from 'react-native'
 
 interface Props<T> {

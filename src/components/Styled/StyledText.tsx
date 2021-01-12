@@ -8,7 +8,7 @@ import {
   typographyH3Styles,
   typographyLeadStyles,
   typographyParagraphStyles
-} from '@oryd/themes'
+} from '@ory/themes'
 import { TextProps } from 'react-native'
 
 interface StyledTextProps extends TextProps {

@@ -6,7 +6,7 @@ import {
   forkMeStylesImages,
   forkMeStylesLink,
   forkMeStylesText
-} from '@oryd/themes'
+} from '@ory/themes'
 import * as Linking from 'expo-linking'
 
 const Container = styled.View(forkMeStyles)

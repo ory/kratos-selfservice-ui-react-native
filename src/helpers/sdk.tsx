@@ -1,4 +1,4 @@
-import { Configuration, PublicApi } from '@oryd/kratos-client'
+import { Configuration, PublicApi } from '@ory/kratos-client'
 import Constants from 'expo-constants'
 import axiosFactory from 'axios'
 import { resilience } from './axios'

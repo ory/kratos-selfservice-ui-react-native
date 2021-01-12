@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { TouchableOpacity } from 'react-native'
 import styled from 'styled-components/native'
-import { ThemeProps } from '@oryd/themes'
+import { ThemeProps } from '@ory/themes'
 import { useNavigation } from '@react-navigation/native'
 import { AuthContext } from '../AuthProvider'
 

@@ -12,7 +12,7 @@ import {
   SettingsFlowMethodConfig,
   VerificationFlow,
   VerificationFlowMethodConfig
-} from '@oryd/kratos-client'
+} from '@ory/kratos-client'
 import { AxiosError } from 'axios'
 import { getPosition } from '../translations'
 import { showMessage } from 'react-native-flash-message'

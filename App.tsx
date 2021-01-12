@@ -7,7 +7,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import * as Sentry from 'sentry-expo'
 import { CaptureConsole } from '@sentry/integrations'
 
-import { theme } from '@oryd/themes'
+import { theme } from '@ory/themes'
 import {
   useFonts as useFontsRoboto,
   Roboto_400Regular
