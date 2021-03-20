@@ -1,28 +1,31 @@
 // This file renders the login screen.
-
 import React, { useContext, useState } from 'react'
 import { StackScreenProps } from '@react-navigation/stack'
 import { useFocusEffect } from '@react-navigation/native'
 import { LoginFlow } from '@oryd/kratos-client'
+import { CompleteSelfServiceLoginFlowWithPasswordMethod } from '@oryd/kratos-client/api'
+
 import Form from '../Form/Form'
-import kratos from '../../helpers/sdk'
+import { newKratosSdk } from '../../helpers/sdk'
 import StyledCard from '../Styled/StyledCard'
 import AuthLayout from '../Layout/AuthLayout'
 import NavigationCard from '../Styled/NavigationCard'
 import AuthSubTitle from '../Styled/AuthSubTitle'
-import { CompleteSelfServiceLoginFlowWithPasswordMethod } from '@oryd/kratos-client/api'
 import { RootStackParamList } from '../Navigation'
 import { AuthContext } from '../AuthProvider'
 import { handleFormSubmitError } from '../../helpers/form'
+import ProjectForm from '../Form/Project'
+import { ProjectContext } from '../ProjectProvider'
 
 type Props = StackScreenProps<RootStackParamList, 'Login'>
 
 const Login = ({ navigation }: Props) => {
+  const { project, setProject } = useContext(ProjectContext)
   const { setSession } = useContext(AuthContext)
   const [config, setConfig] = useState<LoginFlow | undefined>(undefined)
 
   const initializeFlow = () =>
-    kratos
+    newKratosSdk(project)
       .initializeSelfServiceLoginViaAPIFlow()
       .then(({ data: flow }) => {
         // The flow was initialized successfully, let's set the form data:
@@ -38,13 +41,13 @@ const Login = ({ navigation }: Props) => {
       return () => {
         setConfig(undefined)
       }
-    }, [])
+    }, [project])
   )
 
   // This will update the login flow with the user provided input:
   const onSubmit = (payload: CompleteSelfServiceLoginFlowWithPasswordMethod) =>
     config
-      ? kratos
+      ? newKratosSdk(project)
           .completeSelfServiceLoginFlowWithPasswordMethod(config.id, payload)
           .then(({ data }) => Promise.resolve(data))
           // Looks like everything worked and we have a session!
@@ -55,7 +58,7 @@ const Login = ({ navigation }: Props) => {
   return (
     <AuthLayout>
       <StyledCard>
-        <AuthSubTitle>Sign in to your ORY Demo account</AuthSubTitle>
+        <AuthSubTitle>Sign in to your account</AuthSubTitle>
         <Form
           config={config}
           method="password"
@@ -70,6 +73,8 @@ const Login = ({ navigation }: Props) => {
         cta="Sign up!"
         onPress={() => navigation.navigate('Registration')}
       />
+
+      <ProjectForm project={project} setProject={setProject} />
     </AuthLayout>
   )
 }

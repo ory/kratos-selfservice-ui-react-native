@@ -13,22 +13,20 @@ import { AuthContext } from '../AuthProvider'
 import Layout from '../Layout/Layout'
 import StyledText from '../Styled/StyledText'
 import { handleFormSubmitError } from '../../helpers/form'
+import ProjectForm from '../Form/Project'
+import { ProjectContext } from '../ProjectProvider'
 
 const CardTitle = styled.View`
   margin-bottom: 15px;
 `
 
 const Settings = () => {
+  const { project } = useContext(ProjectContext)
   const { sessionToken, setSession, syncSession } = useContext(AuthContext)
-  if (!sessionToken) {
-    return null
-  }
-
   const [config, setConfig] = useState<SettingsFlow | undefined>(undefined)
 
-  const kratos = newKratosSdk(sessionToken)
   const initializeFlow = () =>
-    kratos
+    newKratosSdk(project, sessionToken)
       .initializeSelfServiceSettingsViaAPIFlow()
       .then(({ data: flow }) => {
         setConfig(flow)
@@ -37,7 +35,11 @@ const Settings = () => {
 
   useEffect(() => {
     initializeFlow()
-  }, [])
+  }, [project, sessionToken])
+
+  if (!sessionToken) {
+    return null
+  }
 
   if (!config) {
     return null
@@ -54,7 +56,7 @@ const Settings = () => {
   const onSubmitPassword = (
     payload: CompleteSelfServiceSettingsFlowWithPasswordMethod
   ) =>
-    kratos
+    newKratosSdk(project, sessionToken)
       .completeSelfServiceSettingsFlowWithPasswordMethod(config.id, payload)
       .then(onSuccess)
       .catch(
@@ -62,7 +64,7 @@ const Settings = () => {
       )
 
   const onSubmitProfile = (payload: object) =>
-    kratos
+    newKratosSdk(project, sessionToken)
       .completeSelfServiceSettingsFlowWithProfileMethod(config.id, payload)
       .then(onSuccess)
       .catch(
@@ -82,6 +84,7 @@ const Settings = () => {
           onSubmit={onSubmitPassword}
         />
       </StyledCard>
+
       <StyledCard testID={'settings-profile'}>
         <CardTitle>
           <StyledText variant={'h2'}>Profile settings</StyledText>
