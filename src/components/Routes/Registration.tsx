@@ -5,7 +5,7 @@ import { StackScreenProps } from '@react-navigation/stack'
 import { RegistrationFlow } from '@oryd/kratos-client'
 import { useFocusEffect } from '@react-navigation/native'
 import Form from '../Form/Form'
-import kratos from '../../helpers/sdk'
+import { newKratosSdk } from '../../helpers/sdk'
 import StyledCard from '../Styled/StyledCard'
 import NavigationCard from '../Styled/NavigationCard'
 import AuthLayout from '../Layout/AuthLayout'
@@ -14,15 +14,18 @@ import { RootStackParamList } from '../Navigation'
 import { AuthContext } from '../AuthProvider'
 import { handleFormSubmitError } from '../../helpers/form'
 import { Platform } from 'react-native'
+import ProjectForm from '../Form/Project'
+import { ProjectContext } from '../ProjectProvider'
 
 type Props = StackScreenProps<RootStackParamList, 'Registration'>
 
 const Registration = ({ navigation }: Props) => {
   const [config, setConfig] = useState<RegistrationFlow | undefined>(undefined)
+  const { project } = useContext(ProjectContext)
   const { setSession } = useContext(AuthContext)
 
   const initializeFlow = () =>
-    kratos
+    newKratosSdk(project)
       .initializeSelfServiceRegistrationViaAPIFlow()
       // The flow was initialized successfully, let's set the form data:
       .then(({ data: flow }) => {
@@ -38,13 +41,13 @@ const Registration = ({ navigation }: Props) => {
       return () => {
         setConfig(undefined)
       }
-    }, [])
+    }, [project])
   )
 
   // This will update the registration flow with the user provided input:
   const onSubmit = (payload: object): Promise<void> =>
     config
-      ? kratos
+      ? newKratosSdk(project)
           .completeSelfServiceRegistrationFlowWithPasswordMethod(
             config.id,
             payload
@@ -79,7 +82,7 @@ const Registration = ({ navigation }: Props) => {
   return (
     <AuthLayout>
       <StyledCard>
-        <AuthSubTitle>Create your ORY Demo account</AuthSubTitle>
+        <AuthSubTitle>Create an account</AuthSubTitle>
 
         <Form
           fieldTypeOverride={(field, props) => {
@@ -117,6 +120,8 @@ const Registration = ({ navigation }: Props) => {
         cta="Sign in!"
         onPress={() => navigation.navigate('Login')}
       />
+
+      <ProjectForm />
     </AuthLayout>
   )
 }

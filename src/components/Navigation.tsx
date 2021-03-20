@@ -17,6 +17,7 @@ import {
   TouchableWithoutFeedback
 } from 'react-native'
 import Header from './Layout/Header'
+import ProjectProvider from './ProjectProvider'
 
 const Stack = createStackNavigator<RootStackParamList>()
 
@@ -40,36 +41,42 @@ export default () => {
   // import { AuthContext } from './AuthProvider'
   const { isAuthenticated } = useContext(AuthContext)
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
-    >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <NavigationContainer linking={linking}>
-          <Stack.Navigator
-            screenOptions={{
-              headerShown: isAuthenticated
-            }}
-          >
-            {isAuthenticated ? (
-              <>
-                <Stack.Screen name="Home" component={Home} options={options} />
-                <Stack.Screen
-                  name="Settings"
-                  component={Settings}
-                  options={options}
-                />
-              </>
-            ) : (
-              <>
-                <Stack.Screen name="Login" component={Login} />
-                <Stack.Screen name="Registration" component={Registration} />
-              </>
-            )}
-          </Stack.Navigator>
-        </NavigationContainer>
-      </TouchableWithoutFeedback>
-      <FlashMessage position="top" floating />
-    </KeyboardAvoidingView>
+    <ProjectProvider>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <NavigationContainer linking={linking}>
+            <Stack.Navigator
+              screenOptions={{
+                headerShown: isAuthenticated
+              }}
+            >
+              {isAuthenticated ? (
+                <>
+                  <Stack.Screen
+                    name="Home"
+                    component={Home}
+                    options={options}
+                  />
+                  <Stack.Screen
+                    name="Settings"
+                    component={Settings}
+                    options={options}
+                  />
+                </>
+              ) : (
+                <>
+                  <Stack.Screen name="Login" component={Login} />
+                  <Stack.Screen name="Registration" component={Registration} />
+                </>
+              )}
+            </Stack.Navigator>
+          </NavigationContainer>
+        </TouchableWithoutFeedback>
+        <FlashMessage position="top" floating />
+      </KeyboardAvoidingView>
+    </ProjectProvider>
   )
 }

@@ -9,14 +9,24 @@ resilience(axios) // Adds retry mechanism to axios
 // canonicalize removes the trailing slash from URLs.
 const canonicalize = (url: string = '') => url.replace(/\/+$/, '')
 
-export const kratosUrl =
-  // This value comes from ../../app.config.js
-  canonicalize(Constants.manifest?.extra?.kratosUrl) || ''
+// This value comes from ../../app.config.js
+export const kratosUrl = (project: string = 'playground') => {
+  const url = canonicalize(Constants.manifest?.extra?.kratosUrl) || ''
 
-export const newKratosSdk = (token?: string) =>
+  if (url.indexOf('https://playground.projects.oryapis.com/') == -1) {
+    // The URL is not from Ory, so let's just return it.
+    return url
+  }
+
+  // We handle a special case where we allow the project to be changed
+  // if you use an ory project.
+  return url.replace('playground.', `${project}.`)
+}
+
+export const newKratosSdk = (project: string, token?: string) =>
   new PublicApi(
     new Configuration({
-      basePath: kratosUrl,
+      basePath: kratosUrl(project),
       apiKey: token,
       baseOptions: {
         // Setting this is very important as axios will send the CSRF cookie otherwise
@@ -31,6 +41,3 @@ export const newKratosSdk = (token?: string) =>
     // Ensure that we are using the axios client with retry.
     axios
   )
-
-// This exports the ORY Kratos SDK
-export default newKratosSdk()
