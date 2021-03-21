@@ -34,7 +34,7 @@ export const newKratosSdk = (project: string, token?: string) =>
         withCredentials: false,
 
         // Timeout after 5 seconds.
-        timeout: 1000
+        timeout: 10000
       }
     }),
     '',

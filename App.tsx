@@ -23,6 +23,7 @@ import Navigation from './src/components/Navigation'
 import ErrorBoundary from './src/components/ErrorBoundary'
 import AuthProvider from './src/components/AuthProvider'
 import ForkMe from './src/components/Styled/ForkMe'
+import ProjectProvider from './src/components/ProjectProvider'
 
 Sentry.init({
   dsn:
@@ -53,23 +54,25 @@ export default function App() {
           backgroundColor: theme.grey5
         }}
       >
-        <AuthProvider>
-          <ThemeProvider
-            theme={{
-              ...theme,
-              regularFont300: rubikLoaded ? 'Rubik_300Light' : 'Arial',
-              regularFont400: rubikLoaded ? 'Rubik_400Regular' : 'Arial',
-              regularFont500: rubikLoaded ? 'Rubik_500Medium' : 'Arial',
-              codeFont400: robotoLoaded ? 'Roboto_400Regular' : 'Arial',
-              platform: 'react-native'
-            }}
-          >
-            <ErrorBoundary>
-              <Navigation />
-              <ForkMe />
-            </ErrorBoundary>
-          </ThemeProvider>
-        </AuthProvider>
+        <ProjectProvider>
+          <AuthProvider>
+            <ThemeProvider
+              theme={{
+                ...theme,
+                regularFont300: rubikLoaded ? 'Rubik_300Light' : 'Arial',
+                regularFont400: rubikLoaded ? 'Rubik_400Regular' : 'Arial',
+                regularFont500: rubikLoaded ? 'Rubik_500Medium' : 'Arial',
+                codeFont400: robotoLoaded ? 'Roboto_400Regular' : 'Arial',
+                platform: 'react-native'
+              }}
+            >
+              <ErrorBoundary>
+                <Navigation />
+                <ForkMe />
+              </ErrorBoundary>
+            </ThemeProvider>
+          </AuthProvider>
+        </ProjectProvider>
       </SafeAreaView>
     </SafeAreaProvider>
   )

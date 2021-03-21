@@ -33,7 +33,7 @@ const ProjectForm = () => {
           }}
         />
         <Subtitle>
-          Currently using Project "{project}". Type your project slug here to
+          Currently using project "{project}". Type your project slug here to
           use this app with your project. You do not have a Ory Project yet?{' '}
           <StyledText
             style={{ color: theme.primary60 }}

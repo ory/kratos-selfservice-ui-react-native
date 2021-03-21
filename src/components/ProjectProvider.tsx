@@ -28,12 +28,16 @@ interface Props {
 export default ({ children }: Props) => {
   const [project, setProject] = useState('playground')
 
+  console.log('updating with state: ', project)
   return (
     <ProjectContext.Provider
       value={{
         // Helpers to set the global Ory Project for this app.
         project,
-        setProject
+        setProject: (project: string) => {
+          console.log('updating to:', project)
+          setProject(project)
+        }
       }}
     >
       {children}

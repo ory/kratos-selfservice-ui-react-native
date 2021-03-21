@@ -54,6 +54,8 @@ export default ({ children }: AuthContextProps) => {
       return setAuth(null)
     }
 
+    console.log(project)
+
     // Use the session token from the auth session:
     return (
       newKratosSdk(project, auth.session_token)
