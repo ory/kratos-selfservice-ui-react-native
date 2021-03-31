@@ -3,8 +3,8 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { showMessage } from 'react-native-flash-message'
 import styled from 'styled-components/native'
-import { SettingsFlow } from '@oryd/kratos-client'
-import { CompleteSelfServiceSettingsFlowWithPasswordMethod } from '@oryd/kratos-client/api'
+import { SettingsFlow } from '@ory/kratos-client'
+import { CompleteSelfServiceSettingsFlowWithPasswordMethod } from '@ory/kratos-client/api'
 
 import Form from '../Form/Form'
 import { newKratosSdk } from '../../helpers/sdk'

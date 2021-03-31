@@ -1,6 +1,6 @@
 import React from 'react'
-import { Message } from '@oryd/kratos-client/api'
-import { messageStyles } from '@oryd/themes'
+import { Message } from '@ory/kratos-client/api'
+import { messageStyles } from '@ory/themes'
 import styled from 'styled-components/native'
 import { View } from 'react-native'
 

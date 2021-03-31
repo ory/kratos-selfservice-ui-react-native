@@ -13,6 +13,19 @@ export const resilience = (axios: AxiosInstance) => {
 
       if (
         error.response &&
+        (error.response.status == 400 ||
+          error.response.status == 401 ||
+          error.response.status == 403)
+      ) {
+        console.info('Network request failed but this is ok', {
+          config: error.config,
+          error
+        })
+        return Promise.reject(error)
+      }
+
+      if (
+        error.response &&
         (error.response.status >= 400 || error.response.status < 500)
       ) {
         // 4xx status means we should not retry.

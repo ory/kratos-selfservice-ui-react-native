@@ -1,8 +1,9 @@
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useContext } from 'react'
 import styled from 'styled-components/native'
 import { GridRow } from '../Layout/Grid'
 import { ViewProps } from 'react-native'
-import { ThemeProps } from '@oryd/themes'
+import { ThemeProps } from '@ory/themes'
+import { ThemeContext } from 'styled-components'
 
 const StyledCard = styled.View`
   padding: 20px;

@@ -22,8 +22,8 @@
   "dependencies": {
     "@expo-google-fonts/roboto": "~0.1.0",
     "@expo-google-fonts/rubik": "~0.1.0",
-    "@oryd/kratos-client": "0.5.4-alpha.1",
-    "@oryd/themes": "~0.0.19",
+    "@ory/kratos-client": "0.5.4-alpha.1",
+    "@ory/themes": "~0.0.21",
     "@react-native-community/async-storage": "~1.12.0",
     "@react-native-community/masked-view": "0.1.10",
     "@react-navigation/native": "~5.8.10",
@@ -45,7 +45,7 @@
     "react-native-safe-area-context": "3.1.9",
     "react-native-screens": "~2.15.2",
     "react-native-web": "~0.13.12",
-    "sentry-expo": "~3.0.5",
+    "sentry-expo": "^3.1.3",
     "styled-components": "~5.2.0",
     "url": "~0.11.0"
   },
@@ -54,6 +54,7 @@
     "@types/react": "~16.9.35",
     "@types/react-native": "~0.63.2",
     "@types/styled-components": "^5.1.9",
+    "@types/styled-components-react-native": "^5.1.1",
     "ory-prettier-styles": "~1.1.1",
     "prettier": "~2.2.0",
     "typescript": "~4.0.0"

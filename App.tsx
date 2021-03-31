@@ -1,13 +1,13 @@
 import 'react-native-gesture-handler'
 
 import React from 'react'
-import { Text } from 'react-native'
-import { ThemeProvider } from 'styled-components/native'
+import { ThemeProvider } from 'styled-components'
+import { ThemeProvider as NativeThemeProvider } from 'styled-components/native'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import * as Sentry from 'sentry-expo'
 import { CaptureConsole } from '@sentry/integrations'
 
-import { theme } from '@oryd/themes'
+import { theme } from '@ory/themes'
 import {
   useFonts as useFontsRoboto,
   Roboto_400Regular
@@ -45,35 +45,37 @@ export default function App() {
     Rubik_500Medium
   })
 
+  const hydratedTheme = {
+    ...theme,
+    regularFont300: rubikLoaded ? 'Rubik_300Light' : 'Arial',
+    regularFont400: rubikLoaded ? 'Rubik_400Regular' : 'Arial',
+    regularFont500: rubikLoaded ? 'Rubik_500Medium' : 'Arial',
+    codeFont400: robotoLoaded ? 'Roboto_400Regular' : 'Arial',
+    platform: 'react-native'
+  }
+
   return (
-    <SafeAreaProvider>
-      <SafeAreaView
-        edges={['top', 'left', 'right']}
-        style={{
-          flex: 1,
-          backgroundColor: theme.grey5
-        }}
-      >
-        <ProjectProvider>
-          <AuthProvider>
-            <ThemeProvider
-              theme={{
-                ...theme,
-                regularFont300: rubikLoaded ? 'Rubik_300Light' : 'Arial',
-                regularFont400: rubikLoaded ? 'Rubik_400Regular' : 'Arial',
-                regularFont500: rubikLoaded ? 'Rubik_500Medium' : 'Arial',
-                codeFont400: robotoLoaded ? 'Roboto_400Regular' : 'Arial',
-                platform: 'react-native'
-              }}
-            >
-              <ErrorBoundary>
-                <Navigation />
-                <ForkMe />
-              </ErrorBoundary>
-            </ThemeProvider>
-          </AuthProvider>
-        </ProjectProvider>
-      </SafeAreaView>
-    </SafeAreaProvider>
+    <ThemeProvider theme={hydratedTheme}>
+      <NativeThemeProvider theme={hydratedTheme}>
+        <SafeAreaProvider>
+          <SafeAreaView
+            edges={['top', 'left', 'right']}
+            style={{
+              flex: 1,
+              backgroundColor: theme.grey5
+            }}
+          >
+            <ProjectProvider>
+              <AuthProvider>
+                <ErrorBoundary>
+                  <Navigation />
+                  <ForkMe />
+                </ErrorBoundary>
+              </AuthProvider>
+            </ProjectProvider>
+          </SafeAreaView>
+        </SafeAreaProvider>
+      </NativeThemeProvider>
+    </ThemeProvider>
   )
 }

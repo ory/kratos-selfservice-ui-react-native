@@ -2,8 +2,8 @@
 import React, { useContext, useState } from 'react'
 import { StackScreenProps } from '@react-navigation/stack'
 import { useFocusEffect } from '@react-navigation/native'
-import { LoginFlow } from '@oryd/kratos-client'
-import { CompleteSelfServiceLoginFlowWithPasswordMethod } from '@oryd/kratos-client/api'
+import { LoginFlow } from '@ory/kratos-client'
+import { CompleteSelfServiceLoginFlowWithPasswordMethod } from '@ory/kratos-client/api'
 
 import Form from '../Form/Form'
 import { newKratosSdk } from '../../helpers/sdk'
@@ -74,7 +74,7 @@ const Login = ({ navigation }: Props) => {
         onPress={() => navigation.navigate('Registration')}
       />
 
-      <ProjectForm project={project} setProject={setProject} />
+      <ProjectForm />
     </AuthLayout>
   )
 }
