@@ -2,12 +2,12 @@ import { View } from 'react-native'
 import StyledTextInput from '../Styled/StyledTextInput'
 import React, { useContext, useState } from 'react'
 import styled from 'styled-components/native'
-import { textInputSubtitleStyles, textInputTitleStyles } from '@oryd/themes'
+import { ThemeContext } from 'styled-components'
+import { textInputSubtitleStyles, textInputTitleStyles } from '@ory/themes'
 import * as Linking from 'expo-linking'
 
 import StyledCard from '../Styled/StyledCard'
 import StyledText from '../Styled/StyledText'
-import { ThemeContext } from 'styled-components'
 import { ProjectContext } from '../ProjectProvider'
 
 const Subtitle = styled.Text(textInputSubtitleStyles)

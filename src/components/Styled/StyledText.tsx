@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useContext } from 'react'
 import styled from 'styled-components/native'
 import {
   typographyCaptionStyles,
@@ -8,7 +8,7 @@ import {
   typographyH3Styles,
   typographyLeadStyles,
   typographyParagraphStyles
-} from '@oryd/themes'
+} from '@ory/themes'
 import { TextProps } from 'react-native'
 
 interface StyledTextProps extends TextProps {

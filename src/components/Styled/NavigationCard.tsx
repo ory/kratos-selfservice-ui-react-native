@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { TouchableHighlight, View } from 'react-native'
-import { ThemeContext } from 'styled-components/native'
+import { ThemeContext } from 'styled-components'
 
 import StyledCard from './StyledCard'
 import StyledText from './StyledText'

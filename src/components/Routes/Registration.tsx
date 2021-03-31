@@ -2,7 +2,7 @@
 
 import React, { useContext, useState } from 'react'
 import { StackScreenProps } from '@react-navigation/stack'
-import { RegistrationFlow } from '@oryd/kratos-client'
+import { RegistrationFlow } from '@ory/kratos-client'
 import { useFocusEffect } from '@react-navigation/native'
 import Form from '../Form/Form'
 import { newKratosSdk } from '../../helpers/sdk'

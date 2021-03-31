@@ -1,4 +1,4 @@
-import { FormField } from '@oryd/kratos-client'
+import { FormField } from '@ory/kratos-client'
 
 const translations = {
   password: {

@@ -5,8 +5,9 @@ import {
   forkMeStylesFork,
   forkMeStylesImages,
   forkMeStylesLink,
-  forkMeStylesText
-} from '@oryd/themes'
+  forkMeStylesText,
+  ThemeProps
+} from '@ory/themes'
 import * as Linking from 'expo-linking'
 
 const Container = styled.View(forkMeStyles)
@@ -14,7 +15,7 @@ const StyledImage = styled.Image(forkMeStylesImages)
 const Fork = styled.Image(forkMeStylesFork)
 const Link = styled.Text(forkMeStylesLink)
 const StyledText = styled.Text`
-  ${forkMeStylesText}
+  ${forkMeStylesText};
   display: flex;
 `
 

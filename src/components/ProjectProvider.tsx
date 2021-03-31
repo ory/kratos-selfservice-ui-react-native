@@ -9,7 +9,7 @@ import {
 } from '../helpers/auth'
 import { AxiosError } from 'axios'
 import { newKratosSdk } from '../helpers/sdk'
-import { Session } from '@oryd/kratos-client'
+import { Session } from '@ory/kratos-client'
 
 interface Context {
   project: string
@@ -28,14 +28,12 @@ interface Props {
 export default ({ children }: Props) => {
   const [project, setProject] = useState('playground')
 
-  console.log('updating with state: ', project)
   return (
     <ProjectContext.Provider
       value={{
         // Helpers to set the global Ory Project for this app.
         project,
         setProject: (project: string) => {
-          console.log('updating to:', project)
           setProject(project)
         }
       }}

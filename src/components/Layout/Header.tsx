@@ -1,9 +1,10 @@
 import React, { useContext } from 'react'
 import { TouchableOpacity } from 'react-native'
 import styled from 'styled-components/native'
-import { ThemeProps } from '@oryd/themes'
+import { ThemeProps } from '@ory/themes'
 import { useNavigation } from '@react-navigation/native'
 import { AuthContext } from '../AuthProvider'
+import { ThemeContext } from 'styled-components'
 
 const Buttons = styled.View`
   display: flex;
@@ -36,7 +37,7 @@ const Container = styled.View`
 
   border-bottom-width: 1px;
   border-bottom-color: ${({ theme }: ThemeProps) => theme.primary60};
-  background-color: ${({ theme }) => theme.grey5};
+  background-color: ${({ theme }: ThemeProps) => theme.grey5};
 `
 
 const Header = () => {
