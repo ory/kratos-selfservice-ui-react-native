@@ -1,28 +1,34 @@
-import { FormField } from '@ory/kratos-client'
+import { UiNode } from '@ory/kratos-client'
 import React from 'react'
 import { TextInputProps, View } from 'react-native'
 import { getTitle } from '../../translations'
 import StyledTextInput from '../Styled/StyledTextInput'
 import styled from 'styled-components/native'
 import { textInputSubtitleStyles, textInputTitleStyles } from '@ory/themes'
+import {
+  getNodeName,
+  getNodeTitle,
+  isUiNodeInputAttributes
+} from '../../helpers/form'
 
 interface FieldProps {
-  field: FormField
+  node: UiNode
   onChange: (value: any) => void
   value: any
   disabled?: boolean
-  fieldTypeOverride?: (
-    field: FormField,
-    props: TextInputProps
-  ) => TextInputProps
+  fieldTypeOverride?: (field: UiNode, props: TextInputProps) => TextInputProps
 }
 
-const guessVariant = (field: FormField) => {
-  if (field.name === 'identifier') {
+const guessVariant = ({ attributes }: UiNode) => {
+  if (!isUiNodeInputAttributes(attributes)) {
+    return 'text'
+  }
+
+  if (attributes.name === 'identifier') {
     return 'username'
   }
 
-  switch (field.type) {
+  switch (attributes.type) {
     case 'hidden':
       return null
     case 'email':
@@ -57,13 +63,13 @@ const typeToState = ({
 }
 
 export default ({
-  field,
+  node,
   value,
   onChange,
   disabled,
   fieldTypeOverride
 }: FieldProps) => {
-  const variant = guessVariant(field)
+  const variant = guessVariant(node)
   if (!variant) {
     return null
   }
@@ -93,14 +99,17 @@ export default ({
   }
 
   if (fieldTypeOverride) {
-    extraProps = fieldTypeOverride(field, extraProps)
+    extraProps = fieldTypeOverride(node, extraProps)
   }
 
+  const name = getNodeName(node)
+  const title = getNodeTitle(node)
+
   return (
-    <View testID={`field/${field.name}`}>
-      <Title>{getTitle(field.name)}</Title>
+    <View testID={`field/${name}`}>
+      <Title>{title}</Title>
       <StyledTextInput
-        testID={field.name}
+        testID={name}
         onChange={onChange}
         value={value ? String(value) : ''}
         editable={!disabled}
@@ -109,7 +118,7 @@ export default ({
         {...extraProps}
       />
       <>
-        {field.messages?.map(({ text, id, type }, k) => (
+        {node.messages?.map(({ text, id, type }, k) => (
           <Subtitle key={`${id}${k}`} state={typeToState({ type, disabled })}>
             {text}
           </Subtitle>

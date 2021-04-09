@@ -22,9 +22,8 @@
   "dependencies": {
     "@expo-google-fonts/roboto": "~0.1.0",
     "@expo-google-fonts/rubik": "~0.1.0",
-    "@ory/kratos-client": "0.5.4-alpha.1",
+    "@ory/kratos-client": "^0.0.0-next.d79df3c2ff8e",
     "@ory/themes": "~0.0.21",
-    "@oryd/kratos-client": "0.0.0-next.5212bbfcf5dc",
     "@react-native-community/async-storage": "~1.12.0",
     "@react-native-community/masked-view": "0.1.10",
     "@react-navigation/native": "~5.8.10",

@@ -3,8 +3,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { showMessage } from 'react-native-flash-message'
 import styled from 'styled-components/native'
-import { SettingsFlow } from '@ory/kratos-client'
-import { CompleteSelfServiceSettingsFlowWithPasswordMethod } from '@ory/kratos-client/api'
+import { SettingsFlow, SubmitSelfServiceSettingsFlow } from '@ory/kratos-client'
 
 import Form from '../Form/Form'
 import { newKratosSdk } from '../../helpers/sdk'
@@ -13,7 +12,6 @@ import { AuthContext } from '../AuthProvider'
 import Layout from '../Layout/Layout'
 import StyledText from '../Styled/StyledText'
 import { handleFormSubmitError } from '../../helpers/form'
-import ProjectForm from '../Form/Project'
 import { ProjectContext } from '../ProjectProvider'
 
 const CardTitle = styled.View`
@@ -53,19 +51,9 @@ const Settings = () => {
       })
     })
 
-  const onSubmitPassword = (
-    payload: CompleteSelfServiceSettingsFlowWithPasswordMethod
-  ) =>
+  const onSubmit = (payload: SubmitSelfServiceSettingsFlow) =>
     newKratosSdk(project, sessionToken)
-      .completeSelfServiceSettingsFlowWithPasswordMethod(config.id, payload)
-      .then(onSuccess)
-      .catch(
-        handleFormSubmitError(setConfig, initializeFlow, () => setSession(null))
-      )
-
-  const onSubmitProfile = (payload: object) =>
-    newKratosSdk(project, sessionToken)
-      .completeSelfServiceSettingsFlowWithProfileMethod(config.id, payload)
+      .submitSelfServiceSettingsFlow(config.id, payload)
       .then(onSuccess)
       .catch(
         handleFormSubmitError(setConfig, initializeFlow, () => setSession(null))
@@ -78,10 +66,10 @@ const Settings = () => {
           <StyledText variant={'h2'}>Change password</StyledText>
         </CardTitle>
         <Form
-          config={config}
-          method="password"
+          flow={config}
+          only="password"
           submitLabel="Update password"
-          onSubmit={onSubmitPassword}
+          onSubmit={onSubmit}
         />
       </StyledCard>
 
@@ -90,10 +78,10 @@ const Settings = () => {
           <StyledText variant={'h2'}>Profile settings</StyledText>
         </CardTitle>
         <Form
-          config={config}
-          method="profile"
+          flow={config}
+          only="profile"
           submitLabel="Update profile"
-          onSubmit={onSubmitProfile}
+          onSubmit={onSubmit}
         />
       </StyledCard>
     </Layout>
