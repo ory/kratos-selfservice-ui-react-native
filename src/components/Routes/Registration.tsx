@@ -2,7 +2,11 @@
 
 import React, { useContext, useState } from 'react'
 import { StackScreenProps } from '@react-navigation/stack'
-import { RegistrationFlow } from '@ory/kratos-client'
+import {
+  RegistrationFlow,
+  SubmitSelfServiceRegistrationFlow,
+  SubmitSelfServiceRegistrationFlowWithPasswordMethod
+} from '@ory/kratos-client'
 import { useFocusEffect } from '@react-navigation/native'
 import Form from '../Form/Form'
 import { newKratosSdk } from '../../helpers/sdk'
@@ -12,7 +16,7 @@ import AuthLayout from '../Layout/AuthLayout'
 import AuthSubTitle from '../Styled/AuthSubTitle'
 import { RootStackParamList } from '../Navigation'
 import { AuthContext } from '../AuthProvider'
-import { handleFormSubmitError } from '../../helpers/form'
+import { getNodeName, handleFormSubmitError } from '../../helpers/form'
 import { Platform } from 'react-native'
 import ProjectForm from '../Form/Project'
 import { ProjectContext } from '../ProjectProvider'
@@ -20,7 +24,7 @@ import { ProjectContext } from '../ProjectProvider'
 type Props = StackScreenProps<RootStackParamList, 'Registration'>
 
 const Registration = ({ navigation }: Props) => {
-  const [config, setConfig] = useState<RegistrationFlow | undefined>(undefined)
+  const [flow, setConfig] = useState<RegistrationFlow | undefined>(undefined)
   const { project } = useContext(ProjectContext)
   const { setSession } = useContext(AuthContext)
 
@@ -45,13 +49,12 @@ const Registration = ({ navigation }: Props) => {
   )
 
   // This will update the registration flow with the user provided input:
-  const onSubmit = (payload: object): Promise<void> =>
-    config
+  const onSubmit = (
+    payload: SubmitSelfServiceRegistrationFlow
+  ): Promise<void> =>
+    flow
       ? newKratosSdk(project)
-          .completeSelfServiceRegistrationFlowWithPasswordMethod(
-            config.id,
-            payload
-          )
+          .submitSelfServiceRegistrationFlow(flow.id, payload)
           .then(({ data }) => {
             // ORY Kratos can be configured in such a way that it requires a login after
             // registration. You could handle that case by navigating to the Login screen
@@ -83,10 +86,9 @@ const Registration = ({ navigation }: Props) => {
     <AuthLayout>
       <StyledCard>
         <AuthSubTitle>Create an account</AuthSubTitle>
-
         <Form
           fieldTypeOverride={(field, props) => {
-            switch (field.name) {
+            switch (getNodeName(field)) {
               case 'traits.email':
                 return {
                   autoCapitalize: 'none',
@@ -99,17 +101,13 @@ const Registration = ({ navigation }: Props) => {
                   Platform.OS === 'ios' &&
                   parseInt(String(Platform.Version), 10) >= 12
                 return {
-                  // autoCapitalize: 'none',
-                  // autoCompleteType: 'password',
                   textContentType: iOS12Plus ? 'newPassword' : 'password',
                   secureTextEntry: true
-                  // autoCorrect: false
                 }
             }
             return props
           }}
-          config={config}
-          method="password"
+          flow={flow}
           submitLabel="Sign Up"
           onSubmit={onSubmit}
         />

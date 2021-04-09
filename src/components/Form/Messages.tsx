@@ -1,11 +1,11 @@
 import React from 'react'
-import { Message } from '@ory/kratos-client/api'
 import { messageStyles } from '@ory/themes'
 import styled from 'styled-components/native'
 import { View } from 'react-native'
+import { UiText } from '@ory/kratos-client/api'
 
 interface Props {
-  messages?: Array<Message>
+  messages?: Array<UiText>
   testID?: string
 }
 

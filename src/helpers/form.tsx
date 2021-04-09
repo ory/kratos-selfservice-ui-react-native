@@ -1,47 +1,73 @@
 import React from 'react'
 import {
-  FormField,
   GenericError,
-  LoginFlow,
-  LoginFlowMethodConfig,
-  RecoveryFlow,
-  RecoveryFlowMethodConfig,
-  RegistrationFlow,
-  RegistrationFlowMethodConfig,
-  SettingsFlow,
-  SettingsFlowMethodConfig,
-  VerificationFlow,
-  VerificationFlowMethodConfig
+  UiNode,
+  UiNodeAnchorAttributes,
+  UiNodeImageAttributes,
+  UiNodeInputAttributes,
+  UiNodeTextAttributes
 } from '@ory/kratos-client'
 import { AxiosError } from 'axios'
-import { getPosition } from '../translations'
 import { showMessage } from 'react-native-flash-message'
+import { UiNodeAttributes } from '@ory/kratos-client/api'
 
 export function camelize<T>(str: string) {
   return str.replace(/_([a-z])/g, (g) => g[1].toUpperCase()) as keyof T
 }
 
-export function getFieldValue<T>(
-  key: string,
-  fields: Array<FormField>,
-  fallback: T
-): T {
-  const field = fields.find(({ name }) => name == key)
-  if (field) {
-    return (field.value as unknown) as T
-  }
-
-  return fallback
+export function isUiNodeAnchorAttributes(
+  pet: UiNodeAttributes
+): pet is UiNodeAnchorAttributes {
+  return (pet as UiNodeAnchorAttributes).href !== undefined
 }
 
-export const fieldsToKeyMap = (fields: Array<FormField>) => {
-  const proto: { [key: string]: any } = {}
+export function isUiNodeImageAttributes(
+  pet: UiNodeAttributes
+): pet is UiNodeImageAttributes {
+  return (pet as UiNodeImageAttributes).src !== undefined
+}
 
-  fields.forEach((field) => {
-    proto[field.name] = field.value as any
-  })
+export function isUiNodeInputAttributes(
+  pet: UiNodeAttributes
+): pet is UiNodeInputAttributes {
+  return (pet as UiNodeInputAttributes).name !== undefined
+}
 
-  return proto
+export function isUiNodeTextAttributes(
+  pet: UiNodeAttributes
+): pet is UiNodeTextAttributes {
+  return (pet as UiNodeTextAttributes).text !== undefined
+}
+
+export function getNodeName({ attributes }: UiNode) {
+  if (isUiNodeInputAttributes(attributes)) {
+    return attributes.name
+  }
+
+  return ''
+}
+
+export function getNodeValue({ attributes }: UiNode) {
+  if (isUiNodeInputAttributes(attributes)) {
+    return attributes.value
+  }
+
+  return ''
+}
+
+export const getNodeTitle = ({ attributes, meta }: UiNode): string => {
+  if (isUiNodeInputAttributes(attributes)) {
+    if (meta?.label?.text) {
+      return meta.label.text
+    }
+    return attributes.name
+  }
+
+  if (meta?.label?.text) {
+    return meta.label.text
+  }
+
+  return ''
 }
 
 export function handleFlowInitError(err: AxiosError) {
@@ -107,42 +133,4 @@ export function handleFormSubmitError<T>(
     console.error(err, err.response?.data)
     return Promise.resolve()
   }
-}
-
-// This helper returns a flow method config (e.g. for the password flow).
-// If active is set and not the given flow method key, it wil be omitted.
-// This prevents the user from e.g. signing up with email but still seeing
-// other sign up form elements when an input is incorrect.
-//
-// It also sorts the form fields so that e.g. the email address is first.
-export const methodConfig = (
-  flow:
-    | LoginFlow
-    | RegistrationFlow
-    | RecoveryFlow
-    | SettingsFlow
-    | VerificationFlow,
-  key: string
-):
-  | LoginFlowMethodConfig
-  | RegistrationFlowMethodConfig
-  | RecoveryFlowMethodConfig
-  | SettingsFlowMethodConfig
-  | VerificationFlowMethodConfig
-  | undefined => {
-  if (!flow.methods[key]) {
-    // The flow method is apparently not configured -> return empty
-    return
-  }
-
-  const config = flow.methods[key].config
-
-  // We want the form fields to be sorted so that the email address is first, the
-  // password second, and so on.
-  config?.fields.sort(
-    (first: FormField, second: FormField) =>
-      getPosition(first) - getPosition(second)
-  )
-
-  return config
 }

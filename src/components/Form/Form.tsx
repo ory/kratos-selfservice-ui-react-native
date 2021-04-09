@@ -1,59 +1,57 @@
 import React, { useState } from 'react'
 import {
-  FormField,
   LoginFlow,
   RegistrationFlow,
-  SettingsFlow
+  SettingsFlow,
+  SubmitSelfServiceLoginFlow,
+  SubmitSelfServiceRegistrationFlow,
+  SubmitSelfServiceSettingsFlow,
+  UiNode
 } from '@ory/kratos-client'
 import Button from '../Styled/StyledButton'
 import Messages from './Messages'
-import { camelize, methodConfig } from '../../helpers/form'
+import { getNodeName, getNodeValue } from '../../helpers/form'
 import Field from './Field'
-import {
-  CompleteSelfServiceLoginFlowWithPasswordMethod,
-  CompleteSelfServiceSettingsFlowWithPasswordMethod
-} from '@ory/kratos-client/api'
-import { TextInputProps, View } from 'react-native'
+import { TextInputProps } from 'react-native'
 
 interface Props<T> {
-  config?: LoginFlow | RegistrationFlow | SettingsFlow
-  method: 'password' | 'profile' | 'link'
+  flow?: LoginFlow | RegistrationFlow | SettingsFlow
   onSubmit: (payload: T) => Promise<void>
   submitLabel: string
-  fieldTypeOverride?: (
-    field: FormField,
-    props: TextInputProps
-  ) => TextInputProps
+  only?: 'password' | 'profile'
+  fieldTypeOverride?: (node: UiNode, props: TextInputProps) => TextInputProps
 }
 
 const Form = <
   T extends
-    | object
-    | CompleteSelfServiceSettingsFlowWithPasswordMethod
-    | CompleteSelfServiceLoginFlowWithPasswordMethod
+    | SubmitSelfServiceSettingsFlow
+    | SubmitSelfServiceLoginFlow
+    | SubmitSelfServiceRegistrationFlow
 >({
-  config,
+  flow,
+  only,
   onSubmit,
   submitLabel,
-  method,
   fieldTypeOverride
 }: Props<T>) => {
-  if (!config) {
+  if (!flow) {
     return null
   }
 
-  // The Form component keeps track of all the field values in the form.
-  // To do so, we initialize
-  const inner = methodConfig(config, method)
-
-  if (!inner) {
-    return null
-  }
+  const nodes = flow.ui.nodes.filter(({ group }) => {
+    if (only) {
+      return group === only || group === 'default'
+    }
+    return true
+  })
 
   const initialState: Partial<T> = {}
-  inner.fields.forEach((field: FormField) => {
-    const key = field.name as keyof T
-    initialState[key] = (field.value || '') as any // value can be string, number, ... - any is ok here!
+  nodes.forEach((node: UiNode) => {
+    const name = getNodeName(node)
+    const value = getNodeValue(node)
+
+    const key = name as keyof T
+    initialState[key] = value || ('' as any)
   })
 
   const [values, setValues] = useState<T>(initialState as T)
@@ -66,7 +64,7 @@ const Form = <
     }))
   }
 
-  const getValue = (name: string) => values[camelize<T>(name)]
+  const getValue = (name: string) => values[name as keyof T]
   const onPress = () => {
     setInProgress(true)
     onSubmit(values).then(() => {
@@ -76,17 +74,20 @@ const Form = <
 
   return (
     <>
-      <Messages testID="form-messages" messages={inner.messages} />
-      {inner.fields.map((field: FormField, k) => (
-        <Field
-          key={`form-field-${inner?.action || ''}-${field.name}-${k}`}
-          fieldTypeOverride={fieldTypeOverride}
-          disabled={inProgress}
-          value={getValue(field.name)}
-          onChange={onChange(field.name)}
-          field={field}
-        />
-      ))}
+      <Messages testID="form-messages" messages={flow.ui.messages} />
+      {nodes.map((node: UiNode, k) => {
+        const name = getNodeName(node)
+        return (
+          <Field
+            key={`form-field-${flow.ui.action || ''}-${name}-${k}`}
+            fieldTypeOverride={fieldTypeOverride}
+            disabled={inProgress}
+            value={getValue(name)}
+            onChange={onChange(name)}
+            node={node}
+          />
+        )
+      })}
 
       <Button
         testID="submit-form"
