@@ -32,11 +32,10 @@ const Login = ({ navigation }: Props) => {
       .initializeSelfServiceLoginViaAPIFlow()
       .then((response) => {
         const { data: flow } = response
-        console.log(response)
         // The flow was initialized successfully, let's set the form data:
         setConfig(flow)
       })
-      .catch((args) => console.error(args))
+      .catch(console.error)
 
   // When the component is mounted, we initialize a new use login flow:
   useFocusEffect(
