@@ -54,8 +54,6 @@ export default ({ children }: AuthContextProps) => {
       return setAuth(null)
     }
 
-    console.log(project)
-
     // Use the session token from the auth session:
     return (
       newKratosSdk(project, auth.session_token)
@@ -73,7 +71,7 @@ export default ({ children }: AuthContextProps) => {
         .catch((err: AxiosError) => {
           if (err.response?.status === 401) {
             // The user is no longer logged in (hence 401)
-            console.log('Session is not authenticated:', err)
+            // console.log('Session is not authenticated:', err)
           } else {
             // A network or some other error occurred
             console.error(err)

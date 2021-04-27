@@ -17,7 +17,7 @@ export const resilience = (axios: AxiosInstance) => {
           error.response.status == 401 ||
           error.response.status == 403)
       ) {
-        console.info('Network request failed but this is ok', {
+        console.debug('Network request failed but this is ok', {
           config: error.config,
           error
         })
@@ -47,7 +47,7 @@ export const resilience = (axios: AxiosInstance) => {
         return Promise.reject(err)
       }
 
-      console.info('Retrying due to network error', {
+      console.debug('Retrying due to network error', {
         count: error.config.count,
         error
       })
