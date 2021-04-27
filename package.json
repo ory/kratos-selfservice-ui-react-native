@@ -60,6 +60,6 @@
     "prettier": "~2.2.0",
     "typescript": "~4.0.0"
   },
-  "version": "v0.5.4-alpha.1.pre.4",
+  "version": "v0.5.4-alpha.1.pre.5",
   "name": "@ory/expo-login-registration-template"
 }
