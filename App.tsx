@@ -1,4 +1,6 @@
 import 'react-native-gesture-handler'
+// https://github.com/facebook/react-native/issues/23922
+import 'react-native-url-polyfill/auto'
 
 import React from 'react'
 import { ThemeProvider } from 'styled-components'

@@ -30,11 +30,13 @@ const Login = ({ navigation }: Props) => {
   const initializeFlow = () =>
     newKratosSdk(project)
       .initializeSelfServiceLoginViaAPIFlow()
-      .then(({ data: flow }) => {
+      .then((response) => {
+        const { data: flow } = response
+        console.log(response)
         // The flow was initialized successfully, let's set the form data:
         setConfig(flow)
       })
-      .catch(console.error)
+      .catch((args) => console.error(args))
 
   // When the component is mounted, we initialize a new use login flow:
   useFocusEffect(
