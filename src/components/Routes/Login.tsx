@@ -25,7 +25,7 @@ type Props = StackScreenProps<RootStackParamList, 'Login'>
 const Login = ({ navigation }: Props) => {
   const { project } = useContext(ProjectContext)
   const { setSession } = useContext(AuthContext)
-  const [flow, setConfig] = useState<LoginFlow | undefined>(undefined)
+  const [flow, setFlow] = useState<LoginFlow | undefined>(undefined)
 
   const initializeFlow = () =>
     newKratosSdk(project)
@@ -33,7 +33,7 @@ const Login = ({ navigation }: Props) => {
       .then((response) => {
         const { data: flow } = response
         // The flow was initialized successfully, let's set the form data:
-        setConfig(flow)
+        setFlow(flow)
       })
       .catch(console.error)
 
@@ -43,7 +43,7 @@ const Login = ({ navigation }: Props) => {
       initializeFlow()
 
       return () => {
-        setConfig(undefined)
+        setFlow(undefined)
       }
     }, [project])
   )
@@ -56,7 +56,7 @@ const Login = ({ navigation }: Props) => {
           .then(({ data }) => Promise.resolve(data))
           // Looks like everything worked and we have a session!
           .then(setSession)
-          .catch(handleFormSubmitError(setConfig, initializeFlow))
+          .catch(handleFormSubmitError(setFlow, initializeFlow))
       : Promise.resolve()
 
   return (
