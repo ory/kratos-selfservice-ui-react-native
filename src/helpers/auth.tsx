@@ -48,7 +48,7 @@ export const setAuthenticatedSession = (
     return killAuthenticatedSession()
   }
 
-  if (Platform.OS === 'web') {
+  if (Platform.OS !== 'web') {
     // SecureStore is not available on the web platform. We need to use AsyncStore
     // instead.
     return AsyncStore.setItem(userSessionName, JSON.stringify(session))
@@ -63,7 +63,7 @@ export const setAuthenticatedSession = (
 
 // Removes the session from the store.
 export const killAuthenticatedSession = () => {
-  if (Platform.OS === 'web') {
+  if (Platform.OS !== 'web') {
     // SecureStore is not available on the web platform. We need to use AsyncStore
     // instead.
     return AsyncStore.removeItem(userSessionName)
