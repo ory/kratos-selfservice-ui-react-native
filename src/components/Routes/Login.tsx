@@ -3,10 +3,8 @@ import React, { useContext, useState } from 'react'
 import { StackScreenProps } from '@react-navigation/stack'
 import { useFocusEffect } from '@react-navigation/native'
 import {
-  LoginFlow,
-  SubmitSelfServiceLoginFlow,
-  SubmitSelfServiceLoginFlowWithPasswordMethod
-} from '@ory/kratos-client'
+  SelfServiceLoginFlow,
+} from '@ory/kratos-client';
 
 import Form from '../Form/Form'
 import { newKratosSdk } from '../../helpers/sdk'
@@ -19,17 +17,19 @@ import { AuthContext } from '../AuthProvider'
 import { handleFormSubmitError } from '../../helpers/form'
 import ProjectForm from '../Form/Project'
 import { ProjectContext } from '../ProjectProvider'
+import { SubmitSelfServiceLoginFlowBody } from '@ory/kratos-client/api';
+import { SessionContext } from '../../helpers/auth';
 
 type Props = StackScreenProps<RootStackParamList, 'Login'>
 
 const Login = ({ navigation }: Props) => {
   const { project } = useContext(ProjectContext)
   const { setSession } = useContext(AuthContext)
-  const [flow, setFlow] = useState<LoginFlow | undefined>(undefined)
+  const [flow, setFlow] = useState<SelfServiceLoginFlow | undefined>(undefined)
 
   const initializeFlow = () =>
     newKratosSdk(project)
-      .initializeSelfServiceLoginViaAPIFlow()
+      .initializeSelfServiceLoginFlowWithoutBrowser()
       .then((response) => {
         const { data: flow } = response
         // The flow was initialized successfully, let's set the form data:
@@ -49,11 +49,11 @@ const Login = ({ navigation }: Props) => {
   )
 
   // This will update the login flow with the user provided input:
-  const onSubmit = (payload: SubmitSelfServiceLoginFlow) =>
+  const onSubmit = (payload: SubmitSelfServiceLoginFlowBody) =>
     flow
       ? newKratosSdk(project)
           .submitSelfServiceLoginFlow(flow.id, payload)
-          .then(({ data }) => Promise.resolve(data))
+          .then(({ data }) =>  Promise.resolve(data as SessionContext)         )
           // Looks like everything worked and we have a session!
           .then(setSession)
           .catch(handleFormSubmitError(setFlow, initializeFlow))

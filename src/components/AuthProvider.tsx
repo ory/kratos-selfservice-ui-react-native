@@ -56,9 +56,9 @@ export default ({ children }: AuthContextProps) => {
 
     // Use the session token from the auth session:
     return (
-      newKratosSdk(project, auth.session_token)
+      newKratosSdk(project)
         // whoami() returns the session belonging to the session_token:
-        .whoami()
+        .toSession(auth.session_token)
         .then(({ data: session }) => {
           // This means that the session is still valid! The user is logged in.
           //

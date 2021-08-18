@@ -3,7 +3,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { showMessage } from 'react-native-flash-message'
 import styled from 'styled-components/native'
-import { SettingsFlow, SubmitSelfServiceSettingsFlow } from '@ory/kratos-client'
 
 import Form from '../Form/Form'
 import { newKratosSdk } from '../../helpers/sdk'
@@ -13,6 +12,7 @@ import Layout from '../Layout/Layout'
 import StyledText from '../Styled/StyledText'
 import { handleFormSubmitError } from '../../helpers/form'
 import { ProjectContext } from '../ProjectProvider'
+import { SelfServiceSettingsFlow, SubmitSelfServiceSettingsFlowBody } from '@ory/kratos-client';
 
 const CardTitle = styled.View`
   margin-bottom: 15px;
@@ -21,11 +21,11 @@ const CardTitle = styled.View`
 const Settings = () => {
   const { project } = useContext(ProjectContext)
   const { sessionToken, setSession, syncSession } = useContext(AuthContext)
-  const [config, setConfig] = useState<SettingsFlow | undefined>(undefined)
+  const [config, setConfig] = useState<SelfServiceSettingsFlow | undefined>(undefined)
 
   const initializeFlow = () =>
-    newKratosSdk(project, sessionToken)
-      .initializeSelfServiceSettingsViaAPIFlow()
+    newKratosSdk(project)
+      .initializeSelfServiceSettingsFlowWithoutBrowser(sessionToken)
       .then(({ data: flow }) => {
         setConfig(flow)
       })
@@ -51,9 +51,9 @@ const Settings = () => {
       })
     })
 
-  const onSubmit = (payload: SubmitSelfServiceSettingsFlow) =>
-    newKratosSdk(project, sessionToken)
-      .submitSelfServiceSettingsFlow(config.id, payload)
+  const onSubmit = (payload: SubmitSelfServiceSettingsFlowBody) =>
+    newKratosSdk(project)
+      .submitSelfServiceSettingsFlow(config.id, sessionToken, payload)
       .then(onSuccess)
       .catch(
         handleFormSubmitError(setConfig, initializeFlow, () => setSession(null))
@@ -81,6 +81,30 @@ const Settings = () => {
           flow={config}
           only="profile"
           submitLabel="Update profile"
+          onSubmit={onSubmit}
+        />
+      </StyledCard>
+
+      <StyledCard testID={'settings-totp'}>
+        <CardTitle>
+          <StyledText variant={'h2'}>2FA authenticator</StyledText>
+        </CardTitle>
+        <Form
+          flow={config}
+          only="totp"
+          submitLabel="Update"
+          onSubmit={onSubmit}
+        />
+      </StyledCard>
+
+      <StyledCard testID={'settings-lookup'}>
+        <CardTitle>
+          <StyledText variant={'h2'}>Backup recovery codes</StyledText>
+        </CardTitle>
+        <Form
+          flow={config}
+          only="lookup_secret"
+          submitLabel="Update"
           onSubmit={onSubmit}
         />
       </StyledCard>

@@ -1,13 +1,12 @@
 import React, { useState } from 'react'
 import {
-  LoginFlow,
-  RegistrationFlow,
-  SettingsFlow,
-  SubmitSelfServiceLoginFlow,
-  SubmitSelfServiceRegistrationFlow,
-  SubmitSelfServiceSettingsFlow,
-  UiNode
-} from '@ory/kratos-client'
+  SelfServiceLoginFlow,
+  SelfServiceRegistrationFlow,
+  SelfServiceSettingsFlow,
+  SubmitSelfServiceLoginFlowBody, SubmitSelfServiceRegistrationFlowBody,
+  SubmitSelfServiceSettingsFlowBody,
+  UiNode,
+} from '@ory/kratos-client';
 import Button from '../Styled/StyledButton'
 import Messages from './Messages'
 import { getNodeName, getNodeValue } from '../../helpers/form'
@@ -15,18 +14,18 @@ import Field from './Field'
 import { TextInputProps } from 'react-native'
 
 interface Props<T> {
-  flow?: LoginFlow | RegistrationFlow | SettingsFlow
+  flow?: SelfServiceLoginFlow | SelfServiceRegistrationFlow | SelfServiceSettingsFlow
   onSubmit: (payload: T) => Promise<void>
   submitLabel: string
-  only?: 'password' | 'profile'
+  only?: 'password' | 'profile' | 'totp' | 'lookup_secret'
   fieldTypeOverride?: (node: UiNode, props: TextInputProps) => TextInputProps
 }
 
 const Form = <
   T extends
-    | SubmitSelfServiceSettingsFlow
-    | SubmitSelfServiceLoginFlow
-    | SubmitSelfServiceRegistrationFlow
+    | SubmitSelfServiceSettingsFlowBody
+    | SubmitSelfServiceLoginFlowBody
+    | SubmitSelfServiceRegistrationFlowBody
 >({
   flow,
   only,

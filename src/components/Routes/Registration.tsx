@@ -2,11 +2,6 @@
 
 import React, { useContext, useState } from 'react'
 import { StackScreenProps } from '@react-navigation/stack'
-import {
-  RegistrationFlow,
-  SubmitSelfServiceRegistrationFlow,
-  SubmitSelfServiceRegistrationFlowWithPasswordMethod
-} from '@ory/kratos-client'
 import { useFocusEffect } from '@react-navigation/native'
 import Form from '../Form/Form'
 import { newKratosSdk } from '../../helpers/sdk'
@@ -20,17 +15,18 @@ import { getNodeName, handleFormSubmitError } from '../../helpers/form'
 import { Platform } from 'react-native'
 import ProjectForm from '../Form/Project'
 import { ProjectContext } from '../ProjectProvider'
+import { SelfServiceRegistrationFlow, SubmitSelfServiceRegistrationFlowBody } from '@ory/kratos-client';
 
 type Props = StackScreenProps<RootStackParamList, 'Registration'>
 
 const Registration = ({ navigation }: Props) => {
-  const [flow, setConfig] = useState<RegistrationFlow | undefined>(undefined)
+  const [flow, setConfig] = useState<SelfServiceRegistrationFlow | undefined>(undefined)
   const { project } = useContext(ProjectContext)
   const { setSession } = useContext(AuthContext)
 
   const initializeFlow = () =>
     newKratosSdk(project)
-      .initializeSelfServiceRegistrationViaAPIFlow()
+      .initializeSelfServiceRegistrationFlowWithoutBrowser()
       // The flow was initialized successfully, let's set the form data:
       .then(({ data: flow }) => {
         setConfig(flow)
@@ -50,7 +46,7 @@ const Registration = ({ navigation }: Props) => {
 
   // This will update the registration flow with the user provided input:
   const onSubmit = (
-    payload: SubmitSelfServiceRegistrationFlow
+    payload: SubmitSelfServiceRegistrationFlowBody
   ): Promise<void> =>
     flow
       ? newKratosSdk(project)
@@ -75,7 +71,7 @@ const Registration = ({ navigation }: Props) => {
           // Let's log the user in!
           .then(setSession)
           .catch(
-            handleFormSubmitError<RegistrationFlow | undefined>(
+            handleFormSubmitError<SelfServiceRegistrationFlow | undefined>(
               setConfig,
               initializeFlow
             )

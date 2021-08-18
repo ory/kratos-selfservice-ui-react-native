@@ -1,109 +1,130 @@
-import { UiNode } from '@ory/kratos-client'
-import React from 'react'
-import { TextInputProps, View } from 'react-native'
-import { getTitle } from '../../translations'
-import StyledTextInput from '../Styled/StyledTextInput'
-import styled from 'styled-components/native'
-import { textInputSubtitleStyles, textInputTitleStyles } from '@ory/themes'
+import { UiNode } from '@ory/kratos-client';
+import React from 'react';
+import { TextInputProps, View, Image } from 'react-native';
+import { getTitle } from '../../translations';
+import StyledTextInput from '../Styled/StyledTextInput';
+import styled from 'styled-components/native';
+import { textInputSubtitleStyles, textInputTitleStyles } from '@ory/themes';
 import {
   getNodeName,
-  getNodeTitle,
-  isUiNodeInputAttributes
-} from '../../helpers/form'
+  getNodeTitle, isUiNodeAnchorAttributes, isUiNodeImageAttributes,
+  isUiNodeInputAttributes, isUiNodeTextAttributes,
+} from '../../helpers/form';
 
 interface FieldProps {
-  node: UiNode
-  onChange: (value: any) => void
-  value: any
-  disabled?: boolean
-  fieldTypeOverride?: (field: UiNode, props: TextInputProps) => TextInputProps
+  node: UiNode;
+  onChange: (value: any) => void;
+  value: any;
+  disabled?: boolean;
+  fieldTypeOverride?: (field: UiNode, props: TextInputProps) => TextInputProps;
 }
 
 const guessVariant = ({ attributes }: UiNode) => {
   if (!isUiNodeInputAttributes(attributes)) {
-    return 'text'
+    return 'text';
   }
 
   if (attributes.name === 'identifier') {
-    return 'username'
+    return 'username';
   }
 
   switch (attributes.type) {
     case 'hidden':
-      return null
+      return null;
     case 'email':
-      return 'email'
+      return 'email';
     case 'submit':
-      return null
+      return 'button';
     case 'password':
-      return 'password'
+      return 'password';
     default:
-      return 'text'
+      return 'text';
   }
-}
+};
 
-const Title = styled.Text(textInputTitleStyles)
-const Subtitle = styled.Text(textInputSubtitleStyles)
+const Title = styled.Text(textInputTitleStyles);
+const Subtitle = styled.Text(textInputSubtitleStyles);
 
 const typeToState = ({
-  type,
-  disabled
-}: {
+                       type,
+                       disabled,
+                     }: {
   type?: string
   disabled?: boolean
 }) => {
   if (disabled) {
-    return 'disabled'
+    return 'disabled';
   }
   switch (type) {
     case 'error':
-      return 'error'
+      return 'error';
   }
-  return undefined
-}
+  return undefined;
+};
+
+
+const StyledImage = styled.Image`
+width: 256px;
+height: 256px;
+`
 
 export default ({
-  node,
-  value,
-  onChange,
-  disabled,
-  fieldTypeOverride
-}: FieldProps) => {
-  const variant = guessVariant(node)
-  if (!variant) {
-    return null
+                  node,
+                  value,
+                  onChange,
+                  disabled,
+                  fieldTypeOverride,
+                }: FieldProps) => {
+
+  if (isUiNodeImageAttributes(node.attributes)) {
+    return <StyledImage
+      source={{
+        uri: node.attributes.src,
+      }}
+    />;
+  } else if (isUiNodeTextAttributes(node.attributes)) {
+    return <>{node.attributes.text.text}</>;
+  } else if (isUiNodeInputAttributes(node.attributes)) {
+
+  } else {
+    return <>Unknown Element: {node.type}</>
   }
 
-  let extraProps: TextInputProps = {}
+  const variant = guessVariant(node);
+  if (!variant) {
+    return null;
+  }
+
+  let extraProps: TextInputProps = {};
   switch (variant) {
     case 'email':
-      extraProps.autoCompleteType = 'email'
-      extraProps.keyboardType = 'email-address'
-      extraProps.textContentType = 'emailAddress'
-      extraProps.autoCapitalize = 'none'
-      extraProps.autoCorrect = false
-      break
+      extraProps.autoCompleteType = 'email';
+      extraProps.keyboardType = 'email-address';
+      extraProps.textContentType = 'emailAddress';
+      extraProps.autoCapitalize = 'none';
+      extraProps.autoCorrect = false;
+      break;
     case 'password':
-      extraProps.autoCompleteType = 'password'
-      extraProps.textContentType = 'password'
-      extraProps.autoCapitalize = 'none'
-      extraProps.secureTextEntry = true
-      extraProps.autoCorrect = false
-      break
+      extraProps.autoCompleteType = 'password';
+      extraProps.textContentType = 'password';
+      extraProps.autoCapitalize = 'none';
+      extraProps.secureTextEntry = true;
+      extraProps.autoCorrect = false;
+      break;
     case 'username':
-      extraProps.autoCompleteType = 'username'
-      extraProps.textContentType = 'username'
-      extraProps.autoCapitalize = 'none'
-      extraProps.autoCorrect = false
-      break
+      extraProps.autoCompleteType = 'username';
+      extraProps.textContentType = 'username';
+      extraProps.autoCapitalize = 'none';
+      extraProps.autoCorrect = false;
+      break;
   }
 
   if (fieldTypeOverride) {
-    extraProps = fieldTypeOverride(node, extraProps)
+    extraProps = fieldTypeOverride(node, extraProps);
   }
 
-  const name = getNodeName(node)
-  const title = getNodeTitle(node)
+  const name = getNodeName(node);
+  const title = getNodeTitle(node);
 
   return (
     <View testID={`field/${name}`}>
@@ -125,5 +146,5 @@ export default ({
         ))}
       </>
     </View>
-  )
+  );
 }
