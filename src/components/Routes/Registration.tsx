@@ -2,13 +2,8 @@
 
 import React, { useContext, useState } from 'react'
 import { StackScreenProps } from '@react-navigation/stack'
-import {
-  RegistrationFlow,
-  SubmitSelfServiceRegistrationFlow,
-  SubmitSelfServiceRegistrationFlowWithPasswordMethod
-} from '@ory/kratos-client'
 import { useFocusEffect } from '@react-navigation/native'
-import Form from '../Form/Form'
+import { SelfServiceFlow } from '../Ory/Ui'
 import { newKratosSdk } from '../../helpers/sdk'
 import StyledCard from '../Styled/StyledCard'
 import NavigationCard from '../Styled/NavigationCard'
@@ -16,21 +11,27 @@ import AuthLayout from '../Layout/AuthLayout'
 import AuthSubTitle from '../Styled/AuthSubTitle'
 import { RootStackParamList } from '../Navigation'
 import { AuthContext } from '../AuthProvider'
-import { getNodeName, handleFormSubmitError } from '../../helpers/form'
+import { getNodeId, handleFormSubmitError } from '../../helpers/form'
 import { Platform } from 'react-native'
-import ProjectForm from '../Form/Project'
+import ProjectPicker from '../Layout/ProjectPicker'
 import { ProjectContext } from '../ProjectProvider'
+import {
+  SelfServiceRegistrationFlow,
+  SubmitSelfServiceRegistrationFlowBody
+} from '@ory/kratos-client'
 
 type Props = StackScreenProps<RootStackParamList, 'Registration'>
 
 const Registration = ({ navigation }: Props) => {
-  const [flow, setConfig] = useState<RegistrationFlow | undefined>(undefined)
+  const [flow, setConfig] = useState<SelfServiceRegistrationFlow | undefined>(
+    undefined
+  )
   const { project } = useContext(ProjectContext)
   const { setSession } = useContext(AuthContext)
 
   const initializeFlow = () =>
     newKratosSdk(project)
-      .initializeSelfServiceRegistrationViaAPIFlow()
+      .initializeSelfServiceRegistrationFlowWithoutBrowser()
       // The flow was initialized successfully, let's set the form data:
       .then(({ data: flow }) => {
         setConfig(flow)
@@ -50,7 +51,7 @@ const Registration = ({ navigation }: Props) => {
 
   // This will update the registration flow with the user provided input:
   const onSubmit = (
-    payload: SubmitSelfServiceRegistrationFlow
+    payload: SubmitSelfServiceRegistrationFlowBody
   ): Promise<void> =>
     flow
       ? newKratosSdk(project)
@@ -75,7 +76,7 @@ const Registration = ({ navigation }: Props) => {
           // Let's log the user in!
           .then(setSession)
           .catch(
-            handleFormSubmitError<RegistrationFlow | undefined>(
+            handleFormSubmitError<SelfServiceRegistrationFlow | undefined>(
               setConfig,
               initializeFlow
             )
@@ -86,9 +87,9 @@ const Registration = ({ navigation }: Props) => {
     <AuthLayout>
       <StyledCard>
         <AuthSubTitle>Create an account</AuthSubTitle>
-        <Form
-          fieldTypeOverride={(field, props) => {
-            switch (getNodeName(field)) {
+        <SelfServiceFlow
+          textInputOverride={(field, props) => {
+            switch (getNodeId(field)) {
               case 'traits.email':
                 return {
                   autoCapitalize: 'none',
@@ -108,7 +109,6 @@ const Registration = ({ navigation }: Props) => {
             return props
           }}
           flow={flow}
-          submitLabel="Sign Up"
           onSubmit={onSubmit}
         />
       </StyledCard>
@@ -119,7 +119,7 @@ const Registration = ({ navigation }: Props) => {
         onPress={() => navigation.navigate('Login')}
       />
 
-      <ProjectForm />
+      <ProjectPicker />
     </AuthLayout>
   )
 }

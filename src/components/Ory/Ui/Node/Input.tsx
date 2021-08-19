@@ -1,23 +1,31 @@
-import { UiNode } from '@ory/kratos-client'
+import { UiNode, UiNodeInputAttributes } from '@ory/kratos-client'
 import React from 'react'
 import { TextInputProps, View } from 'react-native'
-import { getTitle } from '../../translations'
-import StyledTextInput from '../Styled/StyledTextInput'
+import StyledTextInput from '../../../Styled/StyledTextInput'
 import styled from 'styled-components/native'
 import { textInputSubtitleStyles, textInputTitleStyles } from '@ory/themes'
 import {
-  getNodeName,
+  getNodeId,
   getNodeTitle,
   isUiNodeInputAttributes
-} from '../../helpers/form'
+} from '../../../../helpers/form'
 
-interface FieldProps {
+interface Props extends InputProps {
   node: UiNode
+  attributes: UiNodeInputAttributes
+}
+
+export interface InputProps {
   onChange: (value: any) => void
   value: any
   disabled?: boolean
-  fieldTypeOverride?: (field: UiNode, props: TextInputProps) => TextInputProps
+  textInputOverride?: TextInputOverride
 }
+
+export type TextInputOverride = (
+  field: UiNode,
+  props: TextInputProps
+) => TextInputProps
 
 const guessVariant = ({ attributes }: UiNode) => {
   if (!isUiNodeInputAttributes(attributes)) {
@@ -34,16 +42,13 @@ const guessVariant = ({ attributes }: UiNode) => {
     case 'email':
       return 'email'
     case 'submit':
-      return null
+      return 'button'
     case 'password':
       return 'password'
     default:
       return 'text'
   }
 }
-
-const Title = styled.Text(textInputTitleStyles)
-const Subtitle = styled.Text(textInputSubtitleStyles)
 
 const typeToState = ({
   type,
@@ -62,13 +67,17 @@ const typeToState = ({
   return undefined
 }
 
-export default ({
+const Title = styled.Text(textInputTitleStyles)
+const Subtitle = styled.Text(textInputSubtitleStyles)
+
+export const NodeInput = ({
   node,
+  attributes,
   value,
   onChange,
   disabled,
-  fieldTypeOverride
-}: FieldProps) => {
+  textInputOverride
+}: Props) => {
   const variant = guessVariant(node)
   if (!variant) {
     return null
@@ -98,11 +107,11 @@ export default ({
       break
   }
 
-  if (fieldTypeOverride) {
-    extraProps = fieldTypeOverride(node, extraProps)
+  if (textInputOverride) {
+    extraProps = textInputOverride(node, extraProps)
   }
 
-  const name = getNodeName(node)
+  const name = getNodeId(node)
   const title = getNodeTitle(node)
 
   return (
