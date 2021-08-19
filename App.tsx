@@ -28,8 +28,7 @@ import ForkMe from './src/components/Styled/ForkMe'
 import ProjectProvider from './src/components/ProjectProvider'
 
 Sentry.init({
-  dsn:
-    'https://8be94c41dbe34ce1b244935c68165eab@o481709.ingest.sentry.io/5530799',
+  dsn: 'https://8be94c41dbe34ce1b244935c68165eab@o481709.ingest.sentry.io/5530799',
   enableInExpoDevelopment: true,
   debug: false,
   integrations: [
