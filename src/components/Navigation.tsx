@@ -17,13 +17,15 @@ import {
   TouchableWithoutFeedback
 } from 'react-native'
 import Header from './Layout/Header'
-import ProjectProvider from './ProjectProvider'
 
 const Stack = createStackNavigator<RootStackParamList>()
 
 export type RootStackParamList = {
   Home: undefined
-  Login: undefined
+  Login: {
+    refresh?: boolean
+    aal?: 'aal2'
+  }
   Registration: undefined
   Settings: undefined
 }
@@ -63,10 +65,10 @@ export default () => {
               </>
             ) : (
               <>
-                <Stack.Screen name="Login" component={Login} />
                 <Stack.Screen name="Registration" component={Registration} />
               </>
             )}
+            <Stack.Screen name="Login" component={Login} initialParams={{}} />
           </Stack.Navigator>
         </NavigationContainer>
       </TouchableWithoutFeedback>

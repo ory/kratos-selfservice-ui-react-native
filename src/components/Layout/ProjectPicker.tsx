@@ -16,7 +16,7 @@ const open = (href: string) => () => {
   Linking.openURL(href)
 }
 
-const ProjectForm = () => {
+const ProjectPicker = () => {
   const { project, setProject } = useContext(ProjectContext)
   const [inner, setInner] = useState(project)
   const theme = useContext(ThemeContext)
@@ -47,4 +47,4 @@ const ProjectForm = () => {
   )
 }
 
-export default ProjectForm
+export default ProjectPicker

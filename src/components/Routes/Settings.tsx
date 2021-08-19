@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { showMessage } from 'react-native-flash-message'
 import styled from 'styled-components/native'
 
-import Form from '../Form/Form'
+import { SelfServiceFlow } from '../Ory/Ui'
 import { newKratosSdk } from '../../helpers/sdk'
 import StyledCard from '../Styled/StyledCard'
 import { AuthContext } from '../AuthProvider'
@@ -12,7 +12,11 @@ import Layout from '../Layout/Layout'
 import StyledText from '../Styled/StyledText'
 import { handleFormSubmitError } from '../../helpers/form'
 import { ProjectContext } from '../ProjectProvider'
-import { SelfServiceSettingsFlow, SubmitSelfServiceSettingsFlowBody } from '@ory/kratos-client';
+import {
+  SelfServiceSettingsFlow,
+  SubmitSelfServiceSettingsFlowBody
+} from '@ory/kratos-client'
+import { SelfServiceSettingsFlowState } from '@ory/kratos-client'
 
 const CardTitle = styled.View`
   margin-bottom: 15px;
@@ -21,13 +25,15 @@ const CardTitle = styled.View`
 const Settings = () => {
   const { project } = useContext(ProjectContext)
   const { sessionToken, setSession, syncSession } = useContext(AuthContext)
-  const [config, setConfig] = useState<SelfServiceSettingsFlow | undefined>(undefined)
+  const [flow, setFlow] = useState<SelfServiceSettingsFlow | undefined>(
+    undefined
+  )
 
   const initializeFlow = () =>
     newKratosSdk(project)
       .initializeSelfServiceSettingsFlowWithoutBrowser(sessionToken)
       .then(({ data: flow }) => {
-        setConfig(flow)
+        setFlow(flow)
       })
       .catch(console.error)
 
@@ -39,24 +45,28 @@ const Settings = () => {
     return null
   }
 
-  if (!config) {
+  if (!flow) {
     return null
   }
 
-  const onSuccess = () =>
-    syncSession().then(() => {
-      showMessage({
-        message: 'Your changes have been saved',
-        type: 'success'
+  const onSuccess = (result: SelfServiceSettingsFlow) => {
+    if (result.state === SelfServiceSettingsFlowState.Success) {
+      syncSession().then(() => {
+        showMessage({
+          message: 'Your changes have been saved',
+          type: 'success'
+        })
       })
-    })
+    }
+    setFlow(result)
+  }
 
   const onSubmit = (payload: SubmitSelfServiceSettingsFlowBody) =>
     newKratosSdk(project)
-      .submitSelfServiceSettingsFlow(config.id, sessionToken, payload)
-      .then(onSuccess)
+      .submitSelfServiceSettingsFlow(flow.id, sessionToken, payload)
+      .then(({ data }) => onSuccess(data))
       .catch(
-        handleFormSubmitError(setConfig, initializeFlow, () => setSession(null))
+        handleFormSubmitError(setFlow, initializeFlow, () => setSession(null))
       )
 
   return (
@@ -65,48 +75,28 @@ const Settings = () => {
         <CardTitle>
           <StyledText variant={'h2'}>Change password</StyledText>
         </CardTitle>
-        <Form
-          flow={config}
-          only="password"
-          submitLabel="Update password"
-          onSubmit={onSubmit}
-        />
+        <SelfServiceFlow flow={flow} only="password" onSubmit={onSubmit} />
       </StyledCard>
 
       <StyledCard testID={'settings-profile'}>
         <CardTitle>
           <StyledText variant={'h2'}>Profile settings</StyledText>
         </CardTitle>
-        <Form
-          flow={config}
-          only="profile"
-          submitLabel="Update profile"
-          onSubmit={onSubmit}
-        />
+        <SelfServiceFlow flow={flow} only="profile" onSubmit={onSubmit} />
       </StyledCard>
 
       <StyledCard testID={'settings-totp'}>
         <CardTitle>
           <StyledText variant={'h2'}>2FA authenticator</StyledText>
         </CardTitle>
-        <Form
-          flow={config}
-          only="totp"
-          submitLabel="Update"
-          onSubmit={onSubmit}
-        />
+        <SelfServiceFlow flow={flow} only="totp" onSubmit={onSubmit} />
       </StyledCard>
 
       <StyledCard testID={'settings-lookup'}>
         <CardTitle>
           <StyledText variant={'h2'}>Backup recovery codes</StyledText>
         </CardTitle>
-        <Form
-          flow={config}
-          only="lookup_secret"
-          submitLabel="Update"
-          onSubmit={onSubmit}
-        />
+        <SelfServiceFlow flow={flow} only="lookup_secret" onSubmit={onSubmit} />
       </StyledCard>
     </Layout>
   )

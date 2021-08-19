@@ -9,7 +9,7 @@ import {
 } from '@ory/kratos-client'
 import { AxiosError } from 'axios'
 import { showMessage } from 'react-native-flash-message'
-import { UiNodeAttributes } from '@ory/kratos-client/api'
+import { UiNodeAttributes } from '@ory/kratos-client'
 
 export function camelize<T>(str: string) {
   return str.replace(/_([a-z])/g, (g) => g[1].toUpperCase()) as keyof T
@@ -39,12 +39,12 @@ export function isUiNodeTextAttributes(
   return (pet as UiNodeTextAttributes).text !== undefined
 }
 
-export function getNodeName({ attributes }: UiNode) {
+export function getNodeId({ attributes }: UiNode) {
   if (isUiNodeInputAttributes(attributes)) {
     return attributes.name
+  } else {
+    return attributes.id
   }
-
-  return ''
 }
 
 export function getNodeValue({ attributes }: UiNode) {
@@ -84,25 +84,23 @@ export function handleFormSubmitError<T>(
       switch (err.response.status) {
         case 400:
           if (typeof err.response.data.error === 'object') {
-            console.warn(err.response.data)
-
             const ge: GenericError = err.response.data
             showMessage({
-              message: `${ge.error?.message}: ${ge.error?.reason}`,
+              message: `${ge.message}: ${ge.reason}`,
               type: 'danger'
             })
 
             return Promise.resolve()
           }
 
-          console.warn('Form validation failed:', err.response.data)
+          console.debug('Form validation failed:', err.response.data)
           setConfig(err.response.data)
           return Promise.resolve()
         case 404:
         case 410:
           // This happens when the flow is, for example, expired or was deleted.
           // We simply re-initialize the flow if that happens!
-          console.warn('Flow could not be found, reloading page.')
+          console.debug('Flow could not be found, reloading page.')
           initialize()
           return Promise.resolve()
         case 403:
