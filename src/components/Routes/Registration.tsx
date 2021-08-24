@@ -27,7 +27,7 @@ const Registration = ({ navigation }: Props) => {
     undefined
   )
   const { project } = useContext(ProjectContext)
-  const { setSession } = useContext(AuthContext)
+  const { setSession, isAuthenticated } = useContext(AuthContext)
 
   const initializeFlow = () =>
     newKratosSdk(project)
@@ -48,6 +48,11 @@ const Registration = ({ navigation }: Props) => {
       }
     }, [project])
   )
+
+  if (isAuthenticated) {
+    navigation.navigate('Home')
+    return null
+  }
 
   // This will update the registration flow with the user provided input:
   const onSubmit = (
@@ -116,7 +121,7 @@ const Registration = ({ navigation }: Props) => {
       <NavigationCard
         description="Already have an account?"
         cta="Sign in!"
-        onPress={() => navigation.navigate('Login')}
+        onPress={() => navigation.navigate({ key: 'Login' })}
       />
 
       <ProjectPicker />

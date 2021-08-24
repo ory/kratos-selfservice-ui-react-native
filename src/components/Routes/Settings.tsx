@@ -17,14 +17,17 @@ import {
   SubmitSelfServiceSettingsFlowBody
 } from '@ory/kratos-client'
 import { SelfServiceSettingsFlowState } from '@ory/kratos-client'
+import { useNavigation } from '@react-navigation/native'
 
 const CardTitle = styled.View`
   margin-bottom: 15px;
 `
 
 const Settings = () => {
+  const navigation = useNavigation()
   const { project } = useContext(ProjectContext)
-  const { sessionToken, setSession, syncSession } = useContext(AuthContext)
+  const { isAuthenticated, sessionToken, setSession, syncSession } =
+    useContext(AuthContext)
   const [flow, setFlow] = useState<SelfServiceSettingsFlow | undefined>(
     undefined
   )
@@ -41,8 +44,8 @@ const Settings = () => {
     initializeFlow()
   }, [project, sessionToken])
 
-  if (!sessionToken) {
-    return null
+  if (!isAuthenticated) {
+    return navigation.navigate('Login')
   }
 
   if (!flow) {

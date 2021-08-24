@@ -54,20 +54,13 @@ export default () => {
               headerShown: isAuthenticated
             }}
           >
-            {isAuthenticated ? (
-              <>
-                <Stack.Screen name="Home" component={Home} options={options} />
-                <Stack.Screen
-                  name="Settings"
-                  component={Settings}
-                  options={options}
-                />
-              </>
-            ) : (
-              <>
-                <Stack.Screen name="Registration" component={Registration} />
-              </>
-            )}
+            <Stack.Screen name="Home" component={Home} options={options} />
+            <Stack.Screen
+              name="Settings"
+              component={Settings}
+              options={options}
+            />
+            <Stack.Screen name="Registration" component={Registration} />
             <Stack.Screen name="Login" component={Login} initialParams={{}} />
           </Stack.Navigator>
         </NavigationContainer>

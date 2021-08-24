@@ -4,10 +4,13 @@ import CodeBox from '../Styled/CodeBox'
 import { AuthContext } from '../AuthProvider'
 import Layout from '../Layout/Layout'
 import StyledCard from '../Styled/StyledCard'
+import { useNavigation } from '@react-navigation/native'
 
 const Home = () => {
-  const { session, sessionToken } = useContext(AuthContext)
-  if (!session) {
+  const navigation = useNavigation()
+  const { isAuthenticated, session, sessionToken } = useContext(AuthContext)
+  if (!isAuthenticated || !session) {
+    navigation.navigate('Login')
     return null
   }
 

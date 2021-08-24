@@ -1,8 +1,11 @@
 // This file renders the login screen.
 import React, { useContext, useState } from 'react'
 import { StackScreenProps } from '@react-navigation/stack'
-import { useFocusEffect, useNavigation } from '@react-navigation/native'
-import { SelfServiceLoginFlow } from '@ory/kratos-client'
+import { useFocusEffect } from '@react-navigation/native'
+import {
+  SelfServiceLoginFlow,
+  SubmitSelfServiceLoginFlowBody
+} from '@ory/kratos-client'
 
 import { SelfServiceFlow } from '../Ory/Ui'
 import { newKratosSdk } from '../../helpers/sdk'
@@ -15,14 +18,13 @@ import { AuthContext } from '../AuthProvider'
 import { handleFormSubmitError } from '../../helpers/form'
 import ProjectPicker from '../Layout/ProjectPicker'
 import { ProjectContext } from '../ProjectProvider'
-import { SubmitSelfServiceLoginFlowBody } from '@ory/kratos-client'
 import { SessionContext } from '../../helpers/auth'
 
 type Props = StackScreenProps<RootStackParamList, 'Login'>
 
 const Login = ({ navigation, route }: Props) => {
   const { project } = useContext(ProjectContext)
-  const { setSession, sessionToken } = useContext(AuthContext)
+  const { setSession, session, sessionToken } = useContext(AuthContext)
   const [flow, setFlow] = useState<SelfServiceLoginFlow | undefined>(undefined)
 
   const initializeFlow = () =>
@@ -59,7 +61,9 @@ const Login = ({ navigation, route }: Props) => {
           // Looks like everything worked and we have a session!
           .then((session) => {
             setSession(session)
-            navigation.navigate('Home')
+            setTimeout(() => {
+              navigation.navigate('Home')
+            }, 100)
           })
           .catch(handleFormSubmitError(setFlow, initializeFlow))
       : Promise.resolve()
