@@ -67,7 +67,14 @@ const Settings = () => {
   const onSubmit = (payload: SubmitSelfServiceSettingsFlowBody) =>
     newKratosSdk(project)
       .submitSelfServiceSettingsFlow(flow.id, sessionToken, payload)
-      .then(({ data }) => onSuccess(data))
+      .then(({ data }: any) => {
+        if (data.flow) {
+          // Compatibility hotfix for v0.7.0 / v0.8.0
+          onSuccess(data.flow)
+          return
+        }
+        onSuccess(data)
+      })
       .catch(
         handleFormSubmitError(setFlow, initializeFlow, () => setSession(null))
       )
@@ -88,31 +95,27 @@ const Settings = () => {
         <SelfServiceFlow flow={flow} only="profile" onSubmit={onSubmit} />
       </StyledCard>
 
-      {flow.ui.nodes.find(({ group }) =>
-        group === 'totp' ? (
-          <StyledCard testID={'settings-totp'}>
-            <CardTitle>
-              <StyledText variant={'h2'}>2FA authenticator</StyledText>
-            </CardTitle>
-            <SelfServiceFlow flow={flow} only="totp" onSubmit={onSubmit} />
-          </StyledCard>
-        ) : null
-      )}
+      {flow?.ui.nodes.find(({ group }) => group === 'totp') ? (
+        <StyledCard testID={'settings-totp'}>
+          <CardTitle>
+            <StyledText variant={'h2'}>2FA authenticator</StyledText>
+          </CardTitle>
+          <SelfServiceFlow flow={flow} only="totp" onSubmit={onSubmit} />
+        </StyledCard>
+      ) : null}
 
-      {flow.ui.nodes.find(({ group }) =>
-        group === 'lookup_secret' ? (
-          <StyledCard testID={'settings-lookup'}>
-            <CardTitle>
-              <StyledText variant={'h2'}>Backup recovery codes</StyledText>
-            </CardTitle>
-            <SelfServiceFlow
-              flow={flow}
-              only="lookup_secret"
-              onSubmit={onSubmit}
-            />
-          </StyledCard>
-        ) : null
-      )}
+      {flow?.ui.nodes.find(({ group }) => group === 'lookup_secret') ? (
+        <StyledCard testID={'settings-lookup'}>
+          <CardTitle>
+            <StyledText variant={'h2'}>Backup recovery codes</StyledText>
+          </CardTitle>
+          <SelfServiceFlow
+            flow={flow}
+            only="lookup_secret"
+            onSubmit={onSubmit}
+          />
+        </StyledCard>
+      ) : null}
     </Layout>
   )
 }
