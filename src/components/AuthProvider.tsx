@@ -84,8 +84,6 @@ export default ({ children }: AuthContextProps) => {
   }
 
   const setAuth = (session: SessionContext) => {
-    console.log('SET AUTH', session)
-
     if (!session) {
       return killAuthenticatedSession().then(() => setSessionContext(session))
     }
