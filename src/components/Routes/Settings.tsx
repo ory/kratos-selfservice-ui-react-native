@@ -14,9 +14,9 @@ import { handleFormSubmitError } from '../../helpers/form'
 import { ProjectContext } from '../ProjectProvider'
 import {
   SelfServiceSettingsFlow,
+  SelfServiceSettingsFlowState,
   SubmitSelfServiceSettingsFlowBody
 } from '@ory/kratos-client'
-import { SelfServiceSettingsFlowState } from '@ory/kratos-client'
 import { useNavigation } from '@react-navigation/native'
 
 const CardTitle = styled.View`
@@ -88,19 +88,31 @@ const Settings = () => {
         <SelfServiceFlow flow={flow} only="profile" onSubmit={onSubmit} />
       </StyledCard>
 
-      <StyledCard testID={'settings-totp'}>
-        <CardTitle>
-          <StyledText variant={'h2'}>2FA authenticator</StyledText>
-        </CardTitle>
-        <SelfServiceFlow flow={flow} only="totp" onSubmit={onSubmit} />
-      </StyledCard>
+      {flow.ui.nodes.find(({ group }) =>
+        group === 'totp' ? (
+          <StyledCard testID={'settings-totp'}>
+            <CardTitle>
+              <StyledText variant={'h2'}>2FA authenticator</StyledText>
+            </CardTitle>
+            <SelfServiceFlow flow={flow} only="totp" onSubmit={onSubmit} />
+          </StyledCard>
+        ) : null
+      )}
 
-      <StyledCard testID={'settings-lookup'}>
-        <CardTitle>
-          <StyledText variant={'h2'}>Backup recovery codes</StyledText>
-        </CardTitle>
-        <SelfServiceFlow flow={flow} only="lookup_secret" onSubmit={onSubmit} />
-      </StyledCard>
+      {flow.ui.nodes.find(({ group }) =>
+        group === 'lookup_secret' ? (
+          <StyledCard testID={'settings-lookup'}>
+            <CardTitle>
+              <StyledText variant={'h2'}>Backup recovery codes</StyledText>
+            </CardTitle>
+            <SelfServiceFlow
+              flow={flow}
+              only="lookup_secret"
+              onSubmit={onSubmit}
+            />
+          </StyledCard>
+        ) : null
+      )}
     </Layout>
   )
 }
