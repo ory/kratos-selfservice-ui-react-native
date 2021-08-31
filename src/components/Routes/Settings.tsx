@@ -45,7 +45,8 @@ const Settings = () => {
   }, [project, sessionToken])
 
   if (!isAuthenticated) {
-    return navigation.navigate('Login')
+    navigation.navigate('Login')
+    return null
   }
 
   if (!flow) {
