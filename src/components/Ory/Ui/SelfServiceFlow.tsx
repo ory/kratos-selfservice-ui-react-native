@@ -9,7 +9,7 @@ import {
   UiNode
 } from '@ory/kratos-client'
 import Messages from './Messages'
-import { getNodeId, getNodeValue } from '../../../helpers/form'
+import { getNodeId, isUiNodeInputAttributes } from '../../../helpers/form'
 import { Node, TextInputOverride } from './Node'
 
 interface Props<T> {
@@ -52,10 +52,20 @@ export const SelfServiceFlow = <
     const values: Partial<T> = {}
     nodes.forEach((node: UiNode) => {
       const name = getNodeId(node)
-      const value = getNodeValue(node)
 
       const key = name as keyof T
-      values[key] = value || ('' as any)
+      if (isUiNodeInputAttributes(node.attributes)) {
+        if (
+          node.attributes.type === 'button' ||
+          node.attributes.type === 'submit'
+        ) {
+          // In order to mimic real HTML forms, we need to skip setting the value
+          // for buttons as the button value will (in normal HTML forms) only trigger
+          // if the user clicks it.
+          return
+        }
+        values[key] = node.attributes.value
+      }
     })
 
     setValues(values as T)
@@ -74,12 +84,9 @@ export const SelfServiceFlow = <
   }
 
   const getValue = (name: string) => values[name as keyof T]
-  const onPress = (method?: string) => {
+  const onPress = (key: string, value: any) => {
     setInProgress(true)
-    if (method) {
-      values['method'] = method
-    }
-    onSubmit(values).then(() => {
+    onSubmit({ ...values, [key]: value }).then(() => {
       setInProgress(false)
     })
   }

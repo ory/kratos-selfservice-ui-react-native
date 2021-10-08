@@ -11,7 +11,7 @@ interface Props extends InputSubmitProps {
 
 export interface InputSubmitProps {
   isSubmitting: boolean
-  onSubmitPress: (method?: string) => void
+  onSubmitPress: (key: string, value: any) => void
   onChange: (value: any) => void
 }
 
@@ -36,7 +36,7 @@ export const NodeInputSubmit = ({
         disabled={isSubmitting}
         title={title}
         onPress={() => {
-          onSubmitPress(String(attributes.value))
+          onSubmitPress(attributes.name, attributes.value)
         }}
       />
     </View>
