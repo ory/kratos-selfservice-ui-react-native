@@ -32,7 +32,7 @@ const Settings = () => {
     undefined
   )
 
-  const initializeFlow = () =>
+  const initializeFlow = (sessionToken: string) =>
     newKratosSdk(project)
       .initializeSelfServiceSettingsFlowWithoutBrowser(sessionToken)
       .then(({ data: flow }) => {
@@ -41,15 +41,18 @@ const Settings = () => {
       .catch(console.error)
 
   useEffect(() => {
-    initializeFlow()
+    if (sessionToken) {
+      initializeFlow(sessionToken)
+    }
   }, [project, sessionToken])
 
-  if (!isAuthenticated) {
-    navigation.navigate('Login')
-    return null
-  }
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigation.navigate('Login')
+    }
+  }, [isAuthenticated])
 
-  if (!flow) {
+  if (!flow || !sessionToken) {
     return null
   }
 
@@ -77,7 +80,11 @@ const Settings = () => {
         onSuccess(data)
       })
       .catch(
-        handleFormSubmitError(setFlow, initializeFlow, () => setSession(null))
+        handleFormSubmitError(
+          setFlow,
+          () => initializeFlow(sessionToken),
+          () => setSession(null)
+        )
       )
 
   return (

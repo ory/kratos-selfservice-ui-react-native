@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import StyledText from '../Styled/StyledText'
 import CodeBox from '../Styled/CodeBox'
 import { AuthContext } from '../AuthProvider'
@@ -9,8 +9,14 @@ import { useNavigation } from '@react-navigation/native'
 const Home = () => {
   const navigation = useNavigation()
   const { isAuthenticated, session, sessionToken } = useContext(AuthContext)
+
+  useEffect(() => {
+    if (!isAuthenticated || !session) {
+      navigation.navigate('Login')
+    }
+  }, [isAuthenticated, sessionToken])
+
   if (!isAuthenticated || !session) {
-    navigation.navigate('Login')
     return null
   }
 

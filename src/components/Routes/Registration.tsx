@@ -1,6 +1,6 @@
 // This file renders the registration screen.
 
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { StackScreenProps } from '@react-navigation/stack'
 import { useFocusEffect } from '@react-navigation/native'
 import { SelfServiceFlow } from '../Ory/Ui'
@@ -49,8 +49,13 @@ const Registration = ({ navigation }: Props) => {
     }, [project])
   )
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigation.navigate('Home')
+    }
+  }, [isAuthenticated])
+
   if (isAuthenticated) {
-    navigation.navigate('Home')
     return null
   }
 
