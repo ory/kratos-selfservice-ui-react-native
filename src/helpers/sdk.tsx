@@ -1,4 +1,4 @@
-import { Configuration, V0alpha1Api } from '@ory/kratos-client'
+import { Configuration, V0alpha2Api } from '@ory/kratos-client'
 import Constants from 'expo-constants'
 import axiosFactory from 'axios'
 import { resilience } from './axios'
@@ -24,7 +24,7 @@ export const kratosUrl = (project: string = 'playground') => {
 }
 
 export const newKratosSdk = (project: string) =>
-  new V0alpha1Api(
+  new V0alpha2Api(
     new Configuration({
       basePath: kratosUrl(project),
       baseOptions: {
