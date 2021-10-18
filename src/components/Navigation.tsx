@@ -14,7 +14,8 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  View
 } from 'react-native'
 import Header from './Layout/Header'
 
@@ -65,7 +66,9 @@ export default () => {
           </Stack.Navigator>
         </NavigationContainer>
       </TouchableWithoutFeedback>
-      <FlashMessage position="top" floating />
+      <View data-testid={'flash-message'}>
+        <FlashMessage position="top" floating />
+      </View>
     </KeyboardAvoidingView>
   )
 }
