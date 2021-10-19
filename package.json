@@ -23,7 +23,7 @@
     "@expo-google-fonts/roboto": "~0.1.0",
     "@expo-google-fonts/rubik": "~0.1.0",
     "@ory/client": "0.0.1-alpha.19",
-    "@ory/kratos-client": "0.0.0-next.04fdf92d4fc5",
+    "@ory/kratos-client": "0.0.0-next.059ed9c9cacb",
     "@ory/themes": "0.0.21",
     "@react-native-async-storage/async-storage": "~1.15.0",
     "@react-native-community/masked-view": "0.1.10",
