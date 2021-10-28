@@ -72,11 +72,6 @@ const Settings = () => {
     newKratosSdk(project)
       .submitSelfServiceSettingsFlow(flow.id, sessionToken, payload)
       .then(({ data }: any) => {
-        if (data.flow) {
-          // Compatibility hotfix for v0.7.0 / v0.8.0
-          onSuccess(data.flow)
-          return
-        }
         onSuccess(data)
       })
       .catch(
