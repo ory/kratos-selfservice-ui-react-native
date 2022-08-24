@@ -4,20 +4,20 @@ import React, { useContext, useEffect, useState } from 'react'
 import { showMessage } from 'react-native-flash-message'
 import styled from 'styled-components/native'
 
-import { SelfServiceFlow } from '../Ory/Ui'
-import { newKratosSdk } from '../../helpers/sdk'
-import StyledCard from '../Styled/StyledCard'
-import { AuthContext } from '../AuthProvider'
-import Layout from '../Layout/Layout'
-import StyledText from '../Styled/StyledText'
-import { handleFormSubmitError } from '../../helpers/form'
-import { ProjectContext } from '../ProjectProvider'
 import {
   SelfServiceSettingsFlow,
   SelfServiceSettingsFlowState,
   SubmitSelfServiceSettingsFlowBody
-} from '@ory/kratos-client'
+} from '@ory/client'
 import { useNavigation } from '@react-navigation/native'
+import { handleFormSubmitError } from '../../helpers/form'
+import { newKratosSdk } from '../../helpers/sdk'
+import { AuthContext } from '../AuthProvider'
+import Layout from '../Layout/Layout'
+import { SelfServiceFlow } from '../Ory/Ui'
+import { ProjectContext } from '../ProjectProvider'
+import StyledCard from '../Styled/StyledCard'
+import StyledText from '../Styled/StyledText'
 
 const CardTitle = styled.View`
   margin-bottom: 15px;
@@ -70,7 +70,7 @@ const Settings = () => {
 
   const onSubmit = (payload: SubmitSelfServiceSettingsFlowBody) =>
     newKratosSdk(project)
-      .submitSelfServiceSettingsFlow(flow.id, sessionToken, payload)
+      .submitSelfServiceSettingsFlow(flow.id, payload, sessionToken)
       .then(({ data }: any) => {
         onSuccess(data)
       })

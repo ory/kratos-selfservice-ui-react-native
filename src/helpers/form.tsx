@@ -1,15 +1,15 @@
-import React from 'react'
 import {
   GenericError,
+  SelfServiceBrowserLocationChangeRequiredError,
   UiNode,
   UiNodeAnchorAttributes,
+  UiNodeAttributes,
   UiNodeImageAttributes,
   UiNodeInputAttributes,
   UiNodeTextAttributes
-} from '@ory/kratos-client'
+} from '@ory/client'
 import { AxiosError } from 'axios'
 import { showMessage } from 'react-native-flash-message'
-import { UiNodeAttributes } from '@ory/kratos-client'
 
 export function camelize<T>(str: string) {
   return str.replace(/_([a-z])/g, (g) => g[1].toUpperCase()) as keyof T
@@ -77,7 +77,8 @@ export function handleFlowInitError(err: AxiosError) {
 export function handleFormSubmitError<T>(
   setConfig: (p: T) => void,
   initialize: () => void,
-  logout?: () => void
+  logout?: () => void,
+  redirect?: (x: SelfServiceBrowserLocationChangeRequiredError) => void
 ) {
   return (err: AxiosError) => {
     if (err.response) {
@@ -103,6 +104,15 @@ export function handleFormSubmitError<T>(
           console.debug('Flow could not be found, reloading page.')
           initialize()
           return Promise.resolve()
+        case 422:
+          if (!redirect) {
+            console.debug(
+              'Flow required a redirect, but no redirect handler was registered'
+            )
+            return Promise.resolve()
+          }
+          console.debug('Flow required a redirect, redirecting')
+          redirect(err.response.data)
         case 403:
         case 401:
           if (!logout) {

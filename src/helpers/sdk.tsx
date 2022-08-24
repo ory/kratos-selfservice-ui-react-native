@@ -1,6 +1,6 @@
-import { Configuration, V0alpha2Api } from '@ory/kratos-client'
-import Constants from 'expo-constants'
+import { Configuration, V0alpha2Api } from '@ory/client'
 import axiosFactory from 'axios'
+import Constants from 'expo-constants'
 import { resilience } from './axios'
 
 const axios = axiosFactory.create()

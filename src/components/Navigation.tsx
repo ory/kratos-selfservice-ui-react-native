@@ -29,6 +29,7 @@ export type RootStackParamList = {
   }
   Registration: undefined
   Settings: undefined
+  Recovery: undefined
 }
 
 const options = {

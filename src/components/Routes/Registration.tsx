@@ -1,24 +1,24 @@
 // This file renders the registration screen.
 
-import React, { useContext, useEffect, useState } from 'react'
-import { StackScreenProps } from '@react-navigation/stack'
-import { useFocusEffect } from '@react-navigation/native'
-import { SelfServiceFlow } from '../Ory/Ui'
-import { newKratosSdk } from '../../helpers/sdk'
-import StyledCard from '../Styled/StyledCard'
-import NavigationCard from '../Styled/NavigationCard'
-import AuthLayout from '../Layout/AuthLayout'
-import AuthSubTitle from '../Styled/AuthSubTitle'
-import { RootStackParamList } from '../Navigation'
-import { AuthContext } from '../AuthProvider'
-import { getNodeId, handleFormSubmitError } from '../../helpers/form'
-import { Platform } from 'react-native'
-import ProjectPicker from '../Layout/ProjectPicker'
-import { ProjectContext } from '../ProjectProvider'
 import {
   SelfServiceRegistrationFlow,
   SubmitSelfServiceRegistrationFlowBody
-} from '@ory/kratos-client'
+} from '@ory/client'
+import { useFocusEffect } from '@react-navigation/native'
+import { StackScreenProps } from '@react-navigation/stack'
+import React, { useContext, useEffect, useState } from 'react'
+import { Platform } from 'react-native'
+import { getNodeId, handleFormSubmitError } from '../../helpers/form'
+import { newKratosSdk } from '../../helpers/sdk'
+import { AuthContext } from '../AuthProvider'
+import AuthLayout from '../Layout/AuthLayout'
+import ProjectPicker from '../Layout/ProjectPicker'
+import { RootStackParamList } from '../Navigation'
+import { SelfServiceFlow } from '../Ory/Ui'
+import { ProjectContext } from '../ProjectProvider'
+import AuthSubTitle from '../Styled/AuthSubTitle'
+import NavigationCard from '../Styled/NavigationCard'
+import StyledCard from '../Styled/StyledCard'
 
 type Props = StackScreenProps<RootStackParamList, 'Registration'>
 

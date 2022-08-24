@@ -1,15 +1,6 @@
 // This file defines a React Context which keeps track of the authenticated session.
 
-import React, { createContext, ReactNode, useEffect, useState } from 'react'
-import {
-  getAuthenticatedSession,
-  killAuthenticatedSession,
-  SessionContext,
-  setAuthenticatedSession
-} from '../helpers/auth'
-import { AxiosError } from 'axios'
-import { newKratosSdk } from '../helpers/sdk'
-import { Session } from '@ory/kratos-client'
+import React, { createContext, ReactNode, useState } from 'react'
 
 interface Context {
   project: string
