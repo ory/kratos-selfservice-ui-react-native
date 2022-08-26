@@ -18,12 +18,16 @@ import { SelfServiceFlow } from '../Ory/Ui'
 import { ProjectContext } from '../ProjectProvider'
 import StyledCard from '../Styled/StyledCard'
 import StyledText from '../Styled/StyledText'
+import { StackScreenProps } from '@react-navigation/stack'
+import { RootStackParamList } from '../Navigation'
 
 const CardTitle = styled.View`
   margin-bottom: 15px;
 `
 
-const Settings = () => {
+type Props = StackScreenProps<RootStackParamList, 'Settings'>
+
+const Settings = ({ route }: Props) => {
   const navigation = useNavigation()
   const { project } = useContext(ProjectContext)
   const { isAuthenticated, sessionToken, setSession, syncSession } =
@@ -32,17 +36,27 @@ const Settings = () => {
     undefined
   )
 
-  const initializeFlow = (sessionToken: string) =>
-    newKratosSdk(project)
-      .initializeSelfServiceSettingsFlowWithoutBrowser(sessionToken)
+  const initializeFlow = (sessionToken: string, flowId?: string) => {
+    const sdk = newKratosSdk(project)
+    if (flowId) {
+      sdk.getSelfServiceSettingsFlow(flowId, sessionToken)
+      .then(({ data: flow }) => {
+        setFlow(flow)
+      })
+      .catch(console.error)
+    } else {
+      sdk.initializeSelfServiceSettingsFlowWithoutBrowser(sessionToken)
       .then(({ data: flow }) => {
         setFlow(flow)
       })
       .catch(console.error)
 
+    }
+  }
+
   useEffect(() => {
     if (sessionToken) {
-      initializeFlow(sessionToken)
+      initializeFlow(sessionToken, route.params.flowId)
     }
   }, [project, sessionToken])
 

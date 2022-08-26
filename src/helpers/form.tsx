@@ -113,6 +113,7 @@ export function handleFormSubmitError<T>(
           }
           console.debug('Flow required a redirect, redirecting')
           redirect(err.response.data)
+          return Promise.resolve()
         case 403:
         case 401:
           if (!logout) {

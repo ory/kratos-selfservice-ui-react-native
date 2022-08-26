@@ -18,6 +18,7 @@ import {
   View
 } from 'react-native'
 import Header from './Layout/Header'
+import Recovery from './Routes/Recovery'
 
 const Stack = createStackNavigator<RootStackParamList>()
 
@@ -28,7 +29,9 @@ export type RootStackParamList = {
     aal?: 'aal2'
   }
   Registration: undefined
-  Settings: undefined
+  Settings: {
+    flowId: string,
+  }
   Recovery: undefined
 }
 
@@ -64,6 +67,7 @@ export default () => {
             />
             <Stack.Screen name="Registration" component={Registration} />
             <Stack.Screen name="Login" component={Login} initialParams={{}} />
+            <Stack.Screen name="Recovery" component={Recovery} />
           </Stack.Navigator>
         </NavigationContainer>
       </TouchableWithoutFeedback>

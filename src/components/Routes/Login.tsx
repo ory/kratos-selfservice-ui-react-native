@@ -83,8 +83,8 @@ const Login = ({ navigation, route }: Props) => {
       />
       <NavigationCard
         testID="nav-recover"
-        description="Recover your account"
-        cta="Sign up!"
+        description="Forgot your password?"
+        cta="Recover your account!"
         onPress={() => navigation.navigate('Recovery')}
       />
 
