@@ -30,7 +30,7 @@ export type RootStackParamList = {
   }
   Registration: undefined
   Settings: {
-    flowId: string,
+    flowId?: string,
   }
   Recovery: undefined
 }

@@ -56,7 +56,7 @@ const Settings = ({ route }: Props) => {
 
   useEffect(() => {
     if (sessionToken) {
-      initializeFlow(sessionToken, route.params.flowId)
+      initializeFlow(sessionToken, route.params?.flowId)
     }
   }, [project, sessionToken])
 
