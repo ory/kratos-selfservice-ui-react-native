@@ -7,7 +7,6 @@ import {
 import { useFocusEffect } from '@react-navigation/native'
 import { StackScreenProps } from '@react-navigation/stack'
 import React, { useContext, useState } from 'react'
-import { SessionContext } from '../../helpers/auth'
 import { handleFormSubmitError } from '../../helpers/form'
 import { newKratosSdk } from '../../helpers/sdk'
 import { AuthContext } from '../AuthProvider'
@@ -59,9 +58,9 @@ const Recovery = ({ navigation }: Props) => {
       setSession({ session, session_token: err.session_token })
 
       setTimeout(() => {
-        if (err.flow_id) {
+        if (err.redirect_flow_id) {
           navigation.navigate('Settings', {
-            flowId: err.flow_id
+            flowId: err.redirect_flow_id
           })
         }
       }, 100)
