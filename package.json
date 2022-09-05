@@ -15,7 +15,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "format": "prettier -w \"{src/**/,}*.{ts,tsx,json,js}\"",
+    "format": "prettier -w .",
     "expo-install": "expo install expo-constants expo-secure-store @react-native-community/async-storage react-native-safe-area-context react-native-reanimated react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view",
     "pod-install": "expo install expo-constants expo-secure-store @react-native-community/async-storage react-native-safe-area-context react-native-reanimated react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view"
   },
