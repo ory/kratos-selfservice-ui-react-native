@@ -1,8 +1,8 @@
-import { UiNode, UiNodeInputAttributes } from '@ory/kratos-client'
-import React from 'react'
-import { View } from 'react-native'
-import { getNodeId, getNodeTitle } from '../../../../helpers/form'
-import Button from '../../../Styled/StyledButton'
+import { UiNode, UiNodeInputAttributes } from "@ory/kratos-client"
+import React from "react"
+import { View } from "react-native"
+import { getNodeId, getNodeTitle } from "../../../../helpers/form"
+import Button from "../../../Styled/StyledButton"
 
 interface Props extends InputSubmitProps {
   node: UiNode
@@ -20,9 +20,9 @@ export const NodeInputSubmit = ({
   attributes,
   isSubmitting,
   onSubmitPress,
-  onChange
+  onChange,
 }: Props) => {
-  if (attributes.type !== 'submit') {
+  if (attributes.type !== "submit") {
     return null
   }
 

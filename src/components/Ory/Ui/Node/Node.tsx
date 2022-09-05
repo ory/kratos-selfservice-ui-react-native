@@ -1,14 +1,14 @@
-import { UiNode } from '@ory/kratos-client'
-import React from 'react'
+import { UiNode } from "@ory/kratos-client"
+import React from "react"
 import {
   isUiNodeImageAttributes,
   isUiNodeInputAttributes,
-  isUiNodeTextAttributes
-} from '../../../../helpers/form'
-import { NodeImage } from './Image'
-import { NodeText } from './Text'
-import { InputProps, NodeInput } from './Input'
-import { InputSubmitProps, NodeInputSubmit } from './InputSubmit'
+  isUiNodeTextAttributes,
+} from "../../../../helpers/form"
+import { NodeImage } from "./Image"
+import { NodeText } from "./Text"
+import { InputProps, NodeInput } from "./Input"
+import { InputSubmitProps, NodeInputSubmit } from "./InputSubmit"
 
 interface Props extends InputSubmitProps, InputProps {
   node: UiNode
@@ -21,7 +21,7 @@ export const Node = (props: Props) => {
   } else if (isUiNodeTextAttributes(node.attributes)) {
     return <NodeText node={node} attributes={node.attributes} />
   } else if (isUiNodeInputAttributes(node.attributes)) {
-    if (node.attributes.type === 'submit') {
+    if (node.attributes.type === "submit") {
       return <NodeInputSubmit {...props} attributes={node.attributes} />
     }
     return <NodeInput {...props} attributes={node.attributes} />

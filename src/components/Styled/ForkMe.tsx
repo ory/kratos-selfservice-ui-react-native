@@ -1,14 +1,14 @@
-import React from 'react'
-import styled from 'styled-components/native'
+import React from "react"
+import styled from "styled-components/native"
 import {
   forkMeStyles,
   forkMeStylesFork,
   forkMeStylesImages,
   forkMeStylesLink,
   forkMeStylesText,
-  ThemeProps
-} from '@ory/themes'
-import * as Linking from 'expo-linking'
+  ThemeProps,
+} from "@ory/themes"
+import * as Linking from "expo-linking"
 
 const Container = styled.View(forkMeStyles)
 const StyledImage = styled.Image(forkMeStylesImages)
@@ -19,20 +19,20 @@ const StyledText = styled.Text`
   display: flex;
 `
 
-const fork = () => Linking.openURL('https://github.com/ory')
+const fork = () => Linking.openURL("https://github.com/ory")
 
 export default () => (
   <Container>
     <StyledImage
       resizeMode="contain"
-      source={require('../../assets/ory.png')}
+      source={require("../../assets/ory.png")}
     />
     <StyledText>
-      Fork me on{' '}
+      Fork me on{" "}
       <Link onPress={fork}>
         <Fork
           resizeMode="contain"
-          source={require('../../assets/repo-forked.png')}
+          source={require("../../assets/repo-forked.png")}
         />
         GitHub!
       </Link>

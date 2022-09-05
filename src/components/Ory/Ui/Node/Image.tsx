@@ -1,8 +1,8 @@
-import React from 'react'
-import { UiNode, UiNodeImageAttributes } from '@ory/kratos-client'
-import styled from 'styled-components/native'
-import { getNodeId } from '../../../../helpers/form'
-import { View } from 'react-native'
+import React from "react"
+import { UiNode, UiNodeImageAttributes } from "@ory/kratos-client"
+import styled from "styled-components/native"
+import { getNodeId } from "../../../../helpers/form"
+import { View } from "react-native"
 
 interface Props {
   node: UiNode
@@ -10,8 +10,8 @@ interface Props {
 }
 
 const StyledImage = styled.Image`
-  width: ${({ attributes }: Props) => attributes.width + 'px' || 'auto'};
-  height: ${({ attributes }: Props) => attributes.height + 'px' || 'auto'};
+  width: ${({ attributes }: Props) => attributes.width + "px" || "auto"};
+  height: ${({ attributes }: Props) => attributes.height + "px" || "auto"};
 `
 
 export const NodeImage = (props: Props) => {
@@ -21,7 +21,7 @@ export const NodeImage = (props: Props) => {
       <StyledImage
         {...props}
         source={{
-          uri: props.attributes.src
+          uri: props.attributes.src,
         }}
       />
     </View>

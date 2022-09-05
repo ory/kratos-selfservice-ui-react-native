@@ -1,8 +1,8 @@
-import React, { ReactNode, useContext } from 'react'
-import styled from 'styled-components/native'
-import { ThemeProps } from '@ory/themes'
+import React, { ReactNode, useContext } from "react"
+import styled from "styled-components/native"
+import { ThemeProps } from "@ory/themes"
 
-import StyledText from './StyledText'
+import StyledText from "./StyledText"
 
 interface Props {
   children?: ReactNode

@@ -1,9 +1,9 @@
-import React, { useContext } from 'react'
-import { TouchableHighlight, View } from 'react-native'
-import { ThemeContext } from 'styled-components'
+import React, { useContext } from "react"
+import { TouchableHighlight, View } from "react-native"
+import { ThemeContext } from "styled-components"
 
-import StyledCard from './StyledCard'
-import StyledText from './StyledText'
+import StyledCard from "./StyledCard"
+import StyledText from "./StyledText"
 
 interface Props {
   onPress(): void
@@ -19,8 +19,8 @@ export default ({ onPress, cta, description, testID }: Props) => {
     <StyledCard>
       <TouchableHighlight testID={testID} onPress={onPress}>
         <View>
-          <StyledText variant="h3" style={{ textAlign: 'center' }}>
-            {description}{' '}
+          <StyledText variant="h3" style={{ textAlign: "center" }}>
+            {description}{" "}
             <StyledText variant="h3" style={{ color: theme.primary60 }}>
               {cta}
             </StyledText>

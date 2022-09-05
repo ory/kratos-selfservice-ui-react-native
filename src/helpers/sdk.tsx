@@ -1,26 +1,26 @@
-import { Configuration, V0alpha2Api } from '@ory/kratos-client'
-import Constants from 'expo-constants'
-import axiosFactory from 'axios'
-import { resilience } from './axios'
+import { Configuration, V0alpha2Api } from "@ory/kratos-client"
+import Constants from "expo-constants"
+import axiosFactory from "axios"
+import { resilience } from "./axios"
 
 const axios = axiosFactory.create()
 resilience(axios) // Adds retry mechanism to axios
 
 // canonicalize removes the trailing slash from URLs.
-const canonicalize = (url: string = '') => url.replace(/\/+$/, '')
+const canonicalize = (url: string = "") => url.replace(/\/+$/, "")
 
 // This value comes from ../../app.config.js
-export const kratosUrl = (project: string = 'playground') => {
-  const url = canonicalize(Constants.manifest?.extra?.kratosUrl) || ''
+export const kratosUrl = (project: string = "playground") => {
+  const url = canonicalize(Constants.manifest?.extra?.kratosUrl) || ""
 
-  if (url.indexOf('https://playground.projects.oryapis.com/') == -1) {
+  if (url.indexOf("https://playground.projects.oryapis.com/") == -1) {
     // The URL is not from Ory, so let's just return it.
     return url
   }
 
   // We handle a special case where we allow the project to be changed
   // if you use an ory project.
-  return url.replace('playground.', `${project}.`)
+  return url.replace("playground.", `${project}.`)
 }
 
 export const newKratosSdk = (project: string) =>
@@ -33,10 +33,10 @@ export const newKratosSdk = (project: string) =>
         withCredentials: false,
 
         // Timeout after 5 seconds.
-        timeout: 10000
-      }
+        timeout: 10000,
+      },
     }),
-    '',
+    "",
     // Ensure that we are using the axios client with retry.
-    axios
+    axios,
   )

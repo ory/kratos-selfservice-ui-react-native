@@ -1,14 +1,14 @@
-import { View } from 'react-native'
-import StyledTextInput from '../Styled/StyledTextInput'
-import React, { useContext, useState } from 'react'
-import styled from 'styled-components/native'
-import { ThemeContext } from 'styled-components'
-import { textInputSubtitleStyles, textInputTitleStyles } from '@ory/themes'
-import * as Linking from 'expo-linking'
+import { View } from "react-native"
+import StyledTextInput from "../Styled/StyledTextInput"
+import React, { useContext, useState } from "react"
+import styled from "styled-components/native"
+import { ThemeContext } from "styled-components"
+import { textInputSubtitleStyles, textInputTitleStyles } from "@ory/themes"
+import * as Linking from "expo-linking"
 
-import StyledCard from '../Styled/StyledCard'
-import StyledText from '../Styled/StyledText'
-import { ProjectContext } from '../ProjectProvider'
+import StyledCard from "../Styled/StyledCard"
+import StyledText from "../Styled/StyledText"
+import { ProjectContext } from "../ProjectProvider"
 
 const Subtitle = styled.Text(textInputSubtitleStyles)
 
@@ -34,10 +34,10 @@ const ProjectPicker = () => {
         />
         <Subtitle>
           Currently using project "{project}". Type your project slug here to
-          use this app with your project. You do not have a Ory Project yet?{' '}
+          use this app with your project. You do not have a Ory Project yet?{" "}
           <StyledText
             style={{ color: theme.primary60 }}
-            onPress={open('https://console.ory.sh/')}
+            onPress={open("https://console.ory.sh/")}
           >
             Create one for free!
           </StyledText>

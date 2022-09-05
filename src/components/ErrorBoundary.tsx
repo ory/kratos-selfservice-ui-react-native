@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo } from 'react'
+import React, { Component, ErrorInfo } from "react"
 
 interface Props {}
 
@@ -8,7 +8,7 @@ interface State {
 
 export default class ErrorBoundary extends Component<Props, State> {
   state = {
-    hasError: false
+    hasError: false,
   }
 
   static getDerivedStateFromError(error: Error) {

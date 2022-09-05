@@ -1,30 +1,30 @@
 // This file renders the registration screen.
 
-import React, { useContext, useEffect, useState } from 'react'
-import { StackScreenProps } from '@react-navigation/stack'
-import { useFocusEffect } from '@react-navigation/native'
-import { SelfServiceFlow } from '../Ory/Ui'
-import { newKratosSdk } from '../../helpers/sdk'
-import StyledCard from '../Styled/StyledCard'
-import NavigationCard from '../Styled/NavigationCard'
-import AuthLayout from '../Layout/AuthLayout'
-import AuthSubTitle from '../Styled/AuthSubTitle'
-import { RootStackParamList } from '../Navigation'
-import { AuthContext } from '../AuthProvider'
-import { getNodeId, handleFormSubmitError } from '../../helpers/form'
-import { Platform } from 'react-native'
-import ProjectPicker from '../Layout/ProjectPicker'
-import { ProjectContext } from '../ProjectProvider'
+import React, { useContext, useEffect, useState } from "react"
+import { StackScreenProps } from "@react-navigation/stack"
+import { useFocusEffect } from "@react-navigation/native"
+import { SelfServiceFlow } from "../Ory/Ui"
+import { newKratosSdk } from "../../helpers/sdk"
+import StyledCard from "../Styled/StyledCard"
+import NavigationCard from "../Styled/NavigationCard"
+import AuthLayout from "../Layout/AuthLayout"
+import AuthSubTitle from "../Styled/AuthSubTitle"
+import { RootStackParamList } from "../Navigation"
+import { AuthContext } from "../AuthProvider"
+import { getNodeId, handleFormSubmitError } from "../../helpers/form"
+import { Platform } from "react-native"
+import ProjectPicker from "../Layout/ProjectPicker"
+import { ProjectContext } from "../ProjectProvider"
 import {
   SelfServiceRegistrationFlow,
-  SubmitSelfServiceRegistrationFlowBody
-} from '@ory/kratos-client'
+  SubmitSelfServiceRegistrationFlowBody,
+} from "@ory/kratos-client"
 
-type Props = StackScreenProps<RootStackParamList, 'Registration'>
+type Props = StackScreenProps<RootStackParamList, "Registration">
 
 const Registration = ({ navigation }: Props) => {
   const [flow, setConfig] = useState<SelfServiceRegistrationFlow | undefined>(
-    undefined
+    undefined,
   )
   const { project } = useContext(ProjectContext)
   const { setSession, isAuthenticated } = useContext(AuthContext)
@@ -46,12 +46,12 @@ const Registration = ({ navigation }: Props) => {
       return () => {
         setConfig(undefined)
       }
-    }, [project])
+    }, [project]),
   )
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigation.navigate('Home')
+      navigation.navigate("Home")
     }
   }, [isAuthenticated])
 
@@ -61,7 +61,7 @@ const Registration = ({ navigation }: Props) => {
 
   // This will update the registration flow with the user provided input:
   const onSubmit = (
-    payload: SubmitSelfServiceRegistrationFlowBody
+    payload: SubmitSelfServiceRegistrationFlowBody,
   ): Promise<void> =>
     flow
       ? newKratosSdk(project)
@@ -72,7 +72,7 @@ const Registration = ({ navigation }: Props) => {
             // but for simplicity we'll just print an error here:
             if (!data.session_token || !data.session) {
               const err = new Error(
-                'It looks like you configured ORY Kratos to not issue a session automatically after registration. This edge-case is currently not supported in this example app. You can find more information on enabling this feature here: https://www.ory.sh/kratos/docs/next/self-service/flows/user-registration#successful-registration'
+                "It looks like you configured ORY Kratos to not issue a session automatically after registration. This edge-case is currently not supported in this example app. You can find more information on enabling this feature here: https://www.ory.sh/kratos/docs/next/self-service/flows/user-registration#successful-registration",
               )
               return Promise.reject(err)
             }
@@ -80,7 +80,7 @@ const Registration = ({ navigation }: Props) => {
             // Looks like we got a session!
             return Promise.resolve({
               session: data.session,
-              session_token: data.session_token
+              session_token: data.session_token,
             })
           })
           // Let's log the user in!
@@ -88,8 +88,8 @@ const Registration = ({ navigation }: Props) => {
           .catch(
             handleFormSubmitError<SelfServiceRegistrationFlow | undefined>(
               setConfig,
-              initializeFlow
-            )
+              initializeFlow,
+            ),
           )
       : Promise.resolve()
 
@@ -100,20 +100,20 @@ const Registration = ({ navigation }: Props) => {
         <SelfServiceFlow
           textInputOverride={(field, props) => {
             switch (getNodeId(field)) {
-              case 'traits.email':
+              case "traits.email":
                 return {
-                  autoCapitalize: 'none',
-                  autoCompleteType: 'email',
-                  textContentType: 'username',
-                  autoCorrect: false
+                  autoCapitalize: "none",
+                  autoCompleteType: "email",
+                  textContentType: "username",
+                  autoCorrect: false,
                 }
-              case 'password':
+              case "password":
                 const iOS12Plus =
-                  Platform.OS === 'ios' &&
+                  Platform.OS === "ios" &&
                   parseInt(String(Platform.Version), 10) >= 12
                 return {
-                  textContentType: iOS12Plus ? 'newPassword' : 'password',
-                  secureTextEntry: true
+                  textContentType: iOS12Plus ? "newPassword" : "password",
+                  secureTextEntry: true,
                 }
             }
             return props
@@ -126,7 +126,7 @@ const Registration = ({ navigation }: Props) => {
       <NavigationCard
         description="Already have an account?"
         cta="Sign in!"
-        onPress={() => navigation.navigate({ key: 'Login' })}
+        onPress={() => navigation.navigate({ key: "Login" })}
       />
 
       <ProjectPicker />

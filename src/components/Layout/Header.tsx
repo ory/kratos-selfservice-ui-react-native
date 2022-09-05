@@ -1,10 +1,10 @@
-import React, { useContext } from 'react'
-import { TouchableOpacity } from 'react-native'
-import styled from 'styled-components/native'
-import { ThemeProps } from '@ory/themes'
-import { useNavigation } from '@react-navigation/native'
-import { AuthContext } from '../AuthProvider'
-import { ThemeContext } from 'styled-components'
+import React, { useContext } from "react"
+import { TouchableOpacity } from "react-native"
+import styled from "styled-components/native"
+import { ThemeProps } from "@ory/themes"
+import { useNavigation } from "@react-navigation/native"
+import { AuthContext } from "../AuthProvider"
+import { ThemeContext } from "styled-components"
 
 const Buttons = styled.View`
   display: flex;
@@ -44,29 +44,29 @@ const Header = () => {
   const navigation = useNavigation()
   const { setSession } = useContext(AuthContext)
   const logout = () => setSession(null)
-  const navigate = (to: 'Settings' | 'Home') => () => {
+  const navigate = (to: "Settings" | "Home") => () => {
     navigation.navigate(to)
   }
 
   return (
     <Container>
-      <TouchableOpacity onPress={navigate('Home')}>
+      <TouchableOpacity onPress={navigate("Home")}>
         <StyledImage
           resizeMode="contain"
-          source={require('../../assets/logo.png')}
+          source={require("../../assets/logo.png")}
         />
       </TouchableOpacity>
       <Buttons>
-        <TouchableOpacity onPress={navigate('Settings')}>
+        <TouchableOpacity onPress={navigate("Settings")}>
           <HeaderButton
             resizeMode="contain"
-            source={require('../../assets/gear.png')}
+            source={require("../../assets/gear.png")}
           />
         </TouchableOpacity>
-        <TouchableOpacity testID={'logout'} onPress={logout}>
+        <TouchableOpacity testID={"logout"} onPress={logout}>
           <HeaderButton
             resizeMode="contain"
-            source={require('../../assets/sign-out.png')}
+            source={require("../../assets/sign-out.png")}
           />
         </TouchableOpacity>
       </Buttons>
