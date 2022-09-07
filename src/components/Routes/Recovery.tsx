@@ -1,6 +1,7 @@
 // This file renders the recovery screen.
 import {
   SelfServiceBrowserLocationChangeRequiredError,
+  SelfServiceFlowName,
   SelfServiceRecoveryFlow,
   SubmitSelfServiceRecoveryFlowBody
 } from '@ory/client'
@@ -47,10 +48,15 @@ const Recovery = ({ navigation }: Props) => {
     }, [project])
   )
 
-  const handleRedirection = async (err: SelfServiceBrowserLocationChangeRequiredError) => {
+  const handleRedirection = async (
+    err: SelfServiceBrowserLocationChangeRequiredError
+  ) => {
     // A SelfServiceBrowserLocationChangeRequiredError indicates the `success` of the recovery api flow
     // as after a recovery the user _needs_ to update their password in a settings flow
-    if (err.session_token) {
+    if (
+      err.session_token &&
+      err.redirect_flow_name === SelfServiceFlowName.Settings
+    ) {
       const { data: session } = await newKratosSdk(project).toSession(
         err.session_token,
         undefined
@@ -73,13 +79,13 @@ const Recovery = ({ navigation }: Props) => {
         const { data: recoveryFlow } = await newKratosSdk(
           project
         ).submitSelfServiceRecoveryFlow(flow.id, payload)
-        setFlow(recoveryFlow);
+        setFlow(recoveryFlow)
       } catch (err: any) {
         handleFormSubmitError(
           setFlow,
           () => initializeFlow(),
           () => {},
-          (err) => handleRedirection(err).then(() => {}),
+          (err) => handleRedirection(err).then(() => {})
         )(err)
       }
     }
