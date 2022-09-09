@@ -1,8 +1,8 @@
-import React from 'react'
-import { messageStyles } from '@ory/themes'
-import styled from 'styled-components/native'
-import { View } from 'react-native'
-import { UiText } from '@ory/kratos-client'
+import React from "react"
+import { messageStyles } from "@ory/themes"
+import styled from "styled-components/native"
+import { View } from "react-native"
+import { UiText } from "@ory/kratos-client"
 
 interface Props {
   messages?: Array<UiText>

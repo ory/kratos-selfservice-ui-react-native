@@ -1,15 +1,15 @@
 // This file defines a React Context which keeps track of the authenticated session.
 
-import React, { createContext, ReactNode, useEffect, useState } from 'react'
+import React, { createContext, ReactNode, useEffect, useState } from "react"
 import {
   getAuthenticatedSession,
   killAuthenticatedSession,
   SessionContext,
-  setAuthenticatedSession
-} from '../helpers/auth'
-import { AxiosError } from 'axios'
-import { newKratosSdk } from '../helpers/sdk'
-import { Session } from '@ory/kratos-client'
+  setAuthenticatedSession,
+} from "../helpers/auth"
+import { AxiosError } from "axios"
+import { newKratosSdk } from "../helpers/sdk"
+import { Session } from "@ory/kratos-client"
 
 interface Context {
   project: string
@@ -18,7 +18,7 @@ interface Context {
 
 export const ProjectContext = createContext<Context>({
   setProject: () => {},
-  project: 'playground'
+  project: "playground",
 })
 
 interface Props {
@@ -26,7 +26,7 @@ interface Props {
 }
 
 export default ({ children }: Props) => {
-  const [project, setProject] = useState('playground')
+  const [project, setProject] = useState("playground")
 
   return (
     <ProjectContext.Provider
@@ -35,7 +35,7 @@ export default ({ children }: Props) => {
         project,
         setProject: (project: string) => {
           setProject(project)
-        }
+        },
       }}
     >
       {children}

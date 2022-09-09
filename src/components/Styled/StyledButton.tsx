@@ -1,15 +1,15 @@
-import React, { useContext } from 'react'
-import styled from 'styled-components/native'
-import { NativeSyntheticEvent, NativeTouchEvent } from 'react-native'
-import { ThemeProps } from '@ory/themes'
-import { ThemeContext } from 'styled-components'
+import React, { useContext } from "react"
+import styled from "styled-components/native"
+import { NativeSyntheticEvent, NativeTouchEvent } from "react-native"
+import { ThemeProps } from "@ory/themes"
+import { ThemeContext } from "styled-components"
 
 const StyledText = styled.Text`
-  font-family: 'Rubik_400Regular';
+  font-family: "Rubik_400Regular";
   font-weight: 400;
   font-size: 14px;
   line-height: ${({ big }: ThemeProps & StyleProps) =>
-    !big ? '20px' : '30px'};
+    !big ? "20px" : "30px"};
   text-align: center;
   color: ${({ disabled, theme }: ThemeProps & StyleProps) =>
     disabled ? theme.grey30 : theme.grey0};
@@ -43,7 +43,7 @@ const StyledButton = ({
   testID,
   title,
   big,
-  disabled
+  disabled,
 }: ButtonProps) => (
   <StyledContainer
     testID={testID}

@@ -1,14 +1,14 @@
-import { UiNode, UiNodeInputAttributes } from '@ory/kratos-client'
-import React from 'react'
-import { TextInputProps, View } from 'react-native'
-import StyledTextInput from '../../../Styled/StyledTextInput'
-import styled from 'styled-components/native'
-import { textInputSubtitleStyles, textInputTitleStyles } from '@ory/themes'
+import { UiNode, UiNodeInputAttributes } from "@ory/kratos-client"
+import React from "react"
+import { TextInputProps, View } from "react-native"
+import StyledTextInput from "../../../Styled/StyledTextInput"
+import styled from "styled-components/native"
+import { textInputSubtitleStyles, textInputTitleStyles } from "@ory/themes"
 import {
   getNodeId,
   getNodeTitle,
-  isUiNodeInputAttributes
-} from '../../../../helpers/form'
+  isUiNodeInputAttributes,
+} from "../../../../helpers/form"
 
 interface Props extends InputProps {
   node: UiNode
@@ -24,45 +24,45 @@ export interface InputProps {
 
 export type TextInputOverride = (
   field: UiNode,
-  props: TextInputProps
+  props: TextInputProps,
 ) => TextInputProps
 
 const guessVariant = ({ attributes }: UiNode) => {
   if (!isUiNodeInputAttributes(attributes)) {
-    return 'text'
+    return "text"
   }
 
-  if (attributes.name === 'identifier') {
-    return 'username'
+  if (attributes.name === "identifier") {
+    return "username"
   }
 
   switch (attributes.type) {
-    case 'hidden':
+    case "hidden":
       return null
-    case 'email':
-      return 'email'
-    case 'submit':
-      return 'button'
-    case 'password':
-      return 'password'
+    case "email":
+      return "email"
+    case "submit":
+      return "button"
+    case "password":
+      return "password"
     default:
-      return 'text'
+      return "text"
   }
 }
 
 const typeToState = ({
   type,
-  disabled
+  disabled,
 }: {
   type?: string
   disabled?: boolean
 }) => {
   if (disabled) {
-    return 'disabled'
+    return "disabled"
   }
   switch (type) {
-    case 'error':
-      return 'error'
+    case "error":
+      return "error"
   }
   return undefined
 }
@@ -76,7 +76,7 @@ export const NodeInput = ({
   value,
   onChange,
   disabled,
-  textInputOverride
+  textInputOverride,
 }: Props) => {
   const variant = guessVariant(node)
   if (!variant) {
@@ -85,24 +85,24 @@ export const NodeInput = ({
 
   let extraProps: TextInputProps = {}
   switch (variant) {
-    case 'email':
-      extraProps.autoCompleteType = 'email'
-      extraProps.keyboardType = 'email-address'
-      extraProps.textContentType = 'emailAddress'
-      extraProps.autoCapitalize = 'none'
+    case "email":
+      extraProps.autoCompleteType = "email"
+      extraProps.keyboardType = "email-address"
+      extraProps.textContentType = "emailAddress"
+      extraProps.autoCapitalize = "none"
       extraProps.autoCorrect = false
       break
-    case 'password':
-      extraProps.autoCompleteType = 'password'
-      extraProps.textContentType = 'password'
-      extraProps.autoCapitalize = 'none'
+    case "password":
+      extraProps.autoCompleteType = "password"
+      extraProps.textContentType = "password"
+      extraProps.autoCapitalize = "none"
       extraProps.secureTextEntry = true
       extraProps.autoCorrect = false
       break
-    case 'username':
-      extraProps.autoCompleteType = 'username'
-      extraProps.textContentType = 'username'
-      extraProps.autoCapitalize = 'none'
+    case "username":
+      extraProps.autoCompleteType = "username"
+      extraProps.textContentType = "username"
+      extraProps.autoCapitalize = "none"
       extraProps.autoCorrect = false
       break
   }
@@ -120,10 +120,10 @@ export const NodeInput = ({
       <StyledTextInput
         testID={name}
         onChange={onChange}
-        value={value ? String(value) : ''}
+        value={value ? String(value) : ""}
         editable={!disabled}
         onChangeText={onChange}
-        state={disabled ? 'disabled' : undefined}
+        state={disabled ? "disabled" : undefined}
         {...extraProps}
       />
       <>

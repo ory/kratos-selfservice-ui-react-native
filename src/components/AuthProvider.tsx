@@ -5,18 +5,18 @@ import React, {
   ReactNode,
   useContext,
   useEffect,
-  useState
-} from 'react'
+  useState,
+} from "react"
 import {
   getAuthenticatedSession,
   killAuthenticatedSession,
   SessionContext,
-  setAuthenticatedSession
-} from '../helpers/auth'
-import { AxiosError } from 'axios'
-import { newKratosSdk } from '../helpers/sdk'
-import { Session } from '@ory/kratos-client'
-import { ProjectContext } from './ProjectProvider'
+  setAuthenticatedSession,
+} from "../helpers/auth"
+import { AxiosError } from "axios"
+import { newKratosSdk } from "../helpers/sdk"
+import { Session } from "@ory/kratos-client"
+import { ProjectContext } from "./ProjectProvider"
 
 interface Context {
   session?: Session
@@ -31,7 +31,7 @@ export const AuthContext = createContext<Context>({
   setSession: () => {},
   syncSession: () => Promise.resolve(),
   didFetch: false,
-  isAuthenticated: false
+  isAuthenticated: false,
 })
 
 interface AuthContextProps {
@@ -112,7 +112,7 @@ export default ({ children }: AuthContextProps) => {
         setSession: setAuth,
 
         // Is true if we have fetched the session.
-        didFetch: true
+        didFetch: true,
       }}
     >
       {children}

@@ -1,10 +1,10 @@
-import React, { useContext, useEffect } from 'react'
-import StyledText from '../Styled/StyledText'
-import CodeBox from '../Styled/CodeBox'
-import { AuthContext } from '../AuthProvider'
-import Layout from '../Layout/Layout'
-import StyledCard from '../Styled/StyledCard'
-import { useNavigation } from '@react-navigation/native'
+import React, { useContext, useEffect } from "react"
+import StyledText from "../Styled/StyledText"
+import CodeBox from "../Styled/CodeBox"
+import { AuthContext } from "../AuthProvider"
+import Layout from "../Layout/Layout"
+import StyledCard from "../Styled/StyledCard"
+import { useNavigation } from "@react-navigation/native"
 
 const Home = () => {
   const navigation = useNavigation()
@@ -12,7 +12,7 @@ const Home = () => {
 
   useEffect(() => {
     if (!isAuthenticated || !session) {
-      navigation.navigate('Login')
+      navigation.navigate("Login")
     }
   }, [isAuthenticated, sessionToken])
 
@@ -35,7 +35,7 @@ const Home = () => {
           Hello, nice to have you! You signed up with this data:
         </StyledText>
         <CodeBox>
-          {JSON.stringify(session.identity.traits || '{}', null, 2)}
+          {JSON.stringify(session.identity.traits || "{}", null, 2)}
         </CodeBox>
         <StyledText variant="lead">
           You are signed in using an ORY Kratos Session Token:
@@ -46,7 +46,7 @@ const Home = () => {
           decode the ORY Kratos Session payload:
         </StyledText>
         <CodeBox testID="session-content">
-          {JSON.stringify(session || '{}', null, 2)}
+          {JSON.stringify(session || "{}", null, 2)}
         </CodeBox>
       </StyledCard>
     </Layout>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react"
 import {
   SelfServiceLoginFlow,
   SelfServiceRegistrationFlow,
@@ -6,11 +6,11 @@ import {
   SubmitSelfServiceLoginFlowBody,
   SubmitSelfServiceRegistrationFlowBody,
   SubmitSelfServiceSettingsFlowBody,
-  UiNode
-} from '@ory/kratos-client'
-import Messages from './Messages'
-import { getNodeId, isUiNodeInputAttributes } from '../../../helpers/form'
-import { Node, TextInputOverride } from './Node'
+  UiNode,
+} from "@ory/kratos-client"
+import Messages from "./Messages"
+import { getNodeId, isUiNodeInputAttributes } from "../../../helpers/form"
+import { Node, TextInputOverride } from "./Node"
 
 interface Props<T> {
   flow?:
@@ -18,7 +18,7 @@ interface Props<T> {
     | SelfServiceRegistrationFlow
     | SelfServiceSettingsFlow
   onSubmit: (payload: T) => Promise<void>
-  only?: 'password' | 'profile' | 'totp' | 'lookup_secret'
+  only?: "password" | "profile" | "totp" | "lookup_secret"
   textInputOverride?: TextInputOverride
 }
 
@@ -26,12 +26,12 @@ export const SelfServiceFlow = <
   T extends
     | SubmitSelfServiceSettingsFlowBody
     | SubmitSelfServiceLoginFlowBody
-    | SubmitSelfServiceRegistrationFlowBody
+    | SubmitSelfServiceRegistrationFlowBody,
 >({
   flow,
   only,
   onSubmit,
-  textInputOverride
+  textInputOverride,
 }: Props<T>) => {
   const [inProgress, setInProgress] = useState(false)
   const [values, setValues] = useState<T>({} as T)
@@ -44,7 +44,7 @@ export const SelfServiceFlow = <
 
     const nodes = flow.ui.nodes.filter(({ group }) => {
       if (only) {
-        return group === only || group === 'default'
+        return group === only || group === "default"
       }
       return true
     })
@@ -56,8 +56,8 @@ export const SelfServiceFlow = <
       const key = name as keyof T
       if (isUiNodeInputAttributes(node.attributes)) {
         if (
-          node.attributes.type === 'button' ||
-          node.attributes.type === 'submit'
+          node.attributes.type === "button" ||
+          node.attributes.type === "submit"
         ) {
           // In order to mimic real HTML forms, we need to skip setting the value
           // for buttons as the button value will (in normal HTML forms) only trigger
@@ -79,7 +79,7 @@ export const SelfServiceFlow = <
   const onChange = (name: string) => (value: any) => {
     setValues((values) => ({
       ...values,
-      [name]: value
+      [name]: value,
     }))
   }
 
@@ -98,7 +98,7 @@ export const SelfServiceFlow = <
         const name = getNodeId(node)
         return (
           <Node
-            key={`form-field-${flow.ui.action || ''}-${name}-${k}`}
+            key={`form-field-${flow.ui.action || ""}-${name}-${k}`}
             textInputOverride={textInputOverride}
             disabled={inProgress}
             value={getValue(name)}

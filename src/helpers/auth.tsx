@@ -1,12 +1,12 @@
 // This file handles the authentication state.
 
-import { Session as KratosSession } from '@ory/kratos-client'
-import * as SecureStore from 'expo-secure-store'
-import AsyncStore from '@react-native-async-storage/async-storage'
-import { Platform } from 'react-native'
+import { Session as KratosSession } from "@ory/kratos-client"
+import * as SecureStore from "expo-secure-store"
+import AsyncStore from "@react-native-async-storage/async-storage"
+import { Platform } from "react-native"
 
 // The key under which the session is being stored
-const userSessionName = 'user_session'
+const userSessionName = "user_session"
 
 // The session type
 export type SessionContext = {
@@ -32,7 +32,7 @@ export const getAuthenticatedSession = (): Promise<SessionContext> => {
   }
 
   let p = AsyncStore.getItem(userSessionName)
-  if (Platform.OS !== 'web') {
+  if (Platform.OS !== "web") {
     // We can use SecureStore if not on web instead!
     p = SecureStore.getItemAsync(userSessionName)
   }
@@ -42,13 +42,13 @@ export const getAuthenticatedSession = (): Promise<SessionContext> => {
 
 // Sets the session.
 export const setAuthenticatedSession = (
-  session: SessionContext
+  session: SessionContext,
 ): Promise<void> => {
   if (!session) {
     return killAuthenticatedSession()
   }
 
-  if (Platform.OS === 'web') {
+  if (Platform.OS === "web") {
     // SecureStore is not available on the web platform. We need to use AsyncStore
     // instead.
     return AsyncStore.setItem(userSessionName, JSON.stringify(session))
@@ -63,7 +63,7 @@ export const setAuthenticatedSession = (
 
 // Removes the session from the store.
 export const killAuthenticatedSession = () => {
-  if (Platform.OS === 'web') {
+  if (Platform.OS === "web") {
     // SecureStore is not available on the web platform. We need to use AsyncStore
     // instead.
     return AsyncStore.removeItem(userSessionName)
