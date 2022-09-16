@@ -14,7 +14,6 @@
     "android": "expo start --android",
     "eject": "expo eject",
     "expo-install": "expo install expo-constants expo-secure-store @react-native-community/async-storage react-native-safe-area-context react-native-reanimated react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view",
-    "format": "prettier -w .",
     "ios": "expo start --ios",
     "pod-install": "expo install expo-constants expo-secure-store @react-native-community/async-storage react-native-safe-area-context react-native-reanimated react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view",
     "start": "expo start",
