@@ -10,7 +10,7 @@ help:
 	touch .bin/ory
 
 node_modules: package-lock.json
-	npm install
+	npm ci
 	touch node_modules
 
 
