@@ -1,3 +1,5 @@
+// Copyright © 2022 Ory Corp
+
 import { FormField } from "@ory/kratos-client"
 
 const translations = {
