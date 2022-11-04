@@ -1,5 +1,5 @@
 format: .bin/ory node_modules   # formats the source code
-	.bin/ory dev headers copyright --exclude=app.config.js
+	.bin/ory dev headers copyright --type=open-source --exclude=app.config.js
 	npm exec -- prettier --write .
 
 help:
