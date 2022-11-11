@@ -6,7 +6,7 @@ export default (parent = {}) => {
   const {
     // This is the URL of your deployment. In our case we use the ORY Demo
     // environment
-    KRATOS_URL = "https://playground.projects.oryapis.com/api/kratos/public",
+    KRATOS_URL = "https://playground.projects.oryapis.com",
 
     // We use sentry.io for error tracing. This helps us identify errors
     // in the distributed packages. You can remove this.
