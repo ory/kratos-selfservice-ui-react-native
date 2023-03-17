@@ -1,22 +1,19 @@
-import React, { useEffect, useState } from "react"
 import {
-  SelfServiceLoginFlow,
-  SelfServiceRegistrationFlow,
-  SelfServiceSettingsFlow,
-  SubmitSelfServiceLoginFlowBody,
-  SubmitSelfServiceRegistrationFlowBody,
-  SubmitSelfServiceSettingsFlowBody,
+  LoginFlow,
+  RegistrationFlow,
+  SettingsFlow,
   UiNode,
-} from "@ory/kratos-client"
-import Messages from "./Messages"
+  UpdateLoginFlowBody,
+  UpdateRegistrationFlowBody,
+  UpdateSettingsFlowBody,
+} from "@ory/client"
+import React, { useEffect, useState } from "react"
 import { getNodeId, isUiNodeInputAttributes } from "../../../helpers/form"
+import Messages from "./Messages"
 import { Node, TextInputOverride } from "./Node"
 
 interface Props<T> {
-  flow?:
-    | SelfServiceLoginFlow
-    | SelfServiceRegistrationFlow
-    | SelfServiceSettingsFlow
+  flow?: LoginFlow | RegistrationFlow | SettingsFlow
   onSubmit: (payload: T) => Promise<void>
   only?: "password" | "profile" | "totp" | "lookup_secret"
   textInputOverride?: TextInputOverride
@@ -24,9 +21,9 @@ interface Props<T> {
 
 export const SelfServiceFlow = <
   T extends
-    | SubmitSelfServiceSettingsFlowBody
-    | SubmitSelfServiceLoginFlowBody
-    | SubmitSelfServiceRegistrationFlowBody,
+    | UpdateSettingsFlowBody
+    | UpdateLoginFlowBody
+    | UpdateRegistrationFlowBody,
 >({
   flow,
   only,

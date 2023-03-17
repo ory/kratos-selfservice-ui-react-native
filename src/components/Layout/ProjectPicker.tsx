@@ -1,14 +1,14 @@
-import { View } from "react-native"
-import StyledTextInput from "../Styled/StyledTextInput"
-import React, { useContext, useState } from "react"
-import styled from "styled-components/native"
-import { ThemeContext } from "styled-components"
-import { textInputSubtitleStyles, textInputTitleStyles } from "@ory/themes"
+import { textInputSubtitleStyles } from "@ory/themes"
 import * as Linking from "expo-linking"
+import React, { useContext, useState } from "react"
+import { View } from "react-native"
+import { ThemeContext } from "styled-components"
+import styled from "styled-components/native"
+import StyledTextInput from "../Styled/StyledTextInput"
 
+import { ProjectContext } from "../ProjectProvider"
 import StyledCard from "../Styled/StyledCard"
 import StyledText from "../Styled/StyledText"
-import { ProjectContext } from "../ProjectProvider"
 
 const Subtitle = styled.Text(textInputSubtitleStyles)
 

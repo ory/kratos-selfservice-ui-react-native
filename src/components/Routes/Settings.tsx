@@ -1,23 +1,22 @@
 // This file renders the settings screen.
 
+import {
+  SettingsFlow,
+  SettingsFlowState,
+  UpdateSettingsFlowBody,
+} from "@ory/client"
+import { useNavigation } from "@react-navigation/native"
 import React, { useContext, useEffect, useState } from "react"
 import { showMessage } from "react-native-flash-message"
 import styled from "styled-components/native"
-
-import { SelfServiceFlow } from "../Ory/Ui"
-import { newKratosSdk } from "../../helpers/sdk"
-import StyledCard from "../Styled/StyledCard"
+import { handleFormSubmitError } from "../../helpers/form"
+import { newOrySdk } from "../../helpers/sdk"
 import { AuthContext } from "../AuthProvider"
 import Layout from "../Layout/Layout"
-import StyledText from "../Styled/StyledText"
-import { handleFormSubmitError } from "../../helpers/form"
+import { SelfServiceFlow } from "../Ory/Ui"
 import { ProjectContext } from "../ProjectProvider"
-import {
-  SelfServiceSettingsFlow,
-  SelfServiceSettingsFlowState,
-  SubmitSelfServiceSettingsFlowBody,
-} from "@ory/kratos-client"
-import { useNavigation } from "@react-navigation/native"
+import StyledCard from "../Styled/StyledCard"
+import StyledText from "../Styled/StyledText"
 
 const CardTitle = styled.View`
   margin-bottom: 15px;
@@ -28,13 +27,11 @@ const Settings = () => {
   const { project } = useContext(ProjectContext)
   const { isAuthenticated, sessionToken, setSession, syncSession } =
     useContext(AuthContext)
-  const [flow, setFlow] = useState<SelfServiceSettingsFlow | undefined>(
-    undefined,
-  )
+  const [flow, setFlow] = useState<SettingsFlow | undefined>(undefined)
 
   const initializeFlow = (sessionToken: string) =>
-    newKratosSdk(project)
-      .initializeSelfServiceSettingsFlowWithoutBrowser(sessionToken)
+    newOrySdk(project)
+      .createNativeSettingsFlow({ xSessionToken: sessionToken })
       .then(({ data: flow }) => {
         setFlow(flow)
       })
@@ -56,8 +53,8 @@ const Settings = () => {
     return null
   }
 
-  const onSuccess = (result: SelfServiceSettingsFlow) => {
-    if (result.state === SelfServiceSettingsFlowState.Success) {
+  const onSuccess = (result: SettingsFlow) => {
+    if (result.state === SettingsFlowState.Success) {
       syncSession().then(() => {
         showMessage({
           message: "Your changes have been saved",
@@ -68,9 +65,13 @@ const Settings = () => {
     setFlow(result)
   }
 
-  const onSubmit = (payload: SubmitSelfServiceSettingsFlowBody) =>
-    newKratosSdk(project)
-      .submitSelfServiceSettingsFlow(flow.id, sessionToken, payload)
+  const onSubmit = (payload: UpdateSettingsFlowBody) =>
+    newOrySdk(project)
+      .updateSettingsFlow({
+        flow: flow.id,
+        xSessionToken: sessionToken,
+        updateSettingsFlowBody: payload,
+      })
       .then(({ data }: any) => {
         onSuccess(data)
       })

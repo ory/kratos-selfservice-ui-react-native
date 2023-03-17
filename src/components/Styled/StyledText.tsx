@@ -1,5 +1,3 @@
-import React, { ReactNode, useContext } from "react"
-import styled from "styled-components/native"
 import {
   typographyCaptionStyles,
   typographyCodeStyles,
@@ -9,7 +7,9 @@ import {
   typographyLeadStyles,
   typographyParagraphStyles,
 } from "@ory/themes"
+import React, { ReactNode } from "react"
 import { TextProps } from "react-native"
+import styled from "styled-components/native"
 
 interface StyledTextProps extends TextProps {
   variant?:

@@ -1,4 +1,4 @@
-import { UiNode, UiNodeInputAttributes } from "@ory/kratos-client"
+import { UiNode, UiNodeInputAttributes } from "@ory/client"
 import React from "react"
 import { View } from "react-native"
 import { getNodeId, getNodeTitle } from "../../../../helpers/form"
@@ -20,7 +20,6 @@ export const NodeInputSubmit = ({
   attributes,
   isSubmitting,
   onSubmitPress,
-  onChange,
 }: Props) => {
   if (attributes.type !== "submit") {
     return null

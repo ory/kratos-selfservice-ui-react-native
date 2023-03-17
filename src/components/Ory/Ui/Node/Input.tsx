@@ -1,14 +1,14 @@
-import { UiNode, UiNodeInputAttributes } from "@ory/kratos-client"
+import { UiNode, UiNodeInputAttributes } from "@ory/client"
+import { textInputSubtitleStyles, textInputTitleStyles } from "@ory/themes"
 import React from "react"
 import { TextInputProps, View } from "react-native"
-import StyledTextInput from "../../../Styled/StyledTextInput"
 import styled from "styled-components/native"
-import { textInputSubtitleStyles, textInputTitleStyles } from "@ory/themes"
 import {
   getNodeId,
   getNodeTitle,
   isUiNodeInputAttributes,
 } from "../../../../helpers/form"
+import StyledTextInput from "../../../Styled/StyledTextInput"
 
 interface Props extends InputProps {
   node: UiNode
@@ -72,7 +72,6 @@ const Subtitle = styled.Text(textInputSubtitleStyles)
 
 export const NodeInput = ({
   node,
-  attributes,
   value,
   onChange,
   disabled,

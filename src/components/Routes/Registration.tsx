@@ -1,37 +1,31 @@
 // This file renders the registration screen.
-
-import React, { useContext, useEffect, useState } from "react"
-import { StackScreenProps } from "@react-navigation/stack"
+import { RegistrationFlow, UpdateRegistrationFlowBody } from "@ory/client"
 import { useFocusEffect } from "@react-navigation/native"
-import { SelfServiceFlow } from "../Ory/Ui"
-import { newKratosSdk } from "../../helpers/sdk"
-import StyledCard from "../Styled/StyledCard"
-import NavigationCard from "../Styled/NavigationCard"
-import AuthLayout from "../Layout/AuthLayout"
-import AuthSubTitle from "../Styled/AuthSubTitle"
-import { RootStackParamList } from "../Navigation"
-import { AuthContext } from "../AuthProvider"
-import { getNodeId, handleFormSubmitError } from "../../helpers/form"
+import { StackScreenProps } from "@react-navigation/stack"
+import React, { useContext, useEffect, useState } from "react"
 import { Platform } from "react-native"
+import { getNodeId, handleFormSubmitError } from "../../helpers/form"
+import { newOrySdk } from "../../helpers/sdk"
+import { AuthContext } from "../AuthProvider"
+import AuthLayout from "../Layout/AuthLayout"
 import ProjectPicker from "../Layout/ProjectPicker"
+import { RootStackParamList } from "../Navigation"
+import { SelfServiceFlow } from "../Ory/Ui"
 import { ProjectContext } from "../ProjectProvider"
-import {
-  SelfServiceRegistrationFlow,
-  SubmitSelfServiceRegistrationFlowBody,
-} from "@ory/kratos-client"
+import AuthSubTitle from "../Styled/AuthSubTitle"
+import NavigationCard from "../Styled/NavigationCard"
+import StyledCard from "../Styled/StyledCard"
 
 type Props = StackScreenProps<RootStackParamList, "Registration">
 
 const Registration = ({ navigation }: Props) => {
-  const [flow, setConfig] = useState<SelfServiceRegistrationFlow | undefined>(
-    undefined,
-  )
+  const [flow, setConfig] = useState<RegistrationFlow | undefined>(undefined)
   const { project } = useContext(ProjectContext)
   const { setSession, isAuthenticated } = useContext(AuthContext)
 
   const initializeFlow = () =>
-    newKratosSdk(project)
-      .initializeSelfServiceRegistrationFlowWithoutBrowser()
+    newOrySdk(project)
+      .createNativeRegistrationFlow()
       // The flow was initialized successfully, let's set the form data:
       .then(({ data: flow }) => {
         setConfig(flow)
@@ -60,38 +54,44 @@ const Registration = ({ navigation }: Props) => {
   }
 
   // This will update the registration flow with the user provided input:
-  const onSubmit = (
-    payload: SubmitSelfServiceRegistrationFlowBody,
-  ): Promise<void> =>
-    flow
-      ? newKratosSdk(project)
-          .submitSelfServiceRegistrationFlow(flow.id, payload)
-          .then(({ data }) => {
-            // ORY Kratos can be configured in such a way that it requires a login after
-            // registration. You could handle that case by navigating to the Login screen
-            // but for simplicity we'll just print an error here:
-            if (!data.session_token || !data.session) {
-              const err = new Error(
-                "It looks like you configured ORY Kratos to not issue a session automatically after registration. This edge-case is currently not supported in this example app. You can find more information on enabling this feature here: https://www.ory.sh/kratos/docs/next/self-service/flows/user-registration#successful-registration",
-              )
-              return Promise.reject(err)
-            }
+  const onSubmit = async (
+    payload: UpdateRegistrationFlowBody,
+  ): Promise<void> => {
+    if (!flow) {
+      return
+    }
 
-            // Looks like we got a session!
-            return Promise.resolve({
-              session: data.session,
-              session_token: data.session_token,
-            })
-          })
-          // Let's log the user in!
-          .then(setSession)
-          .catch(
-            handleFormSubmitError<SelfServiceRegistrationFlow | undefined>(
-              setConfig,
-              initializeFlow,
-            ),
+    newOrySdk(project)
+      .updateRegistrationFlow({
+        flow: flow.id,
+        updateRegistrationFlowBody: payload,
+      })
+      .then(({ data }) => {
+        // ORY Kratos can be configured in such a way that it requires a login after
+        // registration. You could handle that case by navigating to the Login screen
+        // but for simplicity we'll just print an error here:
+        if (!data.session_token || !data.session) {
+          const err = new Error(
+            "It looks like you configured ORY Kratos to not issue a session automatically after registration. This edge-case is currently not supported in this example app. You can find more information on enabling this feature here: https://www.ory.sh/kratos/docs/next/self-service/flows/user-registration#successful-registration",
           )
-      : Promise.resolve()
+          return Promise.reject(err)
+        }
+
+        // Looks like we got a session!
+        return Promise.resolve({
+          session: data.session,
+          session_token: data.session_token,
+        })
+      })
+      // Let's log the user in!
+      .then(setSession)
+      .catch(
+        handleFormSubmitError<RegistrationFlow | undefined>(
+          setConfig,
+          initializeFlow,
+        ),
+      )
+  }
 
   return (
     <AuthLayout>

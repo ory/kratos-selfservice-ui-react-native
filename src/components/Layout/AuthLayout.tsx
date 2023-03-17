@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react"
+import { ScrollView } from "react-native"
 import styled from "styled-components/native"
 import { GridContainer, GridRow } from "./Grid"
-import { ScrollView } from "react-native"
 
 const StyledImage = styled.Image`
   margin-top: 55px;

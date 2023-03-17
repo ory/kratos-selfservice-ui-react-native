@@ -1,5 +1,5 @@
-import styled from "styled-components/native"
 import { ThemeProps } from "@ory/themes"
+import styled from "styled-components/native"
 
 export const GridContainer = styled.View`
   display: flex;

@@ -1,10 +1,9 @@
-import React, { ReactNode, useContext } from "react"
-import styled, { ThemeProps } from "styled-components/native"
-import { GridRow } from "../Layout/Grid"
-import { TextProps } from "react-native"
 import { codeBoxStyles } from "@ory/themes"
+import React, { ReactNode } from "react"
+import { TextProps } from "react-native"
+import styled from "styled-components/native"
+import { GridRow } from "../Layout/Grid"
 import StyledText from "./StyledText"
-import { ThemeContext } from "styled-components"
 
 const StyledCodeBox = styled.View(codeBoxStyles)
 
