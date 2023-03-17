@@ -1,14 +1,13 @@
-import React from "react"
-import styled from "styled-components/native"
 import {
   forkMeStyles,
   forkMeStylesFork,
   forkMeStylesImages,
   forkMeStylesLink,
   forkMeStylesText,
-  ThemeProps,
 } from "@ory/themes"
 import * as Linking from "expo-linking"
+import React from "react"
+import styled from "styled-components/native"
 
 const Container = styled.View(forkMeStyles)
 const StyledImage = styled.Image(forkMeStylesImages)

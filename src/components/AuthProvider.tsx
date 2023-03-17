@@ -1,5 +1,7 @@
 // This file defines a React Context which keeps track of the authenticated session.
 
+import { Session } from "@ory/client"
+import { AxiosError } from "axios"
 import React, {
   createContext,
   ReactNode,
@@ -13,9 +15,7 @@ import {
   SessionContext,
   setAuthenticatedSession,
 } from "../helpers/auth"
-import { AxiosError } from "axios"
-import { newKratosSdk } from "../helpers/sdk"
-import { Session } from "@ory/kratos-client"
+import { newOrySdk } from "../helpers/sdk"
 import { ProjectContext } from "./ProjectProvider"
 
 interface Context {
@@ -56,9 +56,9 @@ export default ({ children }: AuthContextProps) => {
 
     // Use the session token from the auth session:
     return (
-      newKratosSdk(project)
+      newOrySdk(project)
         // whoami() returns the session belonging to the session_token:
-        .toSession(auth.session_token)
+        .toSession({ xSessionToken: auth.session_token })
         .then(({ data: session }) => {
           // This means that the session is still valid! The user is logged in.
           //

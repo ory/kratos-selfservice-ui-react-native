@@ -1,15 +1,14 @@
-import React from "react"
 import {
   GenericError,
   UiNode,
   UiNodeAnchorAttributes,
+  UiNodeAttributes,
   UiNodeImageAttributes,
   UiNodeInputAttributes,
   UiNodeTextAttributes,
-} from "@ory/kratos-client"
+} from "@ory/client"
 import { AxiosError } from "axios"
 import { showMessage } from "react-native-flash-message"
-import { UiNodeAttributes } from "@ory/kratos-client"
 
 export function camelize<T>(str: string) {
   return str.replace(/_([a-z])/g, (g) => g[1].toUpperCase()) as keyof T
