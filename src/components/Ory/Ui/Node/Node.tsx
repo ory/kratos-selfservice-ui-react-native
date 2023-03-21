@@ -1,6 +1,7 @@
 import { UiNode } from "@ory/client"
 import React from "react"
 import {
+  isUiNodeAnchorAttributes,
   isUiNodeImageAttributes,
   isUiNodeInputAttributes,
   isUiNodeTextAttributes,
@@ -25,6 +26,10 @@ export const Node = (props: Props) => {
       return <NodeInputSubmit {...props} attributes={node.attributes} />
     }
     return <NodeInput {...props} attributes={node.attributes} />
+  } else if (isUiNodeAnchorAttributes(node.attributes)) {
+    // Ignore anchor elements for now.
+    // TODO: Implement anchor elements.
+    return null
   } else {
     return <>Unknown Element: {node.type}</>
   }

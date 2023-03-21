@@ -2,8 +2,9 @@
 import { RegistrationFlow, UpdateRegistrationFlowBody } from "@ory/client"
 import { useFocusEffect } from "@react-navigation/native"
 import { StackScreenProps } from "@react-navigation/stack"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useCallback, useContext, useState } from "react"
 import { Platform } from "react-native"
+import { SessionContext } from "../../helpers/auth"
 import { getNodeId, handleFormSubmitError } from "../../helpers/form"
 import { newOrySdk } from "../../helpers/sdk"
 import { AuthContext } from "../AuthProvider"
@@ -34,7 +35,11 @@ const Registration = ({ navigation }: Props) => {
 
   // When the component is mounted, we initialize a new use login flow:
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
+      if (isAuthenticated) {
+        navigation.navigate("Home")
+        return
+      }
       initializeFlow()
 
       return () => {
@@ -42,16 +47,6 @@ const Registration = ({ navigation }: Props) => {
       }
     }, [project]),
   )
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigation.navigate("Home")
-    }
-  }, [isAuthenticated])
-
-  if (isAuthenticated) {
-    return null
-  }
 
   // This will update the registration flow with the user provided input:
   const onSubmit = async (
@@ -77,11 +72,36 @@ const Registration = ({ navigation }: Props) => {
           return Promise.reject(err)
         }
 
-        // Looks like we got a session!
-        return Promise.resolve({
+        const s: SessionContext = {
           session: data.session,
           session_token: data.session_token,
-        })
+        }
+
+        if (data.continue_with) {
+          for (const c of data.continue_with) {
+            switch (c.action) {
+              case "show_verification_ui": {
+                console.log("got a verfification flow, navigating to it", c)
+                navigation.navigate("Verification", {
+                  flowId: c.flow.id,
+                })
+                break
+              }
+              case "set_ory_session_token": {
+                // Right now, this is redundant, and is just supposed to show that the session token is also included
+                // in the continue_with elements.
+                console.log(
+                  "found an ory session token, storing it for further use",
+                )
+                s.session_token = c.ory_session_token
+                break
+              }
+            }
+          }
+        }
+
+        // Looks like we got a session!
+        return Promise.resolve(s)
       })
       // Let's log the user in!
       .then(setSession)
