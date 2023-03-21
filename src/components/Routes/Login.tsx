@@ -30,12 +30,17 @@ const Login = ({ navigation, route }: Props) => {
         aal: route.params.aal,
         refresh: route.params.refresh,
         xSessionToken: sessionToken,
+        returnTo: "exp://example.com/my-app",
+        enableSessionTokenExchangeCode: true,
       })
-      .then((response) => {
-        const { data: flow } = response
-        // The flow was initialized successfully, let's set the form data:
-        setFlow(flow)
-      })
+      .then(({ data: f }) => setFlow(f))
+      .catch(console.error)
+
+  const refetchFlow = () =>
+    newOrySdk(project)
+      .getLoginFlow({ id: flow!.id })
+      .then(({ data: f }) => setFlow({ ...flow, ...f })) // merging ensures we don't lose the code
+      .finally(() => console.log("new flow", flow))
       .catch(console.error)
 
   // When the component is mounted, we initialize a new use login flow:
@@ -49,6 +54,13 @@ const Login = ({ navigation, route }: Props) => {
     }, [project]),
   )
 
+  const setSessionAndRedirect = (session: SessionContext) => {
+    setSession(session)
+    setTimeout(() => {
+      navigation.navigate("Home")
+    }, 100)
+  }
+
   // This will update the login flow with the user provided input:
   const onSubmit = (payload: UpdateLoginFlowBody) =>
     flow
@@ -60,13 +72,16 @@ const Login = ({ navigation, route }: Props) => {
           })
           .then(({ data }) => Promise.resolve(data as SessionContext))
           // Looks like everything worked and we have a session!
-          .then((session) => {
-            setSession(session)
-            setTimeout(() => {
-              navigation.navigate("Home")
-            }, 100)
-          })
-          .catch(handleFormSubmitError(setFlow, initializeFlow))
+          .then(setSessionAndRedirect)
+          .catch(
+            handleFormSubmitError(
+              flow,
+              setFlow,
+              initializeFlow,
+              setSessionAndRedirect,
+              refetchFlow,
+            ),
+          )
       : Promise.resolve()
 
   return (

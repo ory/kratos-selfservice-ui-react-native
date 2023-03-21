@@ -1,11 +1,18 @@
 // This file renders the registration screen.
 import { RegistrationFlow, UpdateRegistrationFlowBody } from "@ory/client"
-import { useFocusEffect } from "@react-navigation/native"
+import { useFocusEffect, useNavigation } from "@react-navigation/native"
 import { StackScreenProps } from "@react-navigation/stack"
+import {
+  makeRedirectUri,
+  useAuthRequest,
+  useAutoDiscovery,
+} from "expo-auth-session"
+import * as WebBrowser from "expo-web-browser"
 import React, { useCallback, useContext, useState } from "react"
-import { Platform } from "react-native"
+import { Linking, Platform } from "react-native"
 import { SessionContext } from "../../helpers/auth"
 import { getNodeId, handleFormSubmitError } from "../../helpers/form"
+import { getIDToken } from "../../helpers/oidc"
 import { newOrySdk } from "../../helpers/sdk"
 import { AuthContext } from "../AuthProvider"
 import AuthLayout from "../Layout/AuthLayout"
@@ -20,16 +27,20 @@ import StyledCard from "../Styled/StyledCard"
 type Props = StackScreenProps<RootStackParamList, "Registration">
 
 const Registration = ({ navigation }: Props) => {
-  const [flow, setConfig] = useState<RegistrationFlow | undefined>(undefined)
+  const [flow, setFlow] = useState<RegistrationFlow | undefined>(undefined)
   const { project } = useContext(ProjectContext)
   const { setSession, isAuthenticated } = useContext(AuthContext)
 
   const initializeFlow = () =>
     newOrySdk(project)
-      .createNativeRegistrationFlow()
+      .createNativeRegistrationFlow({
+        returnTo: "http://localhost:4455",
+        enableSessionTokenExchangeCode: true,
+      })
       // The flow was initialized successfully, let's set the form data:
       .then(({ data: flow }) => {
-        setConfig(flow)
+        setFlow(flow)
+        console.log("Setting registration flow", flow)
       })
       .catch(console.error)
 
@@ -42,11 +53,23 @@ const Registration = ({ navigation }: Props) => {
       }
       initializeFlow()
 
-      return () => {
-        setConfig(undefined)
-      }
+      return () => setFlow(undefined)
     }, [project]),
   )
+
+  const refetchFlow = () =>
+    newOrySdk(project)
+      .getRegistrationFlow({ id: flow!.id })
+      .then(({ data: f }) => setFlow({ ...flow, ...f })) // merging ensures we don't lose the code
+      .finally(() => console.log("new flow", flow))
+      .catch(console.error)
+
+  const setSessionAndRedirect = (session: SessionContext) => {
+    setSession(session)
+    setTimeout(() => {
+      navigation.navigate("Home")
+    }, 100)
+  }
 
   // This will update the registration flow with the user provided input:
   const onSubmit = async (
@@ -109,13 +132,31 @@ const Registration = ({ navigation }: Props) => {
         }
       })
       .catch(
-        handleFormSubmitError<RegistrationFlow | undefined>(
-          setConfig,
+        handleFormSubmitError(
+          flow,
+          setFlow,
           initializeFlow,
+          setSessionAndRedirect,
+          refetchFlow,
         ),
       )
   }
 
+  if (!flow) {
+    // TODO: Show loading indicator?
+    return null
+  }
+
+  return <RegistrationUI flow={flow} onSubmit={onSubmit} />
+}
+
+type RegistrationUIProps = {
+  flow: RegistrationFlow
+  onSubmit: (payload: UpdateRegistrationFlowBody) => Promise<void>
+}
+
+function RegistrationUI({ flow, onSubmit }: RegistrationUIProps) {
+  const navigation = useNavigation()
   return (
     <AuthLayout>
       <StyledCard>
@@ -149,12 +190,11 @@ const Registration = ({ navigation }: Props) => {
       <NavigationCard
         description="Already have an account?"
         cta="Sign in!"
-        onPress={() => navigation.navigate({ key: "Login" })}
+        onPress={() => navigation.navigate("Login")}
       />
 
       <ProjectPicker />
     </AuthLayout>
   )
 }
-
 export default Registration
