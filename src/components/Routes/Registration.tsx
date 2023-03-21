@@ -2,6 +2,12 @@
 import { RegistrationFlow, UpdateRegistrationFlowBody } from "@ory/client"
 import { useFocusEffect } from "@react-navigation/native"
 import { StackScreenProps } from "@react-navigation/stack"
+import {
+  makeRedirectUri,
+  useAuthRequest,
+  useAutoDiscovery,
+} from "expo-auth-session"
+import * as WebBrowser from "expo-web-browser"
 import React, { useCallback, useContext, useState } from "react"
 import { Platform } from "react-native"
 import { SessionContext } from "../../helpers/auth"
@@ -19,10 +25,30 @@ import StyledCard from "../Styled/StyledCard"
 
 type Props = StackScreenProps<RootStackParamList, "Registration">
 
+WebBrowser.maybeCompleteAuthSession()
+
 const Registration = ({ navigation }: Props) => {
   const [flow, setConfig] = useState<RegistrationFlow | undefined>(undefined)
   const { project } = useContext(ProjectContext)
   const { setSession, isAuthenticated } = useContext(AuthContext)
+
+  // Endpoint
+  const discovery = useAutoDiscovery(
+    "https://login.microsoftonline.com/78fa0700-cf44-4f96-a284-af634c70c028/v2.0",
+  )
+  // Request
+  const [, , promptAsync] = useAuthRequest(
+    {
+      clientId: "f86bca7f-196c-4170-940f-201af89f497e",
+      scopes: ["openid", "profile", "email", "offline_access"],
+      redirectUri: makeRedirectUri(),
+      responseType: "id_token",
+      extraParams: {
+        nonce: "678910",
+      },
+    },
+    discovery,
+  )
 
   const initializeFlow = () =>
     newOrySdk(project)
@@ -56,6 +82,19 @@ const Registration = ({ navigation }: Props) => {
       return
     }
 
+    if ("provider" in payload && payload.provider === "microsoft") {
+      const result = await promptAsync()
+      if (result.type === "success") {
+        console.log("r", result.params)
+        payload = {
+          ...payload,
+          id_token: result.params.id_token,
+          method: "oidc",
+        }
+      } else {
+        console.error(result)
+      }
+    }
     newOrySdk(project)
       .updateRegistrationFlow({
         flow: flow.id,
