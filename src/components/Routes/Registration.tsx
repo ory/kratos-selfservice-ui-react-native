@@ -77,11 +77,13 @@ const Registration = ({ navigation }: Props) => {
           session_token: data.session_token,
         }
 
+        let verificationFlow = false
         if (data.continue_with) {
           for (const c of data.continue_with) {
             switch (c.action) {
               case "show_verification_ui": {
                 console.log("got a verfification flow, navigating to it", c)
+                verificationFlow = true
                 navigation.navigate("Verification", {
                   flowId: c.flow.id,
                 })
@@ -100,11 +102,12 @@ const Registration = ({ navigation }: Props) => {
           }
         }
 
-        // Looks like we got a session!
-        return Promise.resolve(s)
+        // Let's log the user in!
+        setSession(s)
+        if (!verificationFlow) {
+          navigation.navigate("Home")
+        }
       })
-      // Let's log the user in!
-      .then(setSession)
       .catch(
         handleFormSubmitError<RegistrationFlow | undefined>(
           setConfig,

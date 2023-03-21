@@ -99,6 +99,7 @@ export default function Verification({ navigation, route }: Props) {
         />
         {flow?.state === "passed_challenge" && (
           <StyledButton
+            testID="continue-button"
             onPress={() => navigation.navigate("Home")}
             title="Continue"
           />
