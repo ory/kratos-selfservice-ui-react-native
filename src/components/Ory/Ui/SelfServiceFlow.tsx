@@ -6,6 +6,8 @@ import {
   UpdateLoginFlowBody,
   UpdateRegistrationFlowBody,
   UpdateSettingsFlowBody,
+  UpdateVerificationFlowBody,
+  VerificationFlow,
 } from "@ory/client"
 import React, { useEffect, useState } from "react"
 import { getNodeId, isUiNodeInputAttributes } from "../../../helpers/form"
@@ -13,7 +15,7 @@ import Messages from "./Messages"
 import { Node, TextInputOverride } from "./Node"
 
 interface Props<T> {
-  flow?: LoginFlow | RegistrationFlow | SettingsFlow
+  flow?: LoginFlow | RegistrationFlow | SettingsFlow | VerificationFlow
   onSubmit: (payload: T) => Promise<void>
   only?: "password" | "profile" | "totp" | "lookup_secret"
   textInputOverride?: TextInputOverride
@@ -23,7 +25,8 @@ export const SelfServiceFlow = <
   T extends
     | UpdateSettingsFlowBody
     | UpdateLoginFlowBody
-    | UpdateRegistrationFlowBody,
+    | UpdateRegistrationFlowBody
+    | UpdateVerificationFlowBody,
 >({
   flow,
   only,

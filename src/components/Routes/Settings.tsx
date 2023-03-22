@@ -54,6 +54,21 @@ const Settings = () => {
   }
 
   const onSuccess = (result: SettingsFlow) => {
+    if (result.continue_with) {
+      if (result.continue_with) {
+        for (const c of result.continue_with) {
+          switch (c.action) {
+            case "show_verification_ui": {
+              console.log("got a verfification flow, navigating to it", c)
+              navigation.navigate("Verification", {
+                flowId: c.flow.id,
+              })
+              break
+            }
+          }
+        }
+      }
+    }
     if (result.state === SettingsFlowState.Success) {
       syncSession().then(() => {
         showMessage({
@@ -72,7 +87,7 @@ const Settings = () => {
         xSessionToken: sessionToken,
         updateSettingsFlowBody: payload,
       })
-      .then(({ data }: any) => {
+      .then(({ data }) => {
         onSuccess(data)
       })
       .catch(

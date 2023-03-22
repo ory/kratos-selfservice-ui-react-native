@@ -1,15 +1,9 @@
 import "react-native-gesture-handler"
 
-import React, { useContext } from "react"
 import { NavigationContainer } from "@react-navigation/native"
 import { createStackNavigator } from "@react-navigation/stack"
+import React, { useContext } from "react"
 
-import Login from "./Routes/Login"
-import Registration from "./Routes/Registration"
-import Home from "./Routes/Home"
-import { AuthContext } from "./AuthProvider"
-import Settings from "./Routes/Settings"
-import FlashMessage from "react-native-flash-message"
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -17,7 +11,14 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native"
+import FlashMessage from "react-native-flash-message"
+import { AuthContext } from "./AuthProvider"
 import Header from "./Layout/Header"
+import Home from "./Routes/Home"
+import Login from "./Routes/Login"
+import Registration from "./Routes/Registration"
+import Settings from "./Routes/Settings"
+import Verification from "./Routes/Verification"
 
 const Stack = createStackNavigator<RootStackParamList>()
 
@@ -29,6 +30,9 @@ export type RootStackParamList = {
   }
   Registration: undefined
   Settings: undefined
+  Verification: {
+    flowId?: string
+  }
 }
 
 const options = {
@@ -63,6 +67,7 @@ export default () => {
             />
             <Stack.Screen name="Registration" component={Registration} />
             <Stack.Screen name="Login" component={Login} initialParams={{}} />
+            <Stack.Screen name="Verification" component={Verification} />
           </Stack.Navigator>
         </NavigationContainer>
       </TouchableWithoutFeedback>
