@@ -1,6 +1,6 @@
 // This file renders the registration screen.
 import { RegistrationFlow, UpdateRegistrationFlowBody } from "@ory/client"
-import { useFocusEffect } from "@react-navigation/native"
+import { useFocusEffect, useNavigation } from "@react-navigation/native"
 import { StackScreenProps } from "@react-navigation/stack"
 import {
   makeRedirectUri,
@@ -12,6 +12,7 @@ import React, { useCallback, useContext, useState } from "react"
 import { Platform } from "react-native"
 import { SessionContext } from "../../helpers/auth"
 import { getNodeId, handleFormSubmitError } from "../../helpers/form"
+import { getIDToken } from "../../helpers/oidc"
 import { newOrySdk } from "../../helpers/sdk"
 import { AuthContext } from "../AuthProvider"
 import AuthLayout from "../Layout/AuthLayout"
@@ -25,30 +26,15 @@ import StyledCard from "../Styled/StyledCard"
 
 type Props = StackScreenProps<RootStackParamList, "Registration">
 
+// https://docs.expo.dev/guides/authentication/
+
+// Important, as otherwise the auth popup will not close
 WebBrowser.maybeCompleteAuthSession()
 
 const Registration = ({ navigation }: Props) => {
   const [flow, setConfig] = useState<RegistrationFlow | undefined>(undefined)
   const { project } = useContext(ProjectContext)
   const { setSession, isAuthenticated } = useContext(AuthContext)
-
-  // Endpoint
-  const discovery = useAutoDiscovery(
-    "https://login.microsoftonline.com/78fa0700-cf44-4f96-a284-af634c70c028/v2.0",
-  )
-  // Request
-  const [, , promptAsync] = useAuthRequest(
-    {
-      clientId: "f86bca7f-196c-4170-940f-201af89f497e",
-      scopes: ["openid", "profile", "email", "offline_access"],
-      redirectUri: makeRedirectUri(),
-      responseType: "id_token",
-      extraParams: {
-        nonce: "678910",
-      },
-    },
-    discovery,
-  )
 
   const initializeFlow = () =>
     newOrySdk(project)
@@ -82,19 +68,6 @@ const Registration = ({ navigation }: Props) => {
       return
     }
 
-    if ("provider" in payload && payload.provider === "microsoft") {
-      const result = await promptAsync()
-      if (result.type === "success") {
-        console.log("r", result.params)
-        payload = {
-          ...payload,
-          id_token: result.params.id_token,
-          method: "oidc",
-        }
-      } else {
-        console.error(result)
-      }
-    }
     newOrySdk(project)
       .updateRegistrationFlow({
         flow: flow.id,
@@ -155,6 +128,55 @@ const Registration = ({ navigation }: Props) => {
       )
   }
 
+  if (!flow) {
+    // TODO: Show loading indicator?
+    return null
+  }
+
+  if (1 == 1 /* flow isOIDC flow */) {
+    return <RegistrationUIWithOIDC flow={flow} onSubmit={onSubmit} />
+  }
+
+  return <RegistrationUI flow={flow} onSubmit={onSubmit} />
+}
+
+type RegistrationUIProps = {
+  flow: RegistrationFlow
+  onSubmit: (payload: UpdateRegistrationFlowBody) => Promise<void>
+}
+
+function RegistrationUIWithOIDC({ flow, onSubmit }: RegistrationUIProps) {
+  const discovery = useAutoDiscovery("https://627c-31-18-157-245.eu.ngrok.io")
+  const [, , promptAsync] = useAuthRequest(
+    {
+      clientId: "757bf5c4-9d5c-402d-930c-2daacf8f7c10",
+      redirectUri: makeRedirectUri(),
+      scopes: ["openid", "offline_access", "profile", "email"],
+      responseType: "id_token",
+      extraParams: {
+        nonce: "943052987",
+      },
+    },
+    discovery,
+  )
+
+  const localOnSubmit = async (payload: UpdateRegistrationFlowBody) => {
+    if ("provider" in payload) {
+      const idToken = await getIDToken(promptAsync)
+      if (idToken) {
+        payload.id_token = idToken
+        payload.method = "oidc"
+      }
+    }
+
+    return onSubmit(payload)
+  }
+
+  return <RegistrationUI flow={flow} onSubmit={localOnSubmit} />
+}
+
+function RegistrationUI({ flow, onSubmit }: RegistrationUIProps) {
+  const navigation = useNavigation()
   return (
     <AuthLayout>
       <StyledCard>
@@ -195,5 +217,4 @@ const Registration = ({ navigation }: Props) => {
     </AuthLayout>
   )
 }
-
 export default Registration
