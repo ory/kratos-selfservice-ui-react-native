@@ -34,7 +34,3 @@ build-sdk:
 					--git-host github.com \
 					-c ./contrib/sdk/typescript.yml
 	(cd ./contrib/sdk/generated; npm i; npm run build)
-	# rm -rf node_modules/@ory/kratos-client/*
-	# cp -r ./contrib/sdk/generated/* node_modules/@ory/client
-	(cd ./contrib/sdk/generated; npm link)
-	npm link @ory/client

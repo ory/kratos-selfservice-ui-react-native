@@ -1,8 +1,8 @@
 import {
+  FrontendApiExchangeSessionTokenRequest,
   GenericError,
   LoginFlow,
   RegistrationFlow,
-  SuccessfulNativeLogin,
   UiNode,
   UiNodeAnchorAttributes,
   UiNodeAttributes,
@@ -10,7 +10,6 @@ import {
   UiNodeInputAttributes,
   UiNodeTextAttributes,
 } from "@ory/client"
-import { Linking, Platform } from "react-native"
 import { showMessage } from "react-native-flash-message"
 import * as WebBrowser from "expo-web-browser"
 import { SessionContext } from "./auth"
@@ -158,53 +157,35 @@ async function handleRedirectBrowserTo(
   setSession: (p: SessionContext) => void,
   refetchFlow: () => Promise<void>,
 ) {
-  const authSession = WebBrowser.openAuthSessionAsync(
-    url,
-    "https://example.org/",
-  )
-  const fetchToken = flow?.session_token_exchange_code
-    ? () =>
-        newOrySdk("").exchangeSessionToken({
-          code: flow.session_token_exchange_code!,
-        })
-    : () => Promise.resolve(undefined)
+  const fetchToken = (params: FrontendApiExchangeSessionTokenRequest) =>
+    newOrySdk("").exchangeSessionToken(params)
   const setToken = (res: Awaited<ReturnType<typeof fetchToken>>) =>
     res?.data.session_token &&
     setSession({
       session: res.data.session,
       session_token: res.data.session_token,
     })
-  const closePopup = () =>
-    WebBrowser.maybeCompleteAuthSession({
-      skipRedirectCheck: true,
-    })
 
-  if (Platform.OS == "web") {
-    // Use polling because we will never get a deep link back.
-    const retry = () => {
-      fetchToken()
-        .then(setToken)
-        .then(closePopup)
-        .catch(() => {
-          console.log("session not ready yet, retrying ...")
-          refetchFlow()
-          setTimeout(retry, 1000)
-        })
+  const result = await WebBrowser.openAuthSessionAsync(
+    url,
+    "http://localhost:4457/Callback",
+  )
+  if (result.type == "success") {
+    // We can fetch the session token now!
+    const initCode = flow?.session_token_exchange_code
+    const returnToCode = new URL(result.url).searchParams.get("code")
+    if (!initCode || !returnToCode) {
+      console.log("code missing, refetching flow")
+      return refetchFlow()
     }
-    setTimeout(retry, 1000)
+    fetchToken({ initCode, returnToCode })
+      .then(setToken)
+      .catch(() => {
+        console.log("failed to get session")
+        refetchFlow()
+      })
   } else {
-    const result = await authSession
-    if (result.type == "success") {
-      // We can fetch the session token now!
-      fetchToken()
-        .then(setToken)
-        .catch(() => {
-          console.log("failed to get session")
-          refetchFlow()
-        })
-    } else {
-      console.log("authentication canceled, refetching flow")
-      refetchFlow()
-    }
+    console.log("authentication canceled, refetching flow")
+    return refetchFlow()
   }
 }

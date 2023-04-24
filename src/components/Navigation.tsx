@@ -19,6 +19,7 @@ import Login from "./Routes/Login"
 import Registration from "./Routes/Registration"
 import Settings from "./Routes/Settings"
 import Verification from "./Routes/Verification"
+import Callback from "./Routes/Callback"
 
 const Stack = createStackNavigator<RootStackParamList>()
 
@@ -30,6 +31,9 @@ export type RootStackParamList = {
   }
   Registration: undefined
   Settings: undefined
+  Callback: {
+    code?: string
+  }
   Verification: {
     flowId?: string
   }
@@ -68,6 +72,7 @@ export default () => {
             <Stack.Screen name="Registration" component={Registration} />
             <Stack.Screen name="Login" component={Login} initialParams={{}} />
             <Stack.Screen name="Verification" component={Verification} />
+            <Stack.Screen name="Callback" component={Callback} />
           </Stack.Navigator>
         </NavigationContainer>
       </TouchableWithoutFeedback>

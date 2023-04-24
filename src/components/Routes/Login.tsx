@@ -30,8 +30,8 @@ const Login = ({ navigation, route }: Props) => {
         aal: route.params.aal,
         refresh: route.params.refresh,
         xSessionToken: sessionToken,
-        returnTo: "exp://example.com/my-app",
-        enableSessionTokenExchangeCode: true,
+        returnTo: "http://localhost:4457/Callback",
+        returnSessionTokenExchangeCode: true,
       })
       .then(({ data: f }) => setFlow(f))
       .catch(console.error)
