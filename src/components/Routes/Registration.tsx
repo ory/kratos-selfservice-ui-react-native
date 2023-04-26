@@ -61,7 +61,6 @@ const Registration = ({ navigation }: Props) => {
     newOrySdk(project)
       .getRegistrationFlow({ id: flow!.id })
       .then(({ data: f }) => setFlow({ ...flow, ...f })) // merging ensures we don't lose the code
-      .finally(() => console.log("new flow", flow))
       .catch(console.error)
 
   const setSessionAndRedirect = (session: SessionContext) => {

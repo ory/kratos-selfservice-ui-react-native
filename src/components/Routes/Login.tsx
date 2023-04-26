@@ -40,7 +40,6 @@ const Login = ({ navigation, route }: Props) => {
     newOrySdk(project)
       .getLoginFlow({ id: flow!.id })
       .then(({ data: f }) => setFlow({ ...flow, ...f })) // merging ensures we don't lose the code
-      .finally(() => console.log("new flow", flow))
       .catch(console.error)
 
   // When the component is mounted, we initialize a new use login flow:
