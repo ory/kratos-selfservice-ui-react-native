@@ -1,5 +1,8 @@
 import {
+  FrontendApiExchangeSessionTokenRequest,
   GenericError,
+  LoginFlow,
+  RegistrationFlow,
   UiNode,
   UiNodeAnchorAttributes,
   UiNodeAttributes,
@@ -7,8 +10,11 @@ import {
   UiNodeInputAttributes,
   UiNodeTextAttributes,
 } from "@ory/client"
-import { AxiosError } from "axios"
 import { showMessage } from "react-native-flash-message"
+import * as WebBrowser from "expo-web-browser"
+import { SessionContext } from "./auth"
+import { newOrySdk } from "./sdk"
+import { AxiosError } from "axios"
 
 export function camelize<T>(str: string) {
   return str.replace(/_([a-z])/g, (g) => g[1].toUpperCase()) as keyof T
@@ -73,9 +79,14 @@ export function handleFlowInitError(err: AxiosError) {
   return
 }
 
-export function handleFormSubmitError<T>(
+export function handleFormSubmitError<
+  T extends RegistrationFlow | LoginFlow | undefined,
+>(
+  flow: T,
   setConfig: (p: T) => void,
-  initialize: () => void,
+  setFlow: () => void,
+  setSession: (p: SessionContext) => void,
+  refetchFlow: () => Promise<void>,
   logout?: () => void,
 ) {
   return (err: AxiosError) => {
@@ -100,7 +111,7 @@ export function handleFormSubmitError<T>(
           // This happens when the flow is, for example, expired or was deleted.
           // We simply re-initialize the flow if that happens!
           console.debug("Flow could not be found, reloading page.")
-          initialize()
+          setFlow()
           return Promise.resolve()
         case 403:
         case 401:
@@ -124,10 +135,57 @@ export function handleFormSubmitError<T>(
           })
           logout()
           return Promise.resolve()
+        case 422:
+          handleRedirectBrowserTo(
+            err.response.data.redirect_browser_to,
+            flow,
+            setSession,
+            refetchFlow,
+          )
+          return Promise.resolve()
       }
     }
 
     console.error(err, err.response?.data)
     return Promise.resolve()
+  }
+}
+
+async function handleRedirectBrowserTo(
+  url: string,
+  flow: LoginFlow | RegistrationFlow | undefined,
+  setSession: (p: SessionContext) => void,
+  refetchFlow: () => Promise<void>,
+) {
+  const fetchToken = (params: FrontendApiExchangeSessionTokenRequest) =>
+    newOrySdk("").exchangeSessionToken(params)
+  const setToken = (res: Awaited<ReturnType<typeof fetchToken>>) =>
+    res?.data.session_token &&
+    setSession({
+      session: res.data.session,
+      session_token: res.data.session_token,
+    })
+
+  const result = await WebBrowser.openAuthSessionAsync(
+    url,
+    "http://localhost:4457/Callback",
+  )
+  if (result.type == "success") {
+    // We can fetch the session token now!
+    const initCode = flow?.session_token_exchange_code
+    const returnToCode = new URL(result.url).searchParams.get("code")
+    if (!initCode || !returnToCode) {
+      console.log("code missing, refetching flow")
+      return refetchFlow()
+    }
+    fetchToken({ initCode, returnToCode })
+      .then(setToken)
+      .catch(() => {
+        console.log("failed to get session")
+        refetchFlow()
+      })
+  } else {
+    console.log("authentication canceled, refetching flow")
+    return refetchFlow()
   }
 }
