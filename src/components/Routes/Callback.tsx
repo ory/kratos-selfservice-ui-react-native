@@ -13,7 +13,15 @@ const Callback = (props: Props) => {
   }, [])
   return (
     <div>
-      Hello Callback! Your code is <code>{props.route.params.code}</code>
+      {props.route.params?.code ? (
+        <>
+          Hello Callback! Your code is <code>{props.route.params?.code}</code>
+        </>
+      ) : (
+        <>
+          Missing query parameter <code>?code=...</code>
+        </>
+      )}
     </div>
   )
 }
