@@ -83,8 +83,8 @@ export function handleFormSubmitError<
   T extends RegistrationFlow | LoginFlow | undefined,
 >(
   flow: T,
-  setConfig: (p: T) => void,
-  setFlow: () => void,
+  setFlow: (p: T) => void,
+  initializeFlow: () => void,
   setSession: (p: SessionContext) => void,
   refetchFlow: () => Promise<void>,
   logout?: () => void,
@@ -104,14 +104,14 @@ export function handleFormSubmitError<
           }
 
           console.debug("Form validation failed:", err.response.data)
-          setConfig(err.response.data)
+          setFlow(err.response.data)
           return Promise.resolve()
         case 404:
         case 410:
           // This happens when the flow is, for example, expired or was deleted.
           // We simply re-initialize the flow if that happens!
           console.debug("Flow could not be found, reloading page.")
-          setFlow()
+          initializeFlow()
           return Promise.resolve()
         case 403:
         case 401:
