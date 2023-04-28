@@ -2,17 +2,10 @@
 import { RegistrationFlow, UpdateRegistrationFlowBody } from "@ory/client"
 import { useFocusEffect, useNavigation } from "@react-navigation/native"
 import { StackScreenProps } from "@react-navigation/stack"
-import {
-  makeRedirectUri,
-  useAuthRequest,
-  useAutoDiscovery,
-} from "expo-auth-session"
-import * as WebBrowser from "expo-web-browser"
 import React, { useCallback, useContext, useState } from "react"
-import { Linking, Platform } from "react-native"
+import { Platform } from "react-native"
 import { SessionContext } from "../../helpers/auth"
 import { getNodeId, handleFormSubmitError } from "../../helpers/form"
-import { getIDToken } from "../../helpers/oidc"
 import { newOrySdk } from "../../helpers/sdk"
 import { AuthContext } from "../AuthProvider"
 import AuthLayout from "../Layout/AuthLayout"

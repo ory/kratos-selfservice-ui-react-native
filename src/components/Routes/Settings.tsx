@@ -17,6 +17,7 @@ import { SelfServiceFlow } from "../Ory/Ui"
 import { ProjectContext } from "../ProjectProvider"
 import StyledCard from "../Styled/StyledCard"
 import StyledText from "../Styled/StyledText"
+import { SessionContext } from "../../helpers/auth"
 
 const CardTitle = styled.View`
   margin-bottom: 15px;
@@ -92,9 +93,11 @@ const Settings = () => {
       })
       .catch(
         handleFormSubmitError(
+          undefined,
           setFlow,
           () => initializeFlow(sessionToken),
           () => setSession(null),
+          async () => {},
         ),
       )
 
