@@ -27,7 +27,8 @@
       "permissions": []
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     },
     "platforms": ["ios", "android", "web"],
     "description": "An example app demonstrating login, registration, profile settings, 2fa, account recovery, and more using the ORY Kratos open source project.",
