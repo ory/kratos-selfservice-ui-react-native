@@ -31,6 +31,7 @@
     },
     "platforms": ["ios", "android", "web"],
     "description": "An example app demonstrating login, registration, profile settings, 2fa, account recovery, and more using the ORY Kratos open source project.",
+    "plugins": ["sentry-expo"],
     "hooks": {
       "postPublish": [
         {

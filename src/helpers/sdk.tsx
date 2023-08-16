@@ -1,17 +1,15 @@
 import { Configuration, FrontendApi } from "@ory/client"
 import axiosFactory from "axios"
 import Constants from "expo-constants"
-import { resilience } from "./axios"
 
 const axios = axiosFactory.create()
-resilience(axios) // Adds retry mechanism to axios
 
 // canonicalize removes the trailing slash from URLs.
 const canonicalize = (url: string = "") => url.replace(/\/+$/, "")
 
 // This value comes from ../../app.config.js
 export const kratosUrl = (project: string = "playground") => {
-  const url = canonicalize(Constants.manifest?.extra?.kratosUrl) || ""
+  const url = canonicalize(Constants.expoConfig?.extra?.kratosUrl) || ""
 
   if (url.indexOf("https://playground.projects.oryapis.com/") == -1) {
     // The URL is not from Ory, so let's just return it.

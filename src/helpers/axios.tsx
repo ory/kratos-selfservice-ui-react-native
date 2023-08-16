@@ -5,7 +5,7 @@ import { AxiosInstance } from "axios"
 export const resilience = (axios: AxiosInstance) => {
   axios.interceptors.response.use(
     (v) => Promise.resolve(v),
-    (error) => {
+    (error, ...args) => {
       if (!error.config) {
         console.error("Received network error without axios details", error)
         return Promise.reject(error)
