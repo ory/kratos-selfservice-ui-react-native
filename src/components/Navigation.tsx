@@ -45,7 +45,7 @@ const options = {
 
 const linking = {
   // This is only used for e2e testing.
-  prefixes: ["http://127.0.0.1:4457/"],
+  prefixes: ["http://127.0.0.1:19006/"],
 }
 
 export default () => {

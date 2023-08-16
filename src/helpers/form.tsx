@@ -168,7 +168,7 @@ async function handleRedirectBrowserTo(
 
   const result = await WebBrowser.openAuthSessionAsync(
     url,
-    "http://localhost:4457/Callback",
+    "http://localhost:19006/Callback",
   )
   if (result.type == "success") {
     // We can fetch the session token now!
