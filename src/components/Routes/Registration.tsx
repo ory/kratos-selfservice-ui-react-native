@@ -27,7 +27,7 @@ const Registration = ({ navigation }: Props) => {
   const initializeFlow = () =>
     newOrySdk(project)
       .createNativeRegistrationFlow({
-        returnTo: "http://localhost:4457/Callback",
+        returnTo: "http://localhost:19006/Callback",
         returnSessionTokenExchangeCode: true,
       })
       // The flow was initialized successfully, let's set the form data:
