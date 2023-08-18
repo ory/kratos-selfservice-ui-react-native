@@ -17,7 +17,7 @@ import { SelfServiceFlow } from "../Ory/Ui"
 import { ProjectContext } from "../ProjectProvider"
 import StyledCard from "../Styled/StyledCard"
 import StyledText from "../Styled/StyledText"
-import { SessionContext } from "../../helpers/auth"
+import { logSDKError } from "../../helpers/axios"
 
 const CardTitle = styled.View`
   margin-bottom: 15px;
@@ -36,7 +36,7 @@ const Settings = () => {
       .then(({ data: flow }) => {
         setFlow(flow)
       })
-      .catch(console.error)
+      .catch(logSDKError)
 
   useEffect(() => {
     if (sessionToken) {

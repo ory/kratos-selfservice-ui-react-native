@@ -13,6 +13,7 @@ import AuthSubTitle from "../Styled/AuthSubTitle"
 import NavigationCard from "../Styled/NavigationCard"
 import StyledButton from "../Styled/StyledButton"
 import StyledCard from "../Styled/StyledCard"
+import { logSDKError } from "../../helpers/axios"
 
 type Props = StackScreenProps<RootStackParamList, "Verification">
 
@@ -27,7 +28,7 @@ export default function Verification({ navigation, route }: Props) {
       .then(({ data: flow }) => {
         setConfig(flow)
       })
-      .catch(console.error)
+      .catch(logSDKError)
 
   const fetchFlow = (id: string) =>
     newOrySdk(project)

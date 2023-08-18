@@ -16,9 +16,15 @@ import { ProjectContext } from "../ProjectProvider"
 import AuthSubTitle from "../Styled/AuthSubTitle"
 import NavigationCard from "../Styled/NavigationCard"
 import StyledCard from "../Styled/StyledCard"
+import * as AuthSession from "expo-auth-session"
+import { logSDKError } from "../../helpers/axios"
 
 type Props = StackScreenProps<RootStackParamList, "Registration">
 
+const redirectUri = AuthSession.makeRedirectUri({
+  preferLocalhost: true,
+  path: "/Callback",
+})
 const Registration = ({ navigation }: Props) => {
   const [flow, setFlow] = useState<RegistrationFlow | undefined>(undefined)
   const { project } = useContext(ProjectContext)
@@ -27,7 +33,7 @@ const Registration = ({ navigation }: Props) => {
   const initializeFlow = () =>
     newOrySdk(project)
       .createNativeRegistrationFlow({
-        returnTo: "http://localhost:19006/Callback",
+        returnTo: redirectUri,
         returnSessionTokenExchangeCode: true,
       })
       // The flow was initialized successfully, let's set the form data:
@@ -35,7 +41,7 @@ const Registration = ({ navigation }: Props) => {
         setFlow(flow)
         console.log("Setting registration flow", flow)
       })
-      .catch(console.error)
+      .catch(logSDKError)
 
   // When the component is mounted, we initialize a new use login flow:
   useFocusEffect(
@@ -54,7 +60,7 @@ const Registration = ({ navigation }: Props) => {
     newOrySdk(project)
       .getRegistrationFlow({ id: flow!.id })
       .then(({ data: f }) => setFlow({ ...flow, ...f })) // merging ensures we don't lose the code
-      .catch(console.error)
+      .catch(logSDKError)
 
   const setSessionAndRedirect = (session: SessionContext) => {
     setSession(session)
@@ -77,12 +83,12 @@ const Registration = ({ navigation }: Props) => {
         updateRegistrationFlowBody: payload,
       })
       .then(({ data }) => {
-        // ORY Kratos can be configured in such a way that it requires a login after
+        // Ory Kratos can be configured in such a way that it requires a login after
         // registration. You could handle that case by navigating to the Login screen
         // but for simplicity we'll just print an error here:
         if (!data.session_token || !data.session) {
           const err = new Error(
-            "It looks like you configured ORY Kratos to not issue a session automatically after registration. This edge-case is currently not supported in this example app. You can find more information on enabling this feature here: https://www.ory.sh/kratos/docs/next/self-service/flows/user-registration#successful-registration",
+            "It looks like you configured Ory Idnetities to not issue a session automatically after registration. This edge-case is currently not supported in this example app. You can find more information on enabling this feature here: https://www.ory.sh/kratos/docs/next/self-service/flows/user-registration#successful-registration",
           )
           return Promise.reject(err)
         }

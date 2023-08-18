@@ -1,6 +1,6 @@
 // A small which adds retries to axios
 
-import { AxiosInstance } from "axios"
+import { AxiosError, AxiosInstance } from "axios"
 
 export const resilience = (axios: AxiosInstance) => {
   axios.interceptors.response.use(
@@ -58,4 +58,32 @@ export const resilience = (axios: AxiosInstance) => {
       })
     },
   )
+}
+
+// TODO: remove once we upgrade axios
+export function isAxiosError(e: any, status?: number): e is AxiosError {
+  return !!e?.isAxiosError && (!status || e.response?.status === status)
+}
+export function logSDKError(e: unknown): void {
+  if (!isAxiosError(e)) {
+    console.error("Something went wrong", JSON.stringify(e, null, 2))
+    return
+  }
+  const data = e.response?.data
+
+  let message = undefined
+  switch (data.error.id) {
+    case "self_service_flow_return_to_forbidden":
+      message =
+        "Your project does not allow to return to the app. Please add the URL to the allowed_return_to URLs."
+      break
+  }
+
+  console.error(
+    message || data.error.message || "Something went wrong",
+    "\n",
+    "error details:",
+    JSON.stringify(data.error, null, 2),
+  )
+  return
 }

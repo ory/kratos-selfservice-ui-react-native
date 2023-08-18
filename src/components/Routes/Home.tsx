@@ -20,10 +20,9 @@ const Home = () => {
     return null
   }
 
-  // Get the name, or if it does not exist in the traits, use the
-  // identity's ID
-  const { name: { first = String(session.identity.id) } = {} } = session
-    .identity.traits as any
+  const traits = session.identity.traits
+  // Use the first name, the email, or the ID as the name
+  const first = traits.name?.first || traits.email || session.identity.id
 
   return (
     <Layout>
@@ -34,16 +33,14 @@ const Home = () => {
         <StyledText variant="lead">
           Hello, nice to have you! You signed up with this data:
         </StyledText>
-        <CodeBox>
-          {JSON.stringify(session.identity.traits || "{}", null, 2)}
-        </CodeBox>
+        <CodeBox>{JSON.stringify(traits || "{}", null, 2)}</CodeBox>
         <StyledText variant="lead">
-          You are signed in using an ORY Kratos Session Token:
+          You are signed in using an Ory Session Token:
         </StyledText>
         <CodeBox testID="session-token">{sessionToken}</CodeBox>
         <StyledText variant="lead">
-          This app makes REST requests to ORY Kratos' Public API to validate and
-          decode the ORY Kratos Session payload:
+          This app makes REST requests to Ory Identities' Public API to validate
+          and decode the Ory Session payload:
         </StyledText>
         <CodeBox testID="session-content">
           {JSON.stringify(session || "{}", null, 2)}
