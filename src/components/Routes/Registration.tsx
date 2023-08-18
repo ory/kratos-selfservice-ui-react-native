@@ -21,10 +21,6 @@ import { logSDKError } from "../../helpers/axios"
 
 type Props = StackScreenProps<RootStackParamList, "Registration">
 
-const redirectUri = AuthSession.makeRedirectUri({
-  preferLocalhost: true,
-  path: "/Callback",
-})
 const Registration = ({ navigation }: Props) => {
   const [flow, setFlow] = useState<RegistrationFlow | undefined>(undefined)
   const { project } = useContext(ProjectContext)
@@ -33,7 +29,15 @@ const Registration = ({ navigation }: Props) => {
   const initializeFlow = () =>
     newOrySdk(project)
       .createNativeRegistrationFlow({
-        returnTo: redirectUri,
+        // If you do use social sign in, please add the following URLs to your allowed return to URLs.
+        //   If you the app is running on an emulator or physical device: exp://localhost:8081
+        //   If you are using the web version: http://localhost:19006 (or whatever port you are using)
+        //   If that does not work, please see the documentation of makeRedirectURI for more information: https://docs.expo.dev/versions/latest/sdk/auth-session/#authsessionmakeredirecturioptions
+        // If you don't use Social sign in, you can comment out the following line.
+        returnTo: AuthSession.makeRedirectUri({
+          preferLocalhost: true,
+          path: "/Callback",
+        }),
         returnSessionTokenExchangeCode: true,
       })
       // The flow was initialized successfully, let's set the form data:

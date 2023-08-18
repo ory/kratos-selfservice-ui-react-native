@@ -27,7 +27,7 @@ export const newOrySdk = (project: string) =>
       basePath: kratosUrl(project),
       baseOptions: {
         // Setting this is very important as axios will send the CSRF cookie otherwise
-        // which causes problems with ORY Kratos' security detection.
+        // which causes problems with Ory Kratos' security detection.
         withCredentials: false,
 
         // Timeout after 5 seconds.
