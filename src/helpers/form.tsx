@@ -9,6 +9,7 @@ import {
   UiNodeImageAttributes,
   UiNodeInputAttributes,
   UiNodeTextAttributes,
+  VerificationFlow,
 } from "@ory/client"
 import { showMessage } from "react-native-flash-message"
 import * as WebBrowser from "expo-web-browser"
@@ -80,7 +81,7 @@ export function handleFlowInitError(err: AxiosError) {
 }
 
 export function handleFormSubmitError<
-  T extends RegistrationFlow | LoginFlow | undefined,
+  T extends RegistrationFlow | LoginFlow | VerificationFlow | undefined,
 >(
   flow: T,
   setFlow: (p: T) => void,

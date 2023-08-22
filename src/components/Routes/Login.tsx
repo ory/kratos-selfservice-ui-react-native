@@ -96,6 +96,12 @@ const Login = ({ navigation, route }: Props) => {
         cta="Sign up!"
         onPress={() => navigation.navigate("Registration")}
       />
+      <NavigationCard
+        testID="nav-recover"
+        description="Forgot your password?"
+        cta="Reset it!"
+        onPress={() => navigation.navigate("Recovery")}
+      />
 
       <ProjectPicker />
     </AuthLayout>
