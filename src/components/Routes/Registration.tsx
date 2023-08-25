@@ -139,16 +139,18 @@ const Registration = ({ navigation }: Props) => {
     return null
   }
 
-  return <RegistrationUI flow={flow} onSubmit={onSubmit} />
+  return (
+    <RegistrationUI navigation={navigation} flow={flow} onSubmit={onSubmit} />
+  )
 }
 
 type RegistrationUIProps = {
   flow: RegistrationFlow
   onSubmit: (payload: UpdateRegistrationFlowBody) => Promise<void>
+  navigation: Props["navigation"]
 }
 
-function RegistrationUI({ flow, onSubmit }: RegistrationUIProps) {
-  const navigation = useNavigation()
+function RegistrationUI({ flow, onSubmit, navigation }: RegistrationUIProps) {
   return (
     <AuthLayout>
       <StyledCard>
@@ -182,7 +184,7 @@ function RegistrationUI({ flow, onSubmit }: RegistrationUIProps) {
       <NavigationCard
         description="Already have an account?"
         cta="Sign in!"
-        onPress={() => navigation.navigate("Login")}
+        onPress={() => navigation.navigate("Login", {})}
       />
 
       <ProjectPicker />

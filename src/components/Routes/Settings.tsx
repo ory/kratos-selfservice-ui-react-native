@@ -57,7 +57,7 @@ const Settings = ({ navigation, route }: Props) => {
       navigation.navigate("Login", {})
       return
     }
-    if (route.params.flowId) {
+    if (route?.params?.flowId) {
       fetchFlow(sdk, sessionToken, route.params.flowId).then(setFlow)
     } else {
       initializeFlow(sdk, sessionToken).then(setFlow)
