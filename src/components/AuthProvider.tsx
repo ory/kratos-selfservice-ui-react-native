@@ -38,8 +38,8 @@ interface AuthContextProps {
   children: ReactNode
 }
 
-export default ({ children }: AuthContextProps) => {
-  const { project } = useContext(ProjectContext)
+export default function AuthContextProvider({ children }: AuthContextProps) {
+  const { sdk } = useContext(ProjectContext)
   const [sessionContext, setSessionContext] = useState<
     SessionContext | undefined
   >(undefined)
@@ -49,38 +49,34 @@ export default ({ children }: AuthContextProps) => {
     getAuthenticatedSession().then(syncSession)
   }, [])
 
-  const syncSession = (auth: SessionContext) => {
-    if (!auth) {
+  const syncSession = async (auth: { session_token?: string } | null) => {
+    if (!auth?.session_token) {
       return setAuth(null)
     }
 
-    // Use the session token from the auth session:
-    return (
-      newOrySdk(project)
+    try {
+      const { data: session } = await sdk
         // whoami() returns the session belonging to the session_token:
         .toSession({ xSessionToken: auth.session_token })
-        .then(({ data: session }) => {
-          // This means that the session is still valid! The user is logged in.
-          //
-          // Here you could print the user's email using e.g.:
-          //
-          //  console.log(session.identity.traits.email)
-          setSessionContext({ session, session_token: auth.session_token })
-          return Promise.resolve()
-        })
-        .catch((err: AxiosError) => {
-          if (err.response?.status === 401) {
-            // The user is no longer logged in (hence 401)
-            // console.log('Session is not authenticated:', err)
-          } else {
-            // A network or some other error occurred
-            console.error(err)
-          }
 
-          // Remove the session / log the user out.
-          setSessionContext(null)
-        })
-    )
+      // This means that the session is still valid! The user is logged in.
+      //
+      // Here you could print the user's email using e.g.:
+      //
+      //  console.log(session.identity.traits.email)
+      setSessionContext({ session, session_token: auth.session_token })
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        // The user is no longer logged in (hence 401)
+        // console.log('Session is not authenticated:', err)
+      } else {
+        // A network or some other error occurred
+        console.error(err)
+      }
+
+      // Remove the session / log the user out.
+      setSessionContext(null)
+    }
   }
 
   const setAuth = (session: SessionContext) => {

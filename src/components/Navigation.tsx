@@ -20,6 +20,7 @@ import Registration from "./Routes/Registration"
 import Settings from "./Routes/Settings"
 import Verification from "./Routes/Verification"
 import Callback from "./Routes/Callback"
+import Recovery from "./Routes/Recovery"
 
 const Stack = createStackNavigator<RootStackParamList>()
 
@@ -30,13 +31,16 @@ export type RootStackParamList = {
     aal?: "aal2"
   }
   Registration: undefined
-  Settings: undefined
+  Settings: {
+    flowId?: string
+  }
   Callback: {
     code?: string
   }
   Verification: {
     flowId?: string
   }
+  Recovery: undefined
 }
 
 const options = {
@@ -73,6 +77,7 @@ export default () => {
             <Stack.Screen name="Login" component={Login} initialParams={{}} />
             <Stack.Screen name="Verification" component={Verification} />
             <Stack.Screen name="Callback" component={Callback} />
+            <Stack.Screen name="Recovery" component={Recovery} />
           </Stack.Navigator>
         </NavigationContainer>
       </TouchableWithoutFeedback>

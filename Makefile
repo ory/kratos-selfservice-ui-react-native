@@ -34,3 +34,5 @@ build-sdk:
 					--git-host github.com \
 					-c ./contrib/sdk/typescript.yml
 	(cd ./contrib/sdk/generated; npm i; npm run build)
+	make format
+	npm i
