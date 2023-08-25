@@ -1,9 +1,4 @@
-import {
-  ContinueWith,
-  FrontendApi,
-  RecoveryFlow,
-  UpdateRecoveryFlowBody,
-} from "@ory/client"
+import { ContinueWith, RecoveryFlow, UpdateRecoveryFlowBody } from "@ory/client"
 import { useFocusEffect } from "@react-navigation/native"
 import { StackScreenProps } from "@react-navigation/stack"
 import React, { useCallback, useContext, useState } from "react"
@@ -19,7 +14,7 @@ import NavigationCard from "../Styled/NavigationCard"
 import { isAxiosError } from "axios"
 import { handleFormSubmitError } from "../../helpers/form"
 
-type Props = StackScreenProps<RootStackParamList, "Settings">
+type Props = StackScreenProps<RootStackParamList, "Recovery">
 
 function collectRecoveryActions(items?: ContinueWith[]) {
   return items?.reduce(
