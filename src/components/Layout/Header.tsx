@@ -4,6 +4,8 @@ import React, { useContext } from "react"
 import { TouchableOpacity } from "react-native"
 import styled from "styled-components/native"
 import { AuthContext } from "../AuthProvider"
+import { RootStackParamList } from "../Navigation"
+import { NavigationProp } from "@react-navigation/core/src/types"
 
 const Buttons = styled.View`
   display: flex;
@@ -40,23 +42,20 @@ const Container = styled.View`
 `
 
 const Header = () => {
-  const navigation = useNavigation()
+  const { navigate } = useNavigation<NavigationProp<RootStackParamList>>()
   const { setSession } = useContext(AuthContext)
   const logout = () => setSession(null)
-  const navigate = (to: "Settings" | "Home") => () => {
-    navigation.navigate(to)
-  }
 
   return (
     <Container>
-      <TouchableOpacity onPress={navigate("Home")}>
+      <TouchableOpacity onPress={() => navigate("Home")}>
         <StyledImage
           resizeMode="contain"
           source={require("../../assets/logo.png")}
         />
       </TouchableOpacity>
       <Buttons>
-        <TouchableOpacity onPress={navigate("Settings")}>
+        <TouchableOpacity onPress={() => navigate("Settings", {})}>
           <HeaderButton
             resizeMode="contain"
             source={require("../../assets/gear.png")}

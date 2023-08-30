@@ -3,7 +3,6 @@ import { useFocusEffect } from "@react-navigation/native"
 import { StackScreenProps } from "@react-navigation/stack"
 import React, { useCallback, useContext, useState } from "react"
 import { getNodeId, handleFormSubmitError } from "../../helpers/form"
-import { newOrySdk } from "../../helpers/sdk"
 import AuthLayout from "../Layout/AuthLayout"
 import ProjectPicker from "../Layout/ProjectPicker"
 import { RootStackParamList } from "../Navigation"
@@ -18,23 +17,23 @@ import { logSDKError } from "../../helpers/axios"
 type Props = StackScreenProps<RootStackParamList, "Verification">
 
 export default function Verification({ navigation, route }: Props) {
-  const [flow, setConfig] = useState<VerificationFlow | undefined>(undefined)
-  const { project } = useContext(ProjectContext)
+  const [flow, setFlow] = useState<VerificationFlow | undefined>(undefined)
+  const { sdk } = useContext(ProjectContext)
 
   const initializeFlow = () =>
-    newOrySdk(project)
+    sdk
       .createNativeVerificationFlow()
       // The flow was initialized successfully, let's set the form data:
       .then(({ data: flow }) => {
-        setConfig(flow)
+        setFlow(flow)
       })
       .catch(logSDKError)
 
   const fetchFlow = (id: string) =>
-    newOrySdk(project)
+    sdk
       .getVerificationFlow({ id })
       .then(({ data }) => {
-        setConfig(data)
+        setFlow(data)
       })
       .catch(console.error)
 
@@ -49,9 +48,9 @@ export default function Verification({ navigation, route }: Props) {
       }
 
       return () => {
-        setConfig(undefined)
+        setFlow(undefined)
       }
-    }, [project]),
+    }, [sdk, route.params.flowId]),
   )
 
   // This will update the verification flow with the user provided input:
@@ -62,18 +61,21 @@ export default function Verification({ navigation, route }: Props) {
       return
     }
 
-    newOrySdk(project)
+    sdk
       .updateVerificationFlow({
         flow: flow.id,
         updateVerificationFlowBody: payload,
       })
       .then(({ data }) => {
-        setConfig(data)
+        setFlow(data)
       })
       .catch(
         handleFormSubmitError<VerificationFlow | undefined>(
-          setConfig,
+          flow,
+          setFlow,
           initializeFlow,
+          () => {},
+          async () => {},
         ),
       )
   }

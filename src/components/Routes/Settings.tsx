@@ -1,54 +1,68 @@
 // This file renders the settings screen.
 
 import {
+  FrontendApi,
   SettingsFlow,
   SettingsFlowState,
   UpdateSettingsFlowBody,
 } from "@ory/client"
-import { useNavigation } from "@react-navigation/native"
+import { StackScreenProps } from "@react-navigation/stack"
 import React, { useContext, useEffect, useState } from "react"
 import { showMessage } from "react-native-flash-message"
 import styled from "styled-components/native"
+import { logSDKError } from "../../helpers/axios"
 import { handleFormSubmitError } from "../../helpers/form"
 import { newOrySdk } from "../../helpers/sdk"
 import { AuthContext } from "../AuthProvider"
 import Layout from "../Layout/Layout"
+import { RootStackParamList } from "../Navigation"
 import { SelfServiceFlow } from "../Ory/Ui"
 import { ProjectContext } from "../ProjectProvider"
 import StyledCard from "../Styled/StyledCard"
 import StyledText from "../Styled/StyledText"
-import { logSDKError } from "../../helpers/axios"
 
 const CardTitle = styled.View`
   margin-bottom: 15px;
 `
 
-const Settings = () => {
-  const navigation = useNavigation()
-  const { project } = useContext(ProjectContext)
+async function initializeFlow(sdk: FrontendApi, sessionToken: string) {
+  const { data: flow } = await sdk.createNativeSettingsFlow({
+    xSessionToken: sessionToken,
+  })
+  return flow
+}
+
+async function fetchFlow(
+  sdk: FrontendApi,
+  sessionToken: string,
+  flowId: string,
+) {
+  const { data: flow } = await sdk.getSettingsFlow({
+    id: flowId,
+    xSessionToken: sessionToken,
+  })
+  return flow
+}
+
+type Props = StackScreenProps<RootStackParamList, "Settings">
+
+const Settings = ({ navigation, route }: Props) => {
+  const { sdk } = useContext(ProjectContext)
   const { isAuthenticated, sessionToken, setSession, syncSession } =
     useContext(AuthContext)
   const [flow, setFlow] = useState<SettingsFlow | undefined>(undefined)
 
-  const initializeFlow = (sessionToken: string) =>
-    newOrySdk(project)
-      .createNativeSettingsFlow({ xSessionToken: sessionToken })
-      .then(({ data: flow }) => {
-        setFlow(flow)
-      })
-      .catch(logSDKError)
-
   useEffect(() => {
-    if (sessionToken) {
-      initializeFlow(sessionToken)
+    if (!sessionToken || !isAuthenticated) {
+      navigation.navigate("Login", {})
+      return
     }
-  }, [project, sessionToken])
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigation.navigate("Login")
+    if (route?.params?.flowId) {
+      fetchFlow(sdk, sessionToken, route.params.flowId).then(setFlow)
+    } else {
+      initializeFlow(sdk, sessionToken).then(setFlow)
     }
-  }, [isAuthenticated])
+  }, [sdk, sessionToken])
 
   if (!flow || !sessionToken) {
     return null
@@ -60,7 +74,7 @@ const Settings = () => {
         for (const c of result.continue_with) {
           switch (c.action) {
             case "show_verification_ui": {
-              console.log("got a verfification flow, navigating to it", c)
+              console.log("got a verification flow, navigating to it", c)
               navigation.navigate("Verification", {
                 flowId: c.flow.id,
               })
@@ -82,7 +96,7 @@ const Settings = () => {
   }
 
   const onSubmit = (payload: UpdateSettingsFlowBody) =>
-    newOrySdk(project)
+    sdk
       .updateSettingsFlow({
         flow: flow.id,
         xSessionToken: sessionToken,
@@ -95,7 +109,7 @@ const Settings = () => {
         handleFormSubmitError(
           undefined,
           setFlow,
-          () => initializeFlow(sessionToken),
+          () => initializeFlow(sdk, sessionToken).then,
           () => setSession(null),
           async () => {},
         ),

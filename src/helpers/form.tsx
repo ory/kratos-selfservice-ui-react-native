@@ -98,7 +98,9 @@ function isRedirectBrowserToError(
   )
 }
 
-export function handleFormSubmitError<T extends Flow>(
+export function handleFormSubmitError<
+  T extends RegistrationFlow | LoginFlow | VerificationFlow | undefined,
+>(
   flow: T,
   setFlow: (p: T) => void,
   initializeFlow: () => void,
