@@ -14,11 +14,12 @@ import {
   VerificationFlow,
 } from "@ory/client"
 import { AxiosError } from "axios"
+import * as AuthSession from "expo-auth-session"
 import * as WebBrowser from "expo-web-browser"
 import { showMessage } from "react-native-flash-message"
 import { SessionContext } from "./auth"
+import { logSDKError } from "./axios"
 import { newOrySdk } from "./sdk"
-import * as AuthSession from "expo-auth-session"
 
 type Flow = LoginFlow | RegistrationFlow | VerificationFlow | RecoveryFlow
 
@@ -109,6 +110,7 @@ export function handleFormSubmitError<
   logout?: () => void,
 ) {
   return (err: AxiosError) => {
+    logSDKError(err)
     if (err.response) {
       switch (err.response.status) {
         case 400:
@@ -177,7 +179,6 @@ export function handleFormSubmitError<
       }
     }
 
-    console.error(err, err.response?.data)
     return Promise.resolve()
   }
 }

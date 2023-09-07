@@ -1,6 +1,7 @@
 // A small which adds retries to axios
 
-import { AxiosError, AxiosInstance } from "axios"
+import axios, { AxiosInstance } from "axios"
+import { format } from "@redtea/format-axios-error"
 
 export const resilience = (axios: AxiosInstance) => {
   axios.interceptors.response.use(
@@ -60,16 +61,35 @@ export const resilience = (axios: AxiosInstance) => {
   )
 }
 
-// TODO: remove once we upgrade axios
-export function isAxiosError(e: any, status?: number): e is AxiosError {
-  return !!e?.isAxiosError && (!status || e.response?.status === status)
+function containsGenericError(
+  data: unknown,
+): data is { error: { id?: string } & Record<string, unknown> } {
+  if (!data) {
+    return false
+  }
+  if (typeof data !== "object") {
+    return false
+  }
+
+  if (!("error" in data)) {
+    return false
+  }
+
+  const e = data.error
+  return typeof e === "object" && !!e
 }
+
 export function logSDKError(e: unknown): void {
-  if (!isAxiosError(e)) {
+  if (!axios.isAxiosError(e)) {
     console.error("Something went wrong", JSON.stringify(e, null, 2))
     return
   }
   const data = e.response?.data
+
+  if (!containsGenericError(data)) {
+    console.error("Something went wrong", format(e))
+    return
+  }
 
   let message = undefined
   switch (data.error.id) {
@@ -80,8 +100,8 @@ export function logSDKError(e: unknown): void {
   }
 
   console.error(
-    message || data.error.message || "Something went wrong",
-    "\n",
+    message || data.error.reason || "Something went wrong",
+    "\n\n",
     "error details:",
     JSON.stringify(data.error, null, 2),
   )
