@@ -36,3 +36,8 @@ build-sdk:
 	(cd ./contrib/sdk/generated; npm i; npm run build)
 	make format
 	npm i
+
+.PHONE: link-local-sdk
+link-local-sdk:
+	(cd ./contrib/sdk/generated; npm link)
+	npm link @ory/client
