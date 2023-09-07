@@ -13,6 +13,7 @@ import { AuthContext } from "../AuthProvider"
 import NavigationCard from "../Styled/NavigationCard"
 import { isAxiosError } from "axios"
 import { handleFormSubmitError } from "../../helpers/form"
+import { logSDKError } from "../../helpers/axios"
 
 type Props = StackScreenProps<RootStackParamList, "Recovery">
 
@@ -44,7 +45,7 @@ export default function Recovery({ navigation }: Props) {
 
   useFocusEffect(
     useCallback(() => {
-      initializeFlow().then(setFlow)
+      initializeFlow().then(setFlow).catch(logSDKError)
 
       return () => {
         setFlow(undefined)

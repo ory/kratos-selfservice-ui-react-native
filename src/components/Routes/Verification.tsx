@@ -35,7 +35,7 @@ export default function Verification({ navigation, route }: Props) {
       .then(({ data }) => {
         setFlow(data)
       })
-      .catch(console.error)
+      .catch(logSDKError)
 
   // When the component is mounted, we initialize a new verification flow
   // or use the id provided by the route params to fetch that flow:

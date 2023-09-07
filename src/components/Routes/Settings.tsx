@@ -58,9 +58,11 @@ const Settings = ({ navigation, route }: Props) => {
       return
     }
     if (route?.params?.flowId) {
-      fetchFlow(sdk, sessionToken, route.params.flowId).then(setFlow)
+      fetchFlow(sdk, sessionToken, route.params.flowId)
+        .then(setFlow)
+        .catch(logSDKError)
     } else {
-      initializeFlow(sdk, sessionToken).then(setFlow)
+      initializeFlow(sdk, sessionToken).then(setFlow).catch(logSDKError)
     }
   }, [sdk, sessionToken])
 
