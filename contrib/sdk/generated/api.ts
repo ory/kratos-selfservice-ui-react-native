@@ -2876,6 +2876,12 @@ export interface UpdateLoginFlowWithOidcMethod {
    */
   id_token?: string
   /**
+   * IDTokenNonce is the nonce, used when generating the IDToken. If the provider supports nonce validation, the nonce will be validated against this value and required.
+   * @type {string}
+   * @memberof UpdateLoginFlowWithOidcMethod
+   */
+  id_token_nonce?: string
+  /**
    * Method to use  This field must be set to `oidc` when using the oidc method.
    * @type {string}
    * @memberof UpdateLoginFlowWithOidcMethod
@@ -2887,12 +2893,6 @@ export interface UpdateLoginFlowWithOidcMethod {
    * @memberof UpdateLoginFlowWithOidcMethod
    */
   provider: string
-  /**
-   * RawIDTokenNonce is the nonce, used when generating the IDToken. If the provider supports nonce validation, the nonce will be validated against this value and required.
-   * @type {string}
-   * @memberof UpdateLoginFlowWithOidcMethod
-   */
-  raw_id_token_nonce?: string
   /**
    * The identity traits. This is a placeholder for the registration flow.
    * @type {object}
@@ -3155,6 +3155,12 @@ export interface UpdateRegistrationFlowWithOidcMethod {
    */
   id_token?: string
   /**
+   * IDTokenNonce is the nonce, used when generating the IDToken. If the provider supports nonce validation, the nonce will be validated against this value and is required.
+   * @type {string}
+   * @memberof UpdateRegistrationFlowWithOidcMethod
+   */
+  id_token_nonce?: string
+  /**
    * Method to use  This field must be set to `oidc` when using the oidc method.
    * @type {string}
    * @memberof UpdateRegistrationFlowWithOidcMethod
@@ -3166,12 +3172,6 @@ export interface UpdateRegistrationFlowWithOidcMethod {
    * @memberof UpdateRegistrationFlowWithOidcMethod
    */
   provider: string
-  /**
-   * RawIDTokenNonce is the nonce, used when generating the IDToken. If the provider supports nonce validation, the nonce will be validated against this value and required.
-   * @type {string}
-   * @memberof UpdateRegistrationFlowWithOidcMethod
-   */
-  raw_id_token_nonce?: string
   /**
    * The identity traits
    * @type {object}

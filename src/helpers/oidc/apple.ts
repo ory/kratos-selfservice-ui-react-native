@@ -7,13 +7,12 @@ import * as Crypto from "expo-crypto"
 
 async function signInWithApplePayload(): Promise<{
   id_token: string
-  raw_id_token_nonce: string
+  id_token_nonce: string
   traits: Record<string, unknown>
 }> {
-  const nonce = Crypto.getRandomBytes(16).toString()
   const digest = await Crypto.digestStringAsync(
     Crypto.CryptoDigestAlgorithm.SHA256,
-    nonce,
+    Crypto.getRandomBytes(16).toString(),
   )
   let credential: AppleAuthentication.AppleAuthenticationCredential
   try {
@@ -31,7 +30,7 @@ async function signInWithApplePayload(): Promise<{
 
   return {
     id_token: credential.identityToken || "",
-    raw_id_token_nonce: nonce,
+    id_token_nonce: digest,
     traits: {
       name: {
         first: credential.fullName?.givenName || "given name",
