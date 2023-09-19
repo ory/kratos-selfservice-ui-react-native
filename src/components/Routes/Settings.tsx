@@ -6,20 +6,19 @@ import {
   SettingsFlowState,
   UpdateSettingsFlowBody,
 } from "@ory/client"
-import { useNavigation, useRoute } from "@react-navigation/native"
+import { StackScreenProps } from "@react-navigation/stack"
 import React, { useContext, useEffect, useState } from "react"
 import { showMessage } from "react-native-flash-message"
 import styled from "styled-components/native"
+import { logSDKError } from "../../helpers/axios"
 import { handleFormSubmitError } from "../../helpers/form"
-import { newOrySdk } from "../../helpers/sdk"
 import { AuthContext } from "../AuthProvider"
 import Layout from "../Layout/Layout"
+import { RootStackParamList } from "../Navigation"
 import { SelfServiceFlow } from "../Ory/Ui"
 import { ProjectContext } from "../ProjectProvider"
 import StyledCard from "../Styled/StyledCard"
 import StyledText from "../Styled/StyledText"
-import { StackScreenProps } from "@react-navigation/stack"
-import { RootStackParamList } from "../Navigation"
 
 const CardTitle = styled.View`
   margin-bottom: 15px;
@@ -58,9 +57,11 @@ const Settings = ({ navigation, route }: Props) => {
       return
     }
     if (route?.params?.flowId) {
-      fetchFlow(sdk, sessionToken, route.params.flowId).then(setFlow)
+      fetchFlow(sdk, sessionToken, route.params.flowId)
+        .then(setFlow)
+        .catch(logSDKError)
     } else {
-      initializeFlow(sdk, sessionToken).then(setFlow)
+      initializeFlow(sdk, sessionToken).then(setFlow).catch(logSDKError)
     }
   }, [sdk, sessionToken])
 
@@ -70,16 +71,14 @@ const Settings = ({ navigation, route }: Props) => {
 
   const onSuccess = (result: SettingsFlow) => {
     if (result.continue_with) {
-      if (result.continue_with) {
-        for (const c of result.continue_with) {
-          switch (c.action) {
-            case "show_verification_ui": {
-              console.log("got a verification flow, navigating to it", c)
-              navigation.navigate("Verification", {
-                flowId: c.flow.id,
-              })
-              break
-            }
+      for (const c of result.continue_with) {
+        switch (c.action) {
+          case "show_verification_ui": {
+            console.log("got a verification flow, navigating to it", c)
+            navigation.navigate("Verification", {
+              flowId: c.flow.id,
+            })
+            break
           }
         }
       }

@@ -12,6 +12,7 @@ import AuthSubTitle from "../Styled/AuthSubTitle"
 import NavigationCard from "../Styled/NavigationCard"
 import StyledButton from "../Styled/StyledButton"
 import StyledCard from "../Styled/StyledCard"
+import { logSDKError } from "../../helpers/axios"
 
 type Props = StackScreenProps<RootStackParamList, "Verification">
 
@@ -26,7 +27,7 @@ export default function Verification({ navigation, route }: Props) {
       .then(({ data: flow }) => {
         setFlow(flow)
       })
-      .catch(console.error)
+      .catch(logSDKError)
 
   const fetchFlow = (id: string) =>
     sdk
@@ -34,7 +35,7 @@ export default function Verification({ navigation, route }: Props) {
       .then(({ data }) => {
         setFlow(data)
       })
-      .catch(console.error)
+      .catch(logSDKError)
 
   // When the component is mounted, we initialize a new verification flow
   // or use the id provided by the route params to fetch that flow:

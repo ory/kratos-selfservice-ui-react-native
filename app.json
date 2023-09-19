@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ORY Profile App",
+    "name": "Ory Profile App",
     "slug": "kratos-selfservice-ui-react-native",
     "scheme": "kratos-selfservice-ui-react-native",
     "version": "0.5.14",
@@ -30,7 +30,7 @@
       "favicon": "./assets/favicon.png"
     },
     "platforms": ["ios", "android", "web"],
-    "description": "An example app demonstrating login, registration, profile settings, 2fa, account recovery, and more using the ORY Kratos open source project.",
+    "description": "An example app demonstrating login, registration, profile settings, 2fa, account recovery, and more using the Ory Kratos open source project.",
     "plugins": ["sentry-expo"],
     "hooks": {
       "postPublish": [
