@@ -23,7 +23,7 @@
   "dependencies": {
     "@expo-google-fonts/roboto": "0.2.3",
     "@expo-google-fonts/rubik": "0.2.3",
-    "@expo/webpack-config": "^19.0.0",
+    "@expo/webpack-config": "19.0.0",
     "@ory/client": "1.1.46",
     "@ory/themes": "0.0.21",
     "@react-native-async-storage/async-storage": "1.18.2",
