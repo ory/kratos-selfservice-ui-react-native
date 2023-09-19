@@ -1,8 +1,6 @@
 import { Configuration, FrontendApi } from "@ory/client"
-import axiosFactory from "axios"
+import axios from "axios"
 import Constants from "expo-constants"
-
-const axios = axiosFactory.create()
 
 // canonicalize removes the trailing slash from URLs.
 const canonicalize = (url: string = "") => url.replace(/\/+$/, "")

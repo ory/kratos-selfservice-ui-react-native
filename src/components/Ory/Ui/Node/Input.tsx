@@ -85,21 +85,21 @@ export const NodeInput = ({
   let extraProps: TextInputProps = {}
   switch (variant) {
     case "email":
-      extraProps.autoCompleteType = "email"
+      extraProps.autoComplete = "email"
       extraProps.keyboardType = "email-address"
       extraProps.textContentType = "emailAddress"
       extraProps.autoCapitalize = "none"
       extraProps.autoCorrect = false
       break
     case "password":
-      extraProps.autoCompleteType = "password"
+      extraProps.autoComplete = "password"
       extraProps.textContentType = "password"
       extraProps.autoCapitalize = "none"
       extraProps.secureTextEntry = true
       extraProps.autoCorrect = false
       break
     case "username":
-      extraProps.autoCompleteType = "username"
+      extraProps.autoComplete = "username"
       extraProps.textContentType = "username"
       extraProps.autoCapitalize = "none"
       extraProps.autoCorrect = false

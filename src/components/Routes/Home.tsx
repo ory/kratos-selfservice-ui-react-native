@@ -1,18 +1,20 @@
+import { StackScreenProps } from "@react-navigation/stack"
 import React, { useContext, useEffect } from "react"
-import StyledText from "../Styled/StyledText"
-import CodeBox from "../Styled/CodeBox"
 import { AuthContext } from "../AuthProvider"
 import Layout from "../Layout/Layout"
+import { RootStackParamList } from "../Navigation"
+import CodeBox from "../Styled/CodeBox"
 import StyledCard from "../Styled/StyledCard"
-import { useNavigation } from "@react-navigation/native"
+import StyledText from "../Styled/StyledText"
 
-const Home = () => {
-  const navigation = useNavigation()
+type Props = StackScreenProps<RootStackParamList, "Home">
+
+const Home = ({ navigation }: Props) => {
   const { isAuthenticated, session, sessionToken } = useContext(AuthContext)
 
   useEffect(() => {
     if (!isAuthenticated || !session) {
-      navigation.navigate("Login")
+      navigation.navigate("Login", {})
     }
   }, [isAuthenticated, sessionToken])
 
@@ -20,9 +22,10 @@ const Home = () => {
     return null
   }
 
-  const traits = session.identity.traits
+  const traits = session.identity?.traits
+
   // Use the first name, the email, or the ID as the name
-  const first = traits.name?.first || traits.email || session.identity.id
+  const first = traits.name?.first || traits.email || session.identity?.id
 
   return (
     <Layout>

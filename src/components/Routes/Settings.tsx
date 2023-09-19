@@ -12,7 +12,6 @@ import { showMessage } from "react-native-flash-message"
 import styled from "styled-components/native"
 import { logSDKError } from "../../helpers/axios"
 import { handleFormSubmitError } from "../../helpers/form"
-import { newOrySdk } from "../../helpers/sdk"
 import { AuthContext } from "../AuthProvider"
 import Layout from "../Layout/Layout"
 import { RootStackParamList } from "../Navigation"
@@ -72,16 +71,14 @@ const Settings = ({ navigation, route }: Props) => {
 
   const onSuccess = (result: SettingsFlow) => {
     if (result.continue_with) {
-      if (result.continue_with) {
-        for (const c of result.continue_with) {
-          switch (c.action) {
-            case "show_verification_ui": {
-              console.log("got a verification flow, navigating to it", c)
-              navigation.navigate("Verification", {
-                flowId: c.flow.id,
-              })
-              break
-            }
+      for (const c of result.continue_with) {
+        switch (c.action) {
+          case "show_verification_ui": {
+            console.log("got a verification flow, navigating to it", c)
+            navigation.navigate("Verification", {
+              flowId: c.flow.id,
+            })
+            break
           }
         }
       }

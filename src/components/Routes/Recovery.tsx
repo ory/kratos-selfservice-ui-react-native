@@ -11,9 +11,9 @@ import AuthSubTitle from "../Styled/AuthSubTitle"
 import StyledCard from "../Styled/StyledCard"
 import { AuthContext } from "../AuthProvider"
 import NavigationCard from "../Styled/NavigationCard"
-import { isAxiosError } from "axios"
 import { handleFormSubmitError } from "../../helpers/form"
 import { logSDKError } from "../../helpers/axios"
+import axios from "axios"
 
 type Props = StackScreenProps<RootStackParamList, "Recovery">
 
@@ -81,7 +81,7 @@ export default function Recovery({ navigation }: Props) {
         setFlow(updatedFlow)
       }
     } catch (err: unknown) {
-      if (isAxiosError(err)) {
+      if (axios.isAxiosError(err)) {
         handleFormSubmitError(
           flow,
           setFlow,
