@@ -9,6 +9,7 @@ import {
   isUiNodeInputAttributes,
 } from "../../../../helpers/form"
 import StyledTextInput from "../../../Styled/StyledTextInput"
+import Checkbox from "../../../Styled/Checkbox"
 
 interface Props extends InputProps {
   node: UiNode
@@ -45,6 +46,8 @@ const guessVariant = ({ attributes }: UiNode) => {
       return "button"
     case "password":
       return "password"
+    case "checkbox":
+      return "checkbox"
     default:
       return "text"
   }
@@ -116,15 +119,24 @@ export const NodeInput = ({
   return (
     <View testID={`field/${name}`}>
       <Title>{title}</Title>
-      <StyledTextInput
-        testID={name}
-        onChange={onChange}
-        value={value ? String(value) : ""}
-        editable={!disabled}
-        onChangeText={onChange}
-        state={disabled ? "disabled" : undefined}
-        {...extraProps}
-      />
+      {variant === "checkbox" ? (
+        <Checkbox
+          testID={name}
+          onClick={() => onChange(!value)}
+          value={value}
+          disabled={disabled}
+        />
+      ) : (
+        <StyledTextInput
+          testID={name}
+          onChange={onChange}
+          value={value ? String(value) : ""}
+          editable={!disabled}
+          onChangeText={onChange}
+          state={disabled ? "disabled" : undefined}
+          {...extraProps}
+        />
+      )}
       <>
         {node.messages?.map(({ text, id, type }, k) => (
           <Subtitle key={`${id}${k}`} state={typeToState({ type, disabled })}>
