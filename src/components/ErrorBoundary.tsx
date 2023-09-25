@@ -1,13 +1,11 @@
-import React, { Component, ErrorInfo } from "react"
+import React, { Component, ErrorInfo, PropsWithChildren } from "react"
 import { Text } from "react-native"
-
-interface Props {}
 
 interface State {
   hasError: boolean
 }
 
-export default class ErrorBoundary extends Component<Props, State> {
+export default class ErrorBoundary extends Component<PropsWithChildren, State> {
   state = {
     hasError: false,
   }

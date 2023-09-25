@@ -22,6 +22,7 @@ import AuthSubTitle from "../Styled/AuthSubTitle"
 import NavigationCard from "../Styled/NavigationCard"
 import StyledCard from "../Styled/StyledCard"
 import * as AuthSession from "expo-auth-session"
+import { logSDKError } from "../../helpers/axios"
 
 type Props = StackScreenProps<RootStackParamList, "Registration">
 
@@ -33,6 +34,11 @@ const Registration = ({ navigation }: Props) => {
   const initializeFlow = () =>
     sdk
       .createNativeRegistrationFlow({
+        // If you do use social sign in, please add the following URLs to your allowed return to URLs.
+        //   If you the app is running on an emulator or physical device: exp://localhost:8081
+        //   If you are using the web version: http://localhost:19006 (or whatever port you are using)
+        //   If that does not work, please see the documentation of makeRedirectURI for more information: https://docs.expo.dev/versions/latest/sdk/auth-session/#authsessionmakeredirecturioptions
+        // If you don't use Social sign in, you can comment out the following line.
         returnTo: AuthSession.makeRedirectUri({
           preferLocalhost: true,
           path: "/Callback",
@@ -44,7 +50,7 @@ const Registration = ({ navigation }: Props) => {
         setFlow(flow)
         console.log("Setting registration flow", JSON.stringify(flow))
       })
-      .catch(console.error)
+      .catch(logSDKError)
 
   // When the component is mounted, we initialize a new use login flow:
   useFocusEffect(
@@ -63,7 +69,7 @@ const Registration = ({ navigation }: Props) => {
     sdk
       .getRegistrationFlow({ id: flow!.id })
       .then(({ data: f }) => setFlow({ ...flow, ...f })) // merging ensures we don't lose the code
-      .catch(console.error)
+      .catch(logSDKError)
 
   const setSessionAndRedirect = (session: SessionContext) => {
     setSession(session)
@@ -81,7 +87,7 @@ const Registration = ({ navigation }: Props) => {
     }
 
     console.log("Submitting registration form", payload)
-    let res: AxiosResponse<SuccessfulNativeRegistration, any>
+    let res: AxiosResponse<SuccessfulNativeRegistration>
     try {
       if (
         Platform.OS === "ios" &&

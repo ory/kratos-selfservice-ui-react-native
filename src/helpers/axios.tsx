@@ -1,6 +1,7 @@
 // A small which adds retries to axios
 
-import { AxiosInstance } from "axios"
+import axios, { AxiosInstance } from "axios"
+import { format } from "@redtea/format-axios-error"
 
 export const resilience = (axios: AxiosInstance) => {
   axios.interceptors.response.use(
@@ -58,4 +59,51 @@ export const resilience = (axios: AxiosInstance) => {
       })
     },
   )
+}
+
+function containsGenericError(
+  data: unknown,
+): data is { error: { id?: string } & Record<string, unknown> } {
+  if (!data) {
+    return false
+  }
+  if (typeof data !== "object") {
+    return false
+  }
+
+  if (!("error" in data)) {
+    return false
+  }
+
+  const e = data.error
+  return typeof e === "object" && !!e
+}
+
+export function logSDKError(e: unknown): void {
+  if (!axios.isAxiosError(e)) {
+    console.error("Something went wrong", JSON.stringify(e, null, 2))
+    return
+  }
+  const data = e.response?.data
+
+  if (!containsGenericError(data)) {
+    console.error("Something went wrong", format(e))
+    return
+  }
+
+  let message = undefined
+  switch (data.error.id) {
+    case "self_service_flow_return_to_forbidden":
+      message =
+        "Your project does not allow to return to the app. Please add the URL to the allowed_return_to URLs."
+      break
+  }
+
+  console.error(
+    message || data.error.reason || "Something went wrong",
+    "\n\n",
+    "error details:",
+    JSON.stringify(data.error, null, 2),
+  )
+  return
 }

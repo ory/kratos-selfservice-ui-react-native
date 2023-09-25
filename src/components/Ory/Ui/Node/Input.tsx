@@ -9,6 +9,7 @@ import {
   isUiNodeInputAttributes,
 } from "../../../../helpers/form"
 import StyledTextInput from "../../../Styled/StyledTextInput"
+import Checkbox from "../../../Styled/Checkbox"
 
 interface Props extends InputProps {
   node: UiNode
@@ -45,6 +46,8 @@ const guessVariant = ({ attributes }: UiNode) => {
       return "button"
     case "password":
       return "password"
+    case "checkbox":
+      return "checkbox"
     default:
       return "text"
   }
@@ -85,21 +88,21 @@ export const NodeInput = ({
   let extraProps: TextInputProps = {}
   switch (variant) {
     case "email":
-      extraProps.autoCompleteType = "email"
+      extraProps.autoComplete = "email"
       extraProps.keyboardType = "email-address"
       extraProps.textContentType = "emailAddress"
       extraProps.autoCapitalize = "none"
       extraProps.autoCorrect = false
       break
     case "password":
-      extraProps.autoCompleteType = "password"
+      extraProps.autoComplete = "password"
       extraProps.textContentType = "password"
       extraProps.autoCapitalize = "none"
       extraProps.secureTextEntry = true
       extraProps.autoCorrect = false
       break
     case "username":
-      extraProps.autoCompleteType = "username"
+      extraProps.autoComplete = "username"
       extraProps.textContentType = "username"
       extraProps.autoCapitalize = "none"
       extraProps.autoCorrect = false
@@ -116,15 +119,24 @@ export const NodeInput = ({
   return (
     <View testID={`field/${name}`}>
       <Title>{title}</Title>
-      <StyledTextInput
-        testID={name}
-        onChange={onChange}
-        value={value ? String(value) : ""}
-        editable={!disabled}
-        onChangeText={onChange}
-        state={disabled ? "disabled" : undefined}
-        {...extraProps}
-      />
+      {variant === "checkbox" ? (
+        <Checkbox
+          testID={name}
+          onClick={() => onChange(!value)}
+          value={value}
+          disabled={disabled}
+        />
+      ) : (
+        <StyledTextInput
+          testID={name}
+          onChange={onChange}
+          value={value ? String(value) : ""}
+          editable={!disabled}
+          onChangeText={onChange}
+          state={disabled ? "disabled" : undefined}
+          {...extraProps}
+        />
+      )}
       <>
         {node.messages?.map(({ text, id, type }, k) => (
           <Subtitle key={`${id}${k}`} state={typeToState({ type, disabled })}>

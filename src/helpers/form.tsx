@@ -1,7 +1,9 @@
 import {
+  ErrorBrowserLocationChangeRequired,
   FrontendApiExchangeSessionTokenRequest,
   GenericError,
   LoginFlow,
+  RecoveryFlow,
   RegistrationFlow,
   UiNode,
   UiNodeAnchorAttributes,
@@ -11,11 +13,15 @@ import {
   UiNodeTextAttributes,
   VerificationFlow,
 } from "@ory/client"
-import { showMessage } from "react-native-flash-message"
-import * as WebBrowser from "expo-web-browser"
-import { SessionContext } from "./auth"
-import { newOrySdk } from "./sdk"
 import { AxiosError } from "axios"
+import * as AuthSession from "expo-auth-session"
+import * as WebBrowser from "expo-web-browser"
+import { showMessage } from "react-native-flash-message"
+import { SessionContext } from "./auth"
+import { logSDKError } from "./axios"
+import { newOrySdk } from "./sdk"
+
+type Flow = LoginFlow | RegistrationFlow | VerificationFlow | RecoveryFlow
 
 export function camelize<T>(str: string) {
   return str.replace(/_([a-z])/g, (g) => g[1].toUpperCase()) as keyof T
@@ -76,8 +82,21 @@ export const getNodeTitle = ({ attributes, meta }: UiNode): string => {
   return ""
 }
 
-export function handleFlowInitError(err: AxiosError) {
-  return
+function isErrorGeneric(data: unknown): data is { error: GenericError } {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    "error" in data &&
+    typeof data.error === "object"
+  )
+}
+
+function isRedirectBrowserToError(
+  data: unknown,
+): data is ErrorBrowserLocationChangeRequired {
+  return (
+    typeof data === "object" && data !== null && "redirect_browser_to" in data
+  )
 }
 
 export function handleFormSubmitError<
@@ -91,11 +110,12 @@ export function handleFormSubmitError<
   logout?: () => void,
 ) {
   return (err: AxiosError) => {
+    logSDKError(err)
     if (err.response) {
       switch (err.response.status) {
         case 400:
-          if (typeof err.response.data.error === "object") {
-            const ge: GenericError = err.response.data
+          if (isErrorGeneric(err.response.data)) {
+            const ge = err.response.data.error
             showMessage({
               message: `${ge.message}: ${ge.reason}`,
               type: "danger",
@@ -104,14 +124,17 @@ export function handleFormSubmitError<
             return Promise.resolve()
           }
 
-          console.debug("Form validation failed:", err.response.data)
+          console.debug(
+            "Form validation failed:",
+            JSON.stringify(err.response.data),
+          )
           setFlow(err.response.data)
           return Promise.resolve()
         case 404:
         case 410:
           // This happens when the flow is, for example, expired or was deleted.
           // We simply re-initialize the flow if that happens!
-          console.debug("Flow could not be found, reloading page.")
+          console.debug("Flow could not be found, re-initializing the flow.")
           initializeFlow()
           return Promise.resolve()
         case 403:
@@ -128,7 +151,7 @@ export function handleFormSubmitError<
           // This happens when the privileged session is expired but the user tried
           // to modify a privileged field (e.g. change the password).
           console.warn(
-            "The server indicated that this action is not allowed for you. The most likely cause of that is that you modified a privileged field (e.g. your password) but your ORY Kratos Login Session is too old.",
+            "The server indicated that this action is not allowed for you. The most likely cause of that is that you modified a privileged field (e.g. your password) but your Ory Identities Login Session is too old.",
           )
           showMessage({
             message: "Please re-authenticate before making these changes.",
@@ -137,17 +160,25 @@ export function handleFormSubmitError<
           logout()
           return Promise.resolve()
         case 422:
-          handleRedirectBrowserTo(
-            err.response.data.redirect_browser_to,
-            flow,
-            setSession,
-            refetchFlow,
+          console.log(
+            "The server responded with a 422 error, which indicates that to complete this action, the user needs to fulfil additional steps.",
+            JSON.stringify(err.response.data, null, 2),
           )
+          if (
+            isRedirectBrowserToError(err.response.data) &&
+            err.response.data.redirect_browser_to
+          ) {
+            handleRedirectBrowserTo(
+              err.response.data.redirect_browser_to,
+              flow as any,
+              setSession,
+              refetchFlow,
+            )
+          }
           return Promise.resolve()
       }
     }
 
-    console.error(err, err.response?.data)
     return Promise.resolve()
   }
 }
@@ -169,14 +200,28 @@ async function handleRedirectBrowserTo(
 
   const result = await WebBrowser.openAuthSessionAsync(
     url,
-    "http://localhost:19006/Callback",
+    AuthSession.makeRedirectUri({
+      preferLocalhost: true,
+      path: "/Callback",
+    }),
   )
   if (result.type == "success") {
     // We can fetch the session token now!
     const initCode = flow?.session_token_exchange_code
+    if (!initCode) {
+      console.log(
+        "The code from the flow is missing, refetching flow. This is likely due to an error in the flow.",
+        JSON.stringify(flow),
+      )
+      return refetchFlow()
+    }
     const returnToCode = new URL(result.url).searchParams.get("code")
-    if (!initCode || !returnToCode) {
-      console.log("code missing, refetching flow")
+    if (!returnToCode) {
+      console.log(
+        "The provider did not include a code, refetching flow. This is likely due to an error in the flow.",
+        "The url was: ",
+        result.url,
+      )
       return refetchFlow()
     }
     fetchToken({ initCode, returnToCode })

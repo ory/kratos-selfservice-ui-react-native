@@ -1,8 +1,6 @@
 import { Configuration, FrontendApi } from "@ory/client"
-import axiosFactory from "axios"
+import axios from "axios"
 import Constants from "expo-constants"
-
-const axios = axiosFactory.create()
 
 // canonicalize removes the trailing slash from URLs.
 const canonicalize = (url: string = "") => url.replace(/\/+$/, "")
@@ -27,7 +25,7 @@ export const newOrySdk = (project: string) =>
       basePath: kratosUrl(project),
       baseOptions: {
         // Setting this is very important as axios will send the CSRF cookie otherwise
-        // which causes problems with ORY Kratos' security detection.
+        // which causes problems with Ory Kratos' security detection.
         withCredentials: false,
 
         // Timeout after 10 seconds.

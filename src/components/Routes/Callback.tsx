@@ -1,12 +1,14 @@
 import { StackScreenProps } from "@react-navigation/stack"
 import * as WebBrowser from "expo-web-browser"
-import React from "react"
+import React, { useEffect } from "react"
 import { RootStackParamList } from "../Navigation"
 
 type Props = StackScreenProps<RootStackParamList, "Callback">
 
+// This is the route that the user is redirected to after they have logged in with their OIDC (SSO) account.
+// It will handle the completion of the auth request
 const Callback = (props: Props) => {
-  React.useEffect(() => {
+  useEffect(() => {
     WebBrowser.maybeCompleteAuthSession({
       skipRedirectCheck: false,
     })

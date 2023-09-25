@@ -33,11 +33,7 @@ build-sdk:
 					--git-repo-id sdk \
 					--git-host github.com \
 					-c ./contrib/sdk/typescript.yml
-	(cd ./contrib/sdk/generated; npm i; npm run build)
+	(cd ./contrib/sdk/generated; npm i; npm run build; npm link)
 	make format
 	npm i
-
-.PHONE: link-local-sdk
-link-local-sdk:
-	(cd ./contrib/sdk/generated; npm link)
 	npm link @ory/client
