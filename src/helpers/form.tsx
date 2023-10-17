@@ -140,7 +140,10 @@ export function handleFormSubmitError<
           // This happens when the flow is, for example, expired or was deleted.
           // Sometimes, Ory returns a replacement flow here
           console.debug("The flow expired, re-initializing the flow.")
-          if (err.response.data.error.details.continue_with) {
+          if (
+            err.response.data.error?.details &&
+            ".continue_with" in err.response.data.error?.details
+          ) {
             return handleContinueWith?.(
               err.response.data.error.details.continue_with,
             )
