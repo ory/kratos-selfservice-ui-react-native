@@ -74,6 +74,29 @@ export interface BatchPatchIdentitiesResponse {
   identities?: Array<IdentityPatchResponse>
 }
 /**
+ * Control API consistency guarantees
+ * @export
+ * @interface ConsistencyRequestParameters
+ */
+export interface ConsistencyRequestParameters {
+  /**
+   * Read Consistency Level (preview)  The read consistency level determines the consistency guarantee for reads:  strong (slow): The read is guaranteed to return the most recent data committed at the start of the read. eventual (very fast): The result will return data that is about 4.8 seconds old.  The default consistency guarantee can be changed in the Ory Network Console or using the Ory CLI with `ory patch project --replace \'/previews/default_read_consistency_level=\"strong\"\'`.  Setting the default consistency level to `eventual` may cause regressions in the future as we add consistency controls to more APIs. Currently, the following APIs will be affected by this setting:  `GET /admin/identities`  This feature is in preview and only available in Ory Network.  ConsistencyLevelUnset  ConsistencyLevelUnset is the unset / default consistency level. strong ConsistencyLevelStrong  ConsistencyLevelStrong is the strong consistency level. eventual ConsistencyLevelEventual  ConsistencyLevelEventual is the eventual consistency level using follower read timestamps.
+   * @type {string}
+   * @memberof ConsistencyRequestParameters
+   */
+  consistency?: ConsistencyRequestParametersConsistencyEnum
+}
+
+export const ConsistencyRequestParametersConsistencyEnum = {
+  Empty: "",
+  Strong: "strong",
+  Eventual: "eventual",
+} as const
+
+export type ConsistencyRequestParametersConsistencyEnum =
+  typeof ConsistencyRequestParametersConsistencyEnum[keyof typeof ConsistencyRequestParametersConsistencyEnum]
+
+/**
  * @type ContinueWith
  * @export
  */
@@ -603,6 +626,12 @@ export interface Identity {
    */
   metadata_public?: any | null
   /**
+   *
+   * @type {string}
+   * @memberof Identity
+   */
+  organization_id?: string | null
+  /**
    * RecoveryAddresses contains all the addresses that can be used to recover an identity.
    * @type {Array<RecoveryIdentityAddress>}
    * @memberof Identity
@@ -750,6 +779,12 @@ export interface IdentityCredentialsOidcProvider {
    * @memberof IdentityCredentialsOidcProvider
    */
   initial_refresh_token?: string
+  /**
+   *
+   * @type {string}
+   * @memberof IdentityCredentialsOidcProvider
+   */
+  organization?: string
   /**
    *
    * @type {string}
@@ -1098,6 +1133,12 @@ export interface LoginFlow {
    * @memberof LoginFlow
    */
   oauth2_login_request?: OAuth2LoginRequest
+  /**
+   *
+   * @type {string}
+   * @memberof LoginFlow
+   */
+  organization_id?: string | null
   /**
    * Refresh stores whether this login flow should enforce re-authentication.
    * @type {boolean}
@@ -1787,7 +1828,7 @@ export interface PerformNativeLogoutBody {
  */
 export interface RecoveryCodeForIdentity {
   /**
-   * Expires At is the timestamp of when the recovery flow expires  The timestamp when the recovery link expires.
+   * Expires At is the timestamp of when the recovery flow expires  The timestamp when the recovery code expires.
    * @type {string}
    * @memberof RecoveryCodeForIdentity
    */
@@ -1986,6 +2027,12 @@ export interface RegistrationFlow {
    */
   oauth2_login_request?: OAuth2LoginRequest
   /**
+   *
+   * @type {string}
+   * @memberof RegistrationFlow
+   */
+  organization_id?: string | null
+  /**
    * RequestURL is the initial URL that was requested from Ory Kratos. It can be used to forward information contained in the URL\'s path or query for example.
    * @type {string}
    * @memberof RegistrationFlow
@@ -2166,6 +2213,12 @@ export interface SessionAuthenticationMethod {
    */
   method?: SessionAuthenticationMethodMethodEnum
   /**
+   * The Organization id used for authentication
+   * @type {string}
+   * @memberof SessionAuthenticationMethod
+   */
+  organization?: string
+  /**
    * OIDC or SAML provider id used for authentication
    * @type {string}
    * @memberof SessionAuthenticationMethod
@@ -2177,6 +2230,7 @@ export const SessionAuthenticationMethodMethodEnum = {
   LinkRecovery: "link_recovery",
   CodeRecovery: "code_recovery",
   Password: "password",
+  Code: "code",
   Totp: "totp",
   Oidc: "oidc",
   Webauthn: "webauthn",
@@ -4156,6 +4210,7 @@ export const FrontendApiAxiosParamCreator = function (
      * @param {string} [returnTo] The URL to return the browser to after the flow was completed.
      * @param {string} [cookie] HTTP Cookies  When using the SDK in a browser app, on the server side you must include the HTTP Cookie Header sent by the client to your server here. This ensures that CSRF and session cookies are respected.
      * @param {string} [loginChallenge] An optional Hydra login challenge. If present, Kratos will cooperate with Ory Hydra to act as an OAuth2 identity provider.  The value for this parameter comes from &#x60;login_challenge&#x60; URL Query parameter sent to your application (e.g. &#x60;/login?login_challenge&#x3D;abcde&#x60;).
+     * @param {string} [organization] An optional organization ID that should be used for logging this user in. This parameter is only effective in the Ory Network.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -4165,6 +4220,7 @@ export const FrontendApiAxiosParamCreator = function (
       returnTo?: string,
       cookie?: string,
       loginChallenge?: string,
+      organization?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/self-service/login/browser`
@@ -4197,6 +4253,10 @@ export const FrontendApiAxiosParamCreator = function (
 
       if (loginChallenge !== undefined) {
         localVarQueryParameter["login_challenge"] = loginChallenge
+      }
+
+      if (organization !== undefined) {
+        localVarQueryParameter["organization"] = organization
       }
 
       if (cookie !== undefined && cookie !== null) {
@@ -4319,6 +4379,7 @@ export const FrontendApiAxiosParamCreator = function (
      * @param {string} [returnTo] The URL to return the browser to after the flow was completed.
      * @param {string} [loginChallenge] Ory OAuth 2.0 Login Challenge.  If set will cooperate with Ory OAuth2 and OpenID to act as an OAuth2 server / OpenID Provider.  The value for this parameter comes from &#x60;login_challenge&#x60; URL Query parameter sent to your application (e.g. &#x60;/registration?login_challenge&#x3D;abcde&#x60;).  This feature is compatible with Ory Hydra when not running on the Ory Network.
      * @param {string} [afterVerificationReturnTo] The URL to return the browser to after the verification flow was completed.  After the registration flow is completed, the user will be sent a verification email. Upon completing the verification flow, this URL will be used to override the default &#x60;selfservice.flows.verification.after.default_redirect_to&#x60; value.
+     * @param {string} [organization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -4326,6 +4387,7 @@ export const FrontendApiAxiosParamCreator = function (
       returnTo?: string,
       loginChallenge?: string,
       afterVerificationReturnTo?: string,
+      organization?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/self-service/registration/browser`
@@ -4355,6 +4417,10 @@ export const FrontendApiAxiosParamCreator = function (
       if (afterVerificationReturnTo !== undefined) {
         localVarQueryParameter["after_verification_return_to"] =
           afterVerificationReturnTo
+      }
+
+      if (organization !== undefined) {
+        localVarQueryParameter["organization"] = organization
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter)
@@ -4538,7 +4604,7 @@ export const FrontendApiAxiosParamCreator = function (
       }
     },
     /**
-     * This endpoint initiates a recovery flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error.  If you already created a recovery, fetch the flow\'s information using the getRecoveryFlow API endpoint.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
+     * This endpoint initiates a recovery flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error.  On an existing recovery flow, use the `getRecoveryFlow` API endpoint.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
      * @summary Create Recovery Flow for Native Apps
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -5858,6 +5924,7 @@ export const FrontendApiFp = function (configuration?: Configuration) {
      * @param {string} [returnTo] The URL to return the browser to after the flow was completed.
      * @param {string} [cookie] HTTP Cookies  When using the SDK in a browser app, on the server side you must include the HTTP Cookie Header sent by the client to your server here. This ensures that CSRF and session cookies are respected.
      * @param {string} [loginChallenge] An optional Hydra login challenge. If present, Kratos will cooperate with Ory Hydra to act as an OAuth2 identity provider.  The value for this parameter comes from &#x60;login_challenge&#x60; URL Query parameter sent to your application (e.g. &#x60;/login?login_challenge&#x3D;abcde&#x60;).
+     * @param {string} [organization] An optional organization ID that should be used for logging this user in. This parameter is only effective in the Ory Network.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -5867,6 +5934,7 @@ export const FrontendApiFp = function (configuration?: Configuration) {
       returnTo?: string,
       cookie?: string,
       loginChallenge?: string,
+      organization?: string,
       options?: AxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<LoginFlow>
@@ -5878,6 +5946,7 @@ export const FrontendApiFp = function (configuration?: Configuration) {
           returnTo,
           cookie,
           loginChallenge,
+          organization,
           options,
         )
       return createRequestFunction(
@@ -5946,6 +6015,7 @@ export const FrontendApiFp = function (configuration?: Configuration) {
      * @param {string} [returnTo] The URL to return the browser to after the flow was completed.
      * @param {string} [loginChallenge] Ory OAuth 2.0 Login Challenge.  If set will cooperate with Ory OAuth2 and OpenID to act as an OAuth2 server / OpenID Provider.  The value for this parameter comes from &#x60;login_challenge&#x60; URL Query parameter sent to your application (e.g. &#x60;/registration?login_challenge&#x3D;abcde&#x60;).  This feature is compatible with Ory Hydra when not running on the Ory Network.
      * @param {string} [afterVerificationReturnTo] The URL to return the browser to after the verification flow was completed.  After the registration flow is completed, the user will be sent a verification email. Upon completing the verification flow, this URL will be used to override the default &#x60;selfservice.flows.verification.after.default_redirect_to&#x60; value.
+     * @param {string} [organization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -5953,6 +6023,7 @@ export const FrontendApiFp = function (configuration?: Configuration) {
       returnTo?: string,
       loginChallenge?: string,
       afterVerificationReturnTo?: string,
+      organization?: string,
       options?: AxiosRequestConfig,
     ): Promise<
       (
@@ -5965,6 +6036,7 @@ export const FrontendApiFp = function (configuration?: Configuration) {
           returnTo,
           loginChallenge,
           afterVerificationReturnTo,
+          organization,
           options,
         )
       return createRequestFunction(
@@ -6068,7 +6140,7 @@ export const FrontendApiFp = function (configuration?: Configuration) {
       )
     },
     /**
-     * This endpoint initiates a recovery flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error.  If you already created a recovery, fetch the flow\'s information using the getRecoveryFlow API endpoint.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
+     * This endpoint initiates a recovery flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error.  On an existing recovery flow, use the `getRecoveryFlow` API endpoint.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
      * @summary Create Recovery Flow for Native Apps
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -6763,6 +6835,7 @@ export const FrontendApiFactory = function (
      * @param {string} [returnTo] The URL to return the browser to after the flow was completed.
      * @param {string} [cookie] HTTP Cookies  When using the SDK in a browser app, on the server side you must include the HTTP Cookie Header sent by the client to your server here. This ensures that CSRF and session cookies are respected.
      * @param {string} [loginChallenge] An optional Hydra login challenge. If present, Kratos will cooperate with Ory Hydra to act as an OAuth2 identity provider.  The value for this parameter comes from &#x60;login_challenge&#x60; URL Query parameter sent to your application (e.g. &#x60;/login?login_challenge&#x3D;abcde&#x60;).
+     * @param {string} [organization] An optional organization ID that should be used for logging this user in. This parameter is only effective in the Ory Network.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -6772,6 +6845,7 @@ export const FrontendApiFactory = function (
       returnTo?: string,
       cookie?: string,
       loginChallenge?: string,
+      organization?: string,
       options?: any,
     ): AxiosPromise<LoginFlow> {
       return localVarFp
@@ -6781,6 +6855,7 @@ export const FrontendApiFactory = function (
           returnTo,
           cookie,
           loginChallenge,
+          organization,
           options,
         )
         .then((request) => request(axios, basePath))
@@ -6823,6 +6898,7 @@ export const FrontendApiFactory = function (
      * @param {string} [returnTo] The URL to return the browser to after the flow was completed.
      * @param {string} [loginChallenge] Ory OAuth 2.0 Login Challenge.  If set will cooperate with Ory OAuth2 and OpenID to act as an OAuth2 server / OpenID Provider.  The value for this parameter comes from &#x60;login_challenge&#x60; URL Query parameter sent to your application (e.g. &#x60;/registration?login_challenge&#x3D;abcde&#x60;).  This feature is compatible with Ory Hydra when not running on the Ory Network.
      * @param {string} [afterVerificationReturnTo] The URL to return the browser to after the verification flow was completed.  After the registration flow is completed, the user will be sent a verification email. Upon completing the verification flow, this URL will be used to override the default &#x60;selfservice.flows.verification.after.default_redirect_to&#x60; value.
+     * @param {string} [organization]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -6830,6 +6906,7 @@ export const FrontendApiFactory = function (
       returnTo?: string,
       loginChallenge?: string,
       afterVerificationReturnTo?: string,
+      organization?: string,
       options?: any,
     ): AxiosPromise<RegistrationFlow> {
       return localVarFp
@@ -6837,6 +6914,7 @@ export const FrontendApiFactory = function (
           returnTo,
           loginChallenge,
           afterVerificationReturnTo,
+          organization,
           options,
         )
         .then((request) => request(axios, basePath))
@@ -6904,7 +6982,7 @@ export const FrontendApiFactory = function (
         .then((request) => request(axios, basePath))
     },
     /**
-     * This endpoint initiates a recovery flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error.  If you already created a recovery, fetch the flow\'s information using the getRecoveryFlow API endpoint.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
+     * This endpoint initiates a recovery flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error.  On an existing recovery flow, use the `getRecoveryFlow` API endpoint.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
      * @summary Create Recovery Flow for Native Apps
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -7387,6 +7465,13 @@ export interface FrontendApiCreateBrowserLoginFlowRequest {
    * @memberof FrontendApiCreateBrowserLoginFlow
    */
   readonly loginChallenge?: string
+
+  /**
+   * An optional organization ID that should be used for logging this user in. This parameter is only effective in the Ory Network.
+   * @type {string}
+   * @memberof FrontendApiCreateBrowserLoginFlow
+   */
+  readonly organization?: string
 }
 
 /**
@@ -7450,6 +7535,13 @@ export interface FrontendApiCreateBrowserRegistrationFlowRequest {
    * @memberof FrontendApiCreateBrowserRegistrationFlow
    */
   readonly afterVerificationReturnTo?: string
+
+  /**
+   *
+   * @type {string}
+   * @memberof FrontendApiCreateBrowserRegistrationFlow
+   */
+  readonly organization?: string
 }
 
 /**
@@ -8073,6 +8165,7 @@ export class FrontendApi extends BaseAPI {
         requestParameters.returnTo,
         requestParameters.cookie,
         requestParameters.loginChallenge,
+        requestParameters.organization,
         options,
       )
       .then((request) => request(this.axios, this.basePath))
@@ -8133,6 +8226,7 @@ export class FrontendApi extends BaseAPI {
         requestParameters.returnTo,
         requestParameters.loginChallenge,
         requestParameters.afterVerificationReturnTo,
+        requestParameters.organization,
         options,
       )
       .then((request) => request(this.axios, this.basePath))
@@ -8201,7 +8295,7 @@ export class FrontendApi extends BaseAPI {
   }
 
   /**
-   * This endpoint initiates a recovery flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error.  If you already created a recovery, fetch the flow\'s information using the getRecoveryFlow API endpoint.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
+   * This endpoint initiates a recovery flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error.  On an existing recovery flow, use the `getRecoveryFlow` API endpoint.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
    * @summary Create Recovery Flow for Native Apps
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
@@ -9326,7 +9420,9 @@ export const IdentityApiAxiosParamCreator = function (
      * @param {number} [page] Deprecated Pagination Page  DEPRECATED: Please use &#x60;page_token&#x60; instead. This parameter will be removed in the future.  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist. The first page can be retrieved by omitting this parameter. Following page pointers will be returned in the &#x60;Link&#x60; header.
      * @param {number} [pageSize] Page Size  This is the number of items per page to return. For details on pagination please head over to the [pagination documentation](https://www.ory.sh/docs/ecosystem/api-design#pagination).
      * @param {string} [pageToken] Next Page Token  The next page token. For details on pagination please head over to the [pagination documentation](https://www.ory.sh/docs/ecosystem/api-design#pagination).
-     * @param {string} [credentialsIdentifier] CredentialsIdentifier is the identifier (username, email) of the credentials to look up.
+     * @param {'' | 'strong' | 'eventual'} [consistency] Read Consistency Level (preview)  The read consistency level determines the consistency guarantee for reads:  strong (slow): The read is guaranteed to return the most recent data committed at the start of the read. eventual (very fast): The result will return data that is about 4.8 seconds old.  The default consistency guarantee can be changed in the Ory Network Console or using the Ory CLI with &#x60;ory patch project --replace \&#39;/previews/default_read_consistency_level&#x3D;\&quot;strong\&quot;\&#39;&#x60;.  Setting the default consistency level to &#x60;eventual&#x60; may cause regressions in the future as we add consistency controls to more APIs. Currently, the following APIs will be affected by this setting:  &#x60;GET /admin/identities&#x60;  This feature is in preview and only available in Ory Network.  ConsistencyLevelUnset  ConsistencyLevelUnset is the unset / default consistency level. strong ConsistencyLevelStrong  ConsistencyLevelStrong is the strong consistency level. eventual ConsistencyLevelEventual  ConsistencyLevelEventual is the eventual consistency level using follower read timestamps.
+     * @param {string} [credentialsIdentifier] CredentialsIdentifier is the identifier (username, email) of the credentials to look up using exact match. Only one of CredentialsIdentifier and CredentialsIdentifierSimilar can be used.
+     * @param {string} [previewCredentialsIdentifierSimilar] This is an EXPERIMENTAL parameter that WILL CHANGE. Do NOT rely on consistent, deterministic behavior. THIS PARAMETER WILL BE REMOVED IN AN UPCOMING RELEASE WITHOUT ANY MIGRATION PATH.  CredentialsIdentifierSimilar is the (partial) identifier (username, email) of the credentials to look up using similarity search. Only one of CredentialsIdentifier and CredentialsIdentifierSimilar can be used.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -9335,7 +9431,9 @@ export const IdentityApiAxiosParamCreator = function (
       page?: number,
       pageSize?: number,
       pageToken?: string,
+      consistency?: "" | "strong" | "eventual",
       credentialsIdentifier?: string,
+      previewCredentialsIdentifierSimilar?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/admin/identities`
@@ -9377,8 +9475,17 @@ export const IdentityApiAxiosParamCreator = function (
         localVarQueryParameter["page_token"] = pageToken
       }
 
+      if (consistency !== undefined) {
+        localVarQueryParameter["consistency"] = consistency
+      }
+
       if (credentialsIdentifier !== undefined) {
         localVarQueryParameter["credentials_identifier"] = credentialsIdentifier
+      }
+
+      if (previewCredentialsIdentifierSimilar !== undefined) {
+        localVarQueryParameter["preview_credentials_identifier_similar"] =
+          previewCredentialsIdentifierSimilar
       }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter)
@@ -10060,7 +10167,9 @@ export const IdentityApiFp = function (configuration?: Configuration) {
      * @param {number} [page] Deprecated Pagination Page  DEPRECATED: Please use &#x60;page_token&#x60; instead. This parameter will be removed in the future.  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist. The first page can be retrieved by omitting this parameter. Following page pointers will be returned in the &#x60;Link&#x60; header.
      * @param {number} [pageSize] Page Size  This is the number of items per page to return. For details on pagination please head over to the [pagination documentation](https://www.ory.sh/docs/ecosystem/api-design#pagination).
      * @param {string} [pageToken] Next Page Token  The next page token. For details on pagination please head over to the [pagination documentation](https://www.ory.sh/docs/ecosystem/api-design#pagination).
-     * @param {string} [credentialsIdentifier] CredentialsIdentifier is the identifier (username, email) of the credentials to look up.
+     * @param {'' | 'strong' | 'eventual'} [consistency] Read Consistency Level (preview)  The read consistency level determines the consistency guarantee for reads:  strong (slow): The read is guaranteed to return the most recent data committed at the start of the read. eventual (very fast): The result will return data that is about 4.8 seconds old.  The default consistency guarantee can be changed in the Ory Network Console or using the Ory CLI with &#x60;ory patch project --replace \&#39;/previews/default_read_consistency_level&#x3D;\&quot;strong\&quot;\&#39;&#x60;.  Setting the default consistency level to &#x60;eventual&#x60; may cause regressions in the future as we add consistency controls to more APIs. Currently, the following APIs will be affected by this setting:  &#x60;GET /admin/identities&#x60;  This feature is in preview and only available in Ory Network.  ConsistencyLevelUnset  ConsistencyLevelUnset is the unset / default consistency level. strong ConsistencyLevelStrong  ConsistencyLevelStrong is the strong consistency level. eventual ConsistencyLevelEventual  ConsistencyLevelEventual is the eventual consistency level using follower read timestamps.
+     * @param {string} [credentialsIdentifier] CredentialsIdentifier is the identifier (username, email) of the credentials to look up using exact match. Only one of CredentialsIdentifier and CredentialsIdentifierSimilar can be used.
+     * @param {string} [previewCredentialsIdentifierSimilar] This is an EXPERIMENTAL parameter that WILL CHANGE. Do NOT rely on consistent, deterministic behavior. THIS PARAMETER WILL BE REMOVED IN AN UPCOMING RELEASE WITHOUT ANY MIGRATION PATH.  CredentialsIdentifierSimilar is the (partial) identifier (username, email) of the credentials to look up using similarity search. Only one of CredentialsIdentifier and CredentialsIdentifierSimilar can be used.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -10069,7 +10178,9 @@ export const IdentityApiFp = function (configuration?: Configuration) {
       page?: number,
       pageSize?: number,
       pageToken?: string,
+      consistency?: "" | "strong" | "eventual",
       credentialsIdentifier?: string,
+      previewCredentialsIdentifierSimilar?: string,
       options?: AxiosRequestConfig,
     ): Promise<
       (
@@ -10082,7 +10193,9 @@ export const IdentityApiFp = function (configuration?: Configuration) {
         page,
         pageSize,
         pageToken,
+        consistency,
         credentialsIdentifier,
+        previewCredentialsIdentifierSimilar,
         options,
       )
       return createRequestFunction(
@@ -10456,7 +10569,9 @@ export const IdentityApiFactory = function (
      * @param {number} [page] Deprecated Pagination Page  DEPRECATED: Please use &#x60;page_token&#x60; instead. This parameter will be removed in the future.  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist. The first page can be retrieved by omitting this parameter. Following page pointers will be returned in the &#x60;Link&#x60; header.
      * @param {number} [pageSize] Page Size  This is the number of items per page to return. For details on pagination please head over to the [pagination documentation](https://www.ory.sh/docs/ecosystem/api-design#pagination).
      * @param {string} [pageToken] Next Page Token  The next page token. For details on pagination please head over to the [pagination documentation](https://www.ory.sh/docs/ecosystem/api-design#pagination).
-     * @param {string} [credentialsIdentifier] CredentialsIdentifier is the identifier (username, email) of the credentials to look up.
+     * @param {'' | 'strong' | 'eventual'} [consistency] Read Consistency Level (preview)  The read consistency level determines the consistency guarantee for reads:  strong (slow): The read is guaranteed to return the most recent data committed at the start of the read. eventual (very fast): The result will return data that is about 4.8 seconds old.  The default consistency guarantee can be changed in the Ory Network Console or using the Ory CLI with &#x60;ory patch project --replace \&#39;/previews/default_read_consistency_level&#x3D;\&quot;strong\&quot;\&#39;&#x60;.  Setting the default consistency level to &#x60;eventual&#x60; may cause regressions in the future as we add consistency controls to more APIs. Currently, the following APIs will be affected by this setting:  &#x60;GET /admin/identities&#x60;  This feature is in preview and only available in Ory Network.  ConsistencyLevelUnset  ConsistencyLevelUnset is the unset / default consistency level. strong ConsistencyLevelStrong  ConsistencyLevelStrong is the strong consistency level. eventual ConsistencyLevelEventual  ConsistencyLevelEventual is the eventual consistency level using follower read timestamps.
+     * @param {string} [credentialsIdentifier] CredentialsIdentifier is the identifier (username, email) of the credentials to look up using exact match. Only one of CredentialsIdentifier and CredentialsIdentifierSimilar can be used.
+     * @param {string} [previewCredentialsIdentifierSimilar] This is an EXPERIMENTAL parameter that WILL CHANGE. Do NOT rely on consistent, deterministic behavior. THIS PARAMETER WILL BE REMOVED IN AN UPCOMING RELEASE WITHOUT ANY MIGRATION PATH.  CredentialsIdentifierSimilar is the (partial) identifier (username, email) of the credentials to look up using similarity search. Only one of CredentialsIdentifier and CredentialsIdentifierSimilar can be used.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -10465,7 +10580,9 @@ export const IdentityApiFactory = function (
       page?: number,
       pageSize?: number,
       pageToken?: string,
+      consistency?: "" | "strong" | "eventual",
       credentialsIdentifier?: string,
+      previewCredentialsIdentifierSimilar?: string,
       options?: any,
     ): AxiosPromise<Array<Identity>> {
       return localVarFp
@@ -10474,7 +10591,9 @@ export const IdentityApiFactory = function (
           page,
           pageSize,
           pageToken,
+          consistency,
           credentialsIdentifier,
+          previewCredentialsIdentifierSimilar,
           options,
         )
         .then((request) => request(axios, basePath))
@@ -10817,11 +10936,25 @@ export interface IdentityApiListIdentitiesRequest {
   readonly pageToken?: string
 
   /**
-   * CredentialsIdentifier is the identifier (username, email) of the credentials to look up.
+   * Read Consistency Level (preview)  The read consistency level determines the consistency guarantee for reads:  strong (slow): The read is guaranteed to return the most recent data committed at the start of the read. eventual (very fast): The result will return data that is about 4.8 seconds old.  The default consistency guarantee can be changed in the Ory Network Console or using the Ory CLI with &#x60;ory patch project --replace \&#39;/previews/default_read_consistency_level&#x3D;\&quot;strong\&quot;\&#39;&#x60;.  Setting the default consistency level to &#x60;eventual&#x60; may cause regressions in the future as we add consistency controls to more APIs. Currently, the following APIs will be affected by this setting:  &#x60;GET /admin/identities&#x60;  This feature is in preview and only available in Ory Network.  ConsistencyLevelUnset  ConsistencyLevelUnset is the unset / default consistency level. strong ConsistencyLevelStrong  ConsistencyLevelStrong is the strong consistency level. eventual ConsistencyLevelEventual  ConsistencyLevelEventual is the eventual consistency level using follower read timestamps.
+   * @type {'' | 'strong' | 'eventual'}
+   * @memberof IdentityApiListIdentities
+   */
+  readonly consistency?: "" | "strong" | "eventual"
+
+  /**
+   * CredentialsIdentifier is the identifier (username, email) of the credentials to look up using exact match. Only one of CredentialsIdentifier and CredentialsIdentifierSimilar can be used.
    * @type {string}
    * @memberof IdentityApiListIdentities
    */
   readonly credentialsIdentifier?: string
+
+  /**
+   * This is an EXPERIMENTAL parameter that WILL CHANGE. Do NOT rely on consistent, deterministic behavior. THIS PARAMETER WILL BE REMOVED IN AN UPCOMING RELEASE WITHOUT ANY MIGRATION PATH.  CredentialsIdentifierSimilar is the (partial) identifier (username, email) of the credentials to look up using similarity search. Only one of CredentialsIdentifier and CredentialsIdentifierSimilar can be used.
+   * @type {string}
+   * @memberof IdentityApiListIdentities
+   */
+  readonly previewCredentialsIdentifierSimilar?: string
 }
 
 /**
@@ -11228,7 +11361,9 @@ export class IdentityApi extends BaseAPI {
         requestParameters.page,
         requestParameters.pageSize,
         requestParameters.pageToken,
+        requestParameters.consistency,
         requestParameters.credentialsIdentifier,
+        requestParameters.previewCredentialsIdentifierSimilar,
         options,
       )
       .then((request) => request(this.axios, this.basePath))

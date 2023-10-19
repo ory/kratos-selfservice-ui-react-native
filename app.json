@@ -19,7 +19,8 @@
     "assetBundlePatterns": ["src/assets/*", "src/assets/**/*", "assets/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ory.kratos-selfservice-ui-react-native"
+      "bundleIdentifier": "com.ory.kratos-selfservice-ui-react-native",
+      "usesAppleSignIn": true
     },
     "android": {
       "package": "com.ory.kratos_self_service_ui_react_native",
