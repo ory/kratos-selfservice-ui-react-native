@@ -71,7 +71,6 @@ export interface BatchPatchIdentitiesResponse {
  */
 export type ContinueWith =
   | ({ action: "set_ory_session_token" } & ContinueWithSetOrySessionToken)
-  | ({ action: "show_settings_ui" } & ContinueWithSettingsUi)
   | ({ action: "show_verification_ui" } & ContinueWithVerificationUi)
 
 /**
@@ -81,7 +80,7 @@ export type ContinueWith =
  */
 export interface ContinueWithSetOrySessionToken {
   /**
-   * Action will always be `set_ory_session_token` set_ory_session_token ContinueWithActionSetOrySessionToken show_verification_ui ContinueWithActionShowVerificationUI show_settings_ui ContinueWithActionShowSettingsUI
+   * Action will always be `set_ory_session_token` set_ory_session_token ContinueWithActionSetOrySessionToken show_verification_ui ContinueWithActionShowVerificationUI
    * @type {string}
    * @memberof ContinueWithSetOrySessionToken
    */
@@ -97,54 +96,11 @@ export interface ContinueWithSetOrySessionToken {
 export const ContinueWithSetOrySessionTokenActionEnum = {
   SetOrySessionToken: "set_ory_session_token",
   ShowVerificationUi: "show_verification_ui",
-  ShowSettingsUi: "show_settings_ui",
 } as const
 
 export type ContinueWithSetOrySessionTokenActionEnum =
   typeof ContinueWithSetOrySessionTokenActionEnum[keyof typeof ContinueWithSetOrySessionTokenActionEnum]
 
-/**
- * Indicates, that the UI flow could be continued by showing a settings ui
- * @export
- * @interface ContinueWithSettingsUi
- */
-export interface ContinueWithSettingsUi {
-  /**
-   * Action will always be `show_settings_ui` set_ory_session_token ContinueWithActionSetOrySessionToken show_verification_ui ContinueWithActionShowVerificationUI show_settings_ui ContinueWithActionShowSettingsUI
-   * @type {string}
-   * @memberof ContinueWithSettingsUi
-   */
-  action: ContinueWithSettingsUiActionEnum
-  /**
-   *
-   * @type {ContinueWithSettingsUiFlow}
-   * @memberof ContinueWithSettingsUi
-   */
-  flow: ContinueWithSettingsUiFlow
-}
-
-export const ContinueWithSettingsUiActionEnum = {
-  SetOrySessionToken: "set_ory_session_token",
-  ShowVerificationUi: "show_verification_ui",
-  ShowSettingsUi: "show_settings_ui",
-} as const
-
-export type ContinueWithSettingsUiActionEnum =
-  typeof ContinueWithSettingsUiActionEnum[keyof typeof ContinueWithSettingsUiActionEnum]
-
-/**
- *
- * @export
- * @interface ContinueWithSettingsUiFlow
- */
-export interface ContinueWithSettingsUiFlow {
-  /**
-   * The ID of the settings flow
-   * @type {string}
-   * @memberof ContinueWithSettingsUiFlow
-   */
-  id: string
-}
 /**
  * Indicates, that the UI flow could be continued by showing a verification ui
  * @export
@@ -152,7 +108,7 @@ export interface ContinueWithSettingsUiFlow {
  */
 export interface ContinueWithVerificationUi {
   /**
-   * Action will always be `show_verification_ui` set_ory_session_token ContinueWithActionSetOrySessionToken show_verification_ui ContinueWithActionShowVerificationUI show_settings_ui ContinueWithActionShowSettingsUI
+   * Action will always be `show_verification_ui` set_ory_session_token ContinueWithActionSetOrySessionToken show_verification_ui ContinueWithActionShowVerificationUI
    * @type {string}
    * @memberof ContinueWithVerificationUi
    */
@@ -168,7 +124,6 @@ export interface ContinueWithVerificationUi {
 export const ContinueWithVerificationUiActionEnum = {
   SetOrySessionToken: "set_ory_session_token",
   ShowVerificationUi: "show_verification_ui",
-  ShowSettingsUi: "show_settings_ui",
 } as const
 
 export type ContinueWithVerificationUiActionEnum =
@@ -662,6 +617,25 @@ export interface IdentityCredentials {
 }
 
 /**
+ * CredentialsCode represents a one time login/registration code
+ * @export
+ * @interface IdentityCredentialsCode
+ */
+export interface IdentityCredentialsCode {
+  /**
+   *
+   * @type {string}
+   * @memberof IdentityCredentialsCode
+   */
+  address_type?: string
+  /**
+   *
+   * @type {string}
+   * @memberof IdentityCredentialsCode
+   */
+  used_at?: string | null
+}
+/**
  *
  * @export
  * @interface IdentityCredentialsOidc
@@ -736,6 +710,7 @@ export const IdentityCredentialsType = {
   Oidc: "oidc",
   Webauthn: "webauthn",
   LookupSecret: "lookup_secret",
+  Code: "code",
 } as const
 
 export type IdentityCredentialsType =
@@ -1021,11 +996,11 @@ export interface LoginFlow {
    */
   issued_at: string
   /**
-   *
+   * Ory OAuth 2.0 Login Challenge.  This value is set using the `login_challenge` query parameter of the registration and login endpoints. If set will cooperate with Ory OAuth2 and OpenID to act as an OAuth2 server / OpenID Provider.
    * @type {string}
    * @memberof LoginFlow
    */
-  oauth2_login_challenge?: string | null
+  oauth2_login_challenge?: string
   /**
    *
    * @type {OAuth2LoginRequest}
@@ -1063,6 +1038,12 @@ export interface LoginFlow {
    */
   session_token_exchange_code?: string
   /**
+   * State represents the state of this request:  choose_method: ask the user to choose a method to sign in with sent_email: the email has been sent to the user passed_challenge: the request was successful and the login challenge was passed.
+   * @type {any}
+   * @memberof LoginFlow
+   */
+  state: any
+  /**
    * The flow type can either be `api` or `browser`.
    * @type {string}
    * @memberof LoginFlow
@@ -1081,6 +1062,20 @@ export interface LoginFlow {
    */
   updated_at?: string
 }
+
+/**
+ * The state represents the state of the login flow.  choose_method: ask the user to choose a method (e.g. login account via email) sent_email: the email has been sent to the user passed_challenge: the request was successful and the login challenge was passed.
+ * @export
+ * @enum {string}
+ */
+
+export const LoginFlowState = {
+  ChooseMethod: "choose_method",
+  SentEmail: "sent_email",
+  PassedChallenge: "passed_challenge",
+} as const
+
+export type LoginFlowState = typeof LoginFlowState[keyof typeof LoginFlowState]
 
 /**
  * Logout Flow
@@ -1156,7 +1151,7 @@ export interface Message {
    */
   subject: string
   /**
-   *  recovery_invalid TypeRecoveryInvalid recovery_valid TypeRecoveryValid recovery_code_invalid TypeRecoveryCodeInvalid recovery_code_valid TypeRecoveryCodeValid verification_invalid TypeVerificationInvalid verification_valid TypeVerificationValid verification_code_invalid TypeVerificationCodeInvalid verification_code_valid TypeVerificationCodeValid otp TypeOTP stub TypeTestStub
+   *  recovery_invalid TypeRecoveryInvalid recovery_valid TypeRecoveryValid recovery_code_invalid TypeRecoveryCodeInvalid recovery_code_valid TypeRecoveryCodeValid verification_invalid TypeVerificationInvalid verification_valid TypeVerificationValid verification_code_invalid TypeVerificationCodeInvalid verification_code_valid TypeVerificationCodeValid otp TypeOTP stub TypeTestStub login_code_valid TypeLoginCodeValid registration_code_valid TypeRegistrationCodeValid
    * @type {string}
    * @memberof Message
    */
@@ -1186,6 +1181,8 @@ export const MessageTemplateTypeEnum = {
   VerificationCodeValid: "verification_code_valid",
   Otp: "otp",
   Stub: "stub",
+  LoginCodeValid: "login_code_valid",
+  RegistrationCodeValid: "registration_code_valid",
 } as const
 
 export type MessageTemplateTypeEnum =
@@ -1268,6 +1265,18 @@ export interface NeedsPrivilegedSessionError {
  * @interface OAuth2Client
  */
 export interface OAuth2Client {
+  /**
+   *
+   * @type {{ [key: string]: any; }}
+   * @memberof OAuth2Client
+   */
+  AdditionalProperties?: { [key: string]: any }
+  /**
+   * OAuth 2.0 Access Token Strategy  AccessTokenStrategy is the strategy used to generate access tokens. Valid options are `jwt` and `opaque`. `jwt` is a bad idea, see https://www.ory.sh/docs/hydra/advanced#json-web-tokens Setting the stragegy here overrides the global setting in `strategies.access_token`.
+   * @type {string}
+   * @memberof OAuth2Client
+   */
+  access_token_strategy?: string
   /**
    *
    * @type {Array<string>}
@@ -1503,13 +1512,19 @@ export interface OAuth2Client {
    */
   sector_identifier_uri?: string
   /**
+   * SkipConsent skips the consent screen for this client. This field can only be set from the admin API.
+   * @type {boolean}
+   * @memberof OAuth2Client
+   */
+  skip_consent?: boolean
+  /**
    * OpenID Connect Subject Type  The `subject_types_supported` Discovery parameter contains a list of the supported subject_type values for this server. Valid types include `pairwise` and `public`.
    * @type {string}
    * @memberof OAuth2Client
    */
   subject_type?: string
   /**
-   * OAuth 2.0 Token Endpoint Authentication Method  Requested Client Authentication method for the Token Endpoint. The options are:  `client_secret_post`: (default) Send `client_id` and `client_secret` as `application/x-www-form-urlencoded` in the HTTP body. `client_secret_basic`: Send `client_id` and `client_secret` as `application/x-www-form-urlencoded` encoded in the HTTP Authorization header. `private_key_jwt`: Use JSON Web Tokens to authenticate the client. `none`: Used for public clients (native apps, mobile apps) which can not have secrets.
+   * OAuth 2.0 Token Endpoint Authentication Method  Requested Client Authentication method for the Token Endpoint. The options are:  `client_secret_basic`: (default) Send `client_id` and `client_secret` as `application/x-www-form-urlencoded` encoded in the HTTP Authorization header. `client_secret_post`: Send `client_id` and `client_secret` as `application/x-www-form-urlencoded` in the HTTP body. `private_key_jwt`: Use JSON Web Tokens to authenticate the client. `none`: Used for public clients (native apps, mobile apps) which can not have secrets.
    * @type {string}
    * @memberof OAuth2Client
    */
@@ -1545,6 +1560,12 @@ export interface OAuth2Client {
  * @interface OAuth2ConsentRequestOpenIDConnectContext
  */
 export interface OAuth2ConsentRequestOpenIDConnectContext {
+  /**
+   *
+   * @type {{ [key: string]: any; }}
+   * @memberof OAuth2ConsentRequestOpenIDConnectContext
+   */
+  AdditionalProperties?: { [key: string]: any }
   /**
    * ACRValues is the Authentication AuthorizationContext Class Reference requested in the OAuth 2.0 Authorization request. It is a parameter defined by OpenID Connect and expresses which level of authentication (e.g. 2FA) is required.  OpenID Connect defines it as follows: > Requested Authentication AuthorizationContext Class Reference values. Space-separated string that specifies the acr values that the Authorization Server is being requested to use for processing this Authentication Request, with the values appearing in order of preference. The Authentication AuthorizationContext Class satisfied by the authentication performed is returned as the acr Claim Value, as specified in Section 2. The acr Claim is requested as a Voluntary Claim by this parameter.
    * @type {Array<string>}
@@ -1582,6 +1603,12 @@ export interface OAuth2ConsentRequestOpenIDConnectContext {
  * @interface OAuth2LoginRequest
  */
 export interface OAuth2LoginRequest {
+  /**
+   *
+   * @type {{ [key: string]: any; }}
+   * @memberof OAuth2LoginRequest
+   */
+  AdditionalProperties?: { [key: string]: any }
   /**
    * ID is the identifier (\\\"login challenge\\\") of the login request. It is used to identify the session.
    * @type {string}
@@ -1720,12 +1747,6 @@ export interface RecoveryFlow {
    */
   active?: string
   /**
-   *
-   * @type {Array<ContinueWith>}
-   * @memberof RecoveryFlow
-   */
-  continue_with?: Array<ContinueWith>
-  /**
    * ExpiresAt is the time (UTC) when the request expires. If the user still wishes to update the setting, a new request has to be initiated.
    * @type {string}
    * @memberof RecoveryFlow
@@ -1756,11 +1777,11 @@ export interface RecoveryFlow {
    */
   return_to?: string
   /**
-   *
-   * @type {RecoveryFlowState}
+   * State represents the state of this request:  choose_method: ask the user to choose a method (e.g. recover account via email) sent_email: the email has been sent to the user passed_challenge: the request was successful and the recovery challenge was passed.
+   * @type {any}
    * @memberof RecoveryFlow
    */
-  state: RecoveryFlowState
+  state: any
   /**
    * The flow type can either be `api` or `browser`.
    * @type {string}
@@ -1774,7 +1795,6 @@ export interface RecoveryFlow {
    */
   ui: UiContainer
 }
-
 /**
  * The state represents the state of the recovery flow.  choose_method: ask the user to choose a method (e.g. recover account via email) sent_email: the email has been sent to the user passed_challenge: the request was successful and the recovery challenge was passed.
  * @export
@@ -1877,11 +1897,11 @@ export interface RegistrationFlow {
    */
   issued_at: string
   /**
-   *
+   * Ory OAuth 2.0 Login Challenge.  This value is set using the `login_challenge` query parameter of the registration and login endpoints. If set will cooperate with Ory OAuth2 and OpenID to act as an OAuth2 server / OpenID Provider.
    * @type {string}
    * @memberof RegistrationFlow
    */
-  oauth2_login_challenge?: string | null
+  oauth2_login_challenge?: string
   /**
    *
    * @type {OAuth2LoginRequest}
@@ -1907,6 +1927,12 @@ export interface RegistrationFlow {
    */
   session_token_exchange_code?: string
   /**
+   * State represents the state of this request:  choose_method: ask the user to choose a method (e.g. registration with email) sent_email: the email has been sent to the user passed_challenge: the request was successful and the registration challenge was passed.
+   * @type {any}
+   * @memberof RegistrationFlow
+   */
+  state: any
+  /**
    * TransientPayload is used to pass data from the registration to a webhook
    * @type {object}
    * @memberof RegistrationFlow
@@ -1925,6 +1951,21 @@ export interface RegistrationFlow {
    */
   ui: UiContainer
 }
+
+/**
+ * choose_method: ask the user to choose a method (e.g. registration with email) sent_email: the email has been sent to the user passed_challenge: the request was successful and the registration challenge was passed.
+ * @export
+ * @enum {string}
+ */
+
+export const RegistrationFlowState = {
+  ChooseMethod: "choose_method",
+  SentEmail: "sent_email",
+  PassedChallenge: "passed_challenge",
+} as const
+
+export type RegistrationFlowState =
+  typeof RegistrationFlowState[keyof typeof RegistrationFlowState]
 
 /**
  * Is sent when a flow is expired
@@ -2010,7 +2051,7 @@ export interface Session {
    * @type {Identity}
    * @memberof Session
    */
-  identity: Identity
+  identity?: Identity
   /**
    * The Session Issuance Timestamp  When this session was issued at. Usually equal or close to `authenticated_at`.
    * @type {string}
@@ -2043,6 +2084,12 @@ export interface SessionAuthenticationMethod {
    * @memberof SessionAuthenticationMethod
    */
   method?: SessionAuthenticationMethodMethodEnum
+  /**
+   * OIDC or SAML provider id used for authentication
+   * @type {string}
+   * @memberof SessionAuthenticationMethod
+   */
+  provider?: string
 }
 
 export const SessionAuthenticationMethodMethodEnum = {
@@ -2145,11 +2192,11 @@ export interface SettingsFlow {
    */
   return_to?: string
   /**
-   *
-   * @type {SettingsFlowState}
+   * State represents the state of this flow. It knows two states:  show_form: No user data has been collected, or it is invalid, and thus the form should be shown. success: Indicates that the settings flow has been updated successfully with the provided data. Done will stay true when repeatedly checking. If set to true, done will revert back to false only when a flow with invalid (e.g. \"please use a valid phone number\") data was sent.
+   * @type {any}
    * @memberof SettingsFlow
    */
-  state: SettingsFlowState
+  state: any
   /**
    * The flow type can either be `api` or `browser`.
    * @type {string}
@@ -2163,7 +2210,6 @@ export interface SettingsFlow {
    */
   ui: UiContainer
 }
-
 /**
  * show_form: No user data has been collected, or it is invalid, and thus the form should be shown. success: Indicates that the settings flow has been updated successfully with the provided data. Done will stay true when repeatedly checking. If set to true, done will revert back to false only when a flow with invalid (e.g. \"please use a valid phone number\") data was sent.
  * @export
@@ -2742,12 +2788,50 @@ export interface UpdateIdentityBody {
  * @export
  */
 export type UpdateLoginFlowBody =
+  | ({ method: "code" } & UpdateLoginFlowWithCodeMethod)
   | ({ method: "lookup_secret" } & UpdateLoginFlowWithLookupSecretMethod)
   | ({ method: "oidc" } & UpdateLoginFlowWithOidcMethod)
   | ({ method: "password" } & UpdateLoginFlowWithPasswordMethod)
   | ({ method: "totp" } & UpdateLoginFlowWithTotpMethod)
   | ({ method: "webauthn" } & UpdateLoginFlowWithWebAuthnMethod)
 
+/**
+ * Update Login flow using the code method
+ * @export
+ * @interface UpdateLoginFlowWithCodeMethod
+ */
+export interface UpdateLoginFlowWithCodeMethod {
+  /**
+   * Code is the 6 digits code sent to the user
+   * @type {string}
+   * @memberof UpdateLoginFlowWithCodeMethod
+   */
+  code?: string
+  /**
+   * CSRFToken is the anti-CSRF token
+   * @type {string}
+   * @memberof UpdateLoginFlowWithCodeMethod
+   */
+  csrf_token: string
+  /**
+   * Identifier is the code identifier The identifier requires that the user has already completed the registration or settings with code flow.
+   * @type {string}
+   * @memberof UpdateLoginFlowWithCodeMethod
+   */
+  identifier?: string
+  /**
+   * Method should be set to \"code\" when logging in using the code strategy.
+   * @type {string}
+   * @memberof UpdateLoginFlowWithCodeMethod
+   */
+  method: string
+  /**
+   * Resend is set when the user wants to resend the code
+   * @type {string}
+   * @memberof UpdateLoginFlowWithCodeMethod
+   */
+  resend?: string
+}
 /**
  * Update Login Flow with Lookup Secret Method
  * @export
@@ -2786,6 +2870,18 @@ export interface UpdateLoginFlowWithOidcMethod {
    */
   csrf_token?: string
   /**
+   * IDToken is an optional id token provided by an OIDC provider  If submitted, it is verified using the OIDC provider\'s public key set and the claims are used to populate the OIDC credentials of the identity. If the OIDC provider does not store additional claims (such as name, etc.) in the IDToken itself, you can use the `traits` field to populate the identity\'s traits. Note, that Apple only includes the users email in the IDToken.  Supported providers are Apple
+   * @type {string}
+   * @memberof UpdateLoginFlowWithOidcMethod
+   */
+  id_token?: string
+  /**
+   * IDTokenNonce is the nonce, used when generating the IDToken. If the provider supports nonce validation, the nonce will be validated against this value and required.
+   * @type {string}
+   * @memberof UpdateLoginFlowWithOidcMethod
+   */
+  id_token_nonce?: string
+  /**
    * Method to use  This field must be set to `oidc` when using the oidc method.
    * @type {string}
    * @memberof UpdateLoginFlowWithOidcMethod
@@ -2804,7 +2900,7 @@ export interface UpdateLoginFlowWithOidcMethod {
    */
   traits?: object
   /**
-   * UpstreamParameters are the parameters that are passed to the upstream identity provider.  These parameters are optional and depend on what the upstream identity provider supports. Supported parameters are: `login_hint` (string): The `login_hint` parameter suppresses the account chooser and either pre-fills the email box on the sign-in form, or selects the proper session. `hd` (string): The `hd` parameter limits the login/registration process to a Google Organization, e.g. `mycollege.edu`.
+   * UpstreamParameters are the parameters that are passed to the upstream identity provider.  These parameters are optional and depend on what the upstream identity provider supports. Supported parameters are: `login_hint` (string): The `login_hint` parameter suppresses the account chooser and either pre-fills the email box on the sign-in form, or selects the proper session. `hd` (string): The `hd` parameter limits the login/registration process to a Google Organization, e.g. `mycollege.edu`. `prompt` (string): The `prompt` specifies whether the Authorization Server prompts the End-User for reauthentication and consent, e.g. `select_account`.
    * @type {object}
    * @memberof UpdateLoginFlowWithOidcMethod
    */
@@ -2992,10 +3088,54 @@ export type UpdateRecoveryFlowWithLinkMethodMethodEnum =
  * @export
  */
 export type UpdateRegistrationFlowBody =
+  | ({ method: "code" } & UpdateRegistrationFlowWithCodeMethod)
   | ({ method: "oidc" } & UpdateRegistrationFlowWithOidcMethod)
   | ({ method: "password" } & UpdateRegistrationFlowWithPasswordMethod)
   | ({ method: "webauthn" } & UpdateRegistrationFlowWithWebAuthnMethod)
 
+/**
+ * Update Registration Flow with Code Method
+ * @export
+ * @interface UpdateRegistrationFlowWithCodeMethod
+ */
+export interface UpdateRegistrationFlowWithCodeMethod {
+  /**
+   * The OTP Code sent to the user
+   * @type {string}
+   * @memberof UpdateRegistrationFlowWithCodeMethod
+   */
+  code?: string
+  /**
+   * The CSRF Token
+   * @type {string}
+   * @memberof UpdateRegistrationFlowWithCodeMethod
+   */
+  csrf_token?: string
+  /**
+   * Method to use  This field must be set to `code` when using the code method.
+   * @type {string}
+   * @memberof UpdateRegistrationFlowWithCodeMethod
+   */
+  method: string
+  /**
+   * Resend restarts the flow with a new code
+   * @type {string}
+   * @memberof UpdateRegistrationFlowWithCodeMethod
+   */
+  resend?: string
+  /**
+   * The identity\'s traits
+   * @type {object}
+   * @memberof UpdateRegistrationFlowWithCodeMethod
+   */
+  traits: object
+  /**
+   * Transient data to pass along to any webhooks
+   * @type {object}
+   * @memberof UpdateRegistrationFlowWithCodeMethod
+   */
+  transient_payload?: object
+}
 /**
  * Update Registration Flow with OpenID Connect Method
  * @export
@@ -3008,6 +3148,18 @@ export interface UpdateRegistrationFlowWithOidcMethod {
    * @memberof UpdateRegistrationFlowWithOidcMethod
    */
   csrf_token?: string
+  /**
+   * IDToken is an optional id token provided by an OIDC provider  If submitted, it is verified using the OIDC provider\'s public key set and the claims are used to populate the OIDC credentials of the identity. If the OIDC provider does not store additional claims (such as name, etc.) in the IDToken itself, you can use the `traits` field to populate the identity\'s traits. Note, that Apple only includes the users email in the IDToken.  Supported providers are Apple
+   * @type {string}
+   * @memberof UpdateRegistrationFlowWithOidcMethod
+   */
+  id_token?: string
+  /**
+   * IDTokenNonce is the nonce, used when generating the IDToken. If the provider supports nonce validation, the nonce will be validated against this value and is required.
+   * @type {string}
+   * @memberof UpdateRegistrationFlowWithOidcMethod
+   */
+  id_token_nonce?: string
   /**
    * Method to use  This field must be set to `oidc` when using the oidc method.
    * @type {string}
@@ -3033,7 +3185,7 @@ export interface UpdateRegistrationFlowWithOidcMethod {
    */
   transient_payload?: object
   /**
-   * UpstreamParameters are the parameters that are passed to the upstream identity provider.  These parameters are optional and depend on what the upstream identity provider supports. Supported parameters are: `login_hint` (string): The `login_hint` parameter suppresses the account chooser and either pre-fills the email box on the sign-in form, or selects the proper session. `hd` (string): The `hd` parameter limits the login/registration process to a Google Organization, e.g. `mycollege.edu`.
+   * UpstreamParameters are the parameters that are passed to the upstream identity provider.  These parameters are optional and depend on what the upstream identity provider supports. Supported parameters are: `login_hint` (string): The `login_hint` parameter suppresses the account chooser and either pre-fills the email box on the sign-in form, or selects the proper session. `hd` (string): The `hd` parameter limits the login/registration process to a Google Organization, e.g. `mycollege.edu`. `prompt` (string): The `prompt` specifies whether the Authorization Server prompts the End-User for reauthentication and consent, e.g. `select_account`.
    * @type {object}
    * @memberof UpdateRegistrationFlowWithOidcMethod
    */
@@ -3212,7 +3364,7 @@ export interface UpdateSettingsFlowWithOidcMethod {
    */
   unlink?: string
   /**
-   * UpstreamParameters are the parameters that are passed to the upstream identity provider.  These parameters are optional and depend on what the upstream identity provider supports. Supported parameters are: `login_hint` (string): The `login_hint` parameter suppresses the account chooser and either pre-fills the email box on the sign-in form, or selects the proper session. `hd` (string): The `hd` parameter limits the login/registration process to a Google Organization, e.g. `mycollege.edu`.
+   * UpstreamParameters are the parameters that are passed to the upstream identity provider.  These parameters are optional and depend on what the upstream identity provider supports. Supported parameters are: `login_hint` (string): The `login_hint` parameter suppresses the account chooser and either pre-fills the email box on the sign-in form, or selects the proper session. `hd` (string): The `hd` parameter limits the login/registration process to a Google Organization, e.g. `mycollege.edu`. `prompt` (string): The `prompt` specifies whether the Authorization Server prompts the End-User for reauthentication and consent, e.g. `select_account`.
    * @type {object}
    * @memberof UpdateSettingsFlowWithOidcMethod
    */
@@ -3404,12 +3556,21 @@ export interface UpdateVerificationFlowWithLinkMethod {
    */
   email: string
   /**
-   * Method is the method that should be used for this verification flow  Allowed values are `link` and `code`
+   * Method is the method that should be used for this verification flow  Allowed values are `link` and `code` link VerificationStrategyLink code VerificationStrategyCode
    * @type {string}
    * @memberof UpdateVerificationFlowWithLinkMethod
    */
-  method: string
+  method: UpdateVerificationFlowWithLinkMethodMethodEnum
 }
+
+export const UpdateVerificationFlowWithLinkMethodMethodEnum = {
+  Link: "link",
+  Code: "code",
+} as const
+
+export type UpdateVerificationFlowWithLinkMethodMethodEnum =
+  typeof UpdateVerificationFlowWithLinkMethodMethodEnum[keyof typeof UpdateVerificationFlowWithLinkMethodMethodEnum]
+
 /**
  * VerifiableAddress is an identity\'s verifiable address
  * @export
@@ -3508,11 +3669,11 @@ export interface VerificationFlow {
    */
   return_to?: string
   /**
-   *
-   * @type {VerificationFlowState}
+   * State represents the state of this request:  choose_method: ask the user to choose a method (e.g. verify your email) sent_email: the email has been sent to the user passed_challenge: the request was successful and the verification challenge was passed.
+   * @type {any}
    * @memberof VerificationFlow
    */
-  state: VerificationFlowState
+  state: any
   /**
    * The flow type can either be `api` or `browser`.
    * @type {string}
@@ -3526,7 +3687,6 @@ export interface VerificationFlow {
    */
   ui: UiContainer
 }
-
 /**
  * The state represents the state of the verification flow.  choose_method: ask the user to choose a method (e.g. recover account via email) sent_email: the email has been sent to the user passed_challenge: the request was successful and the recovery challenge was passed.
  * @export
@@ -3984,11 +4144,13 @@ export const FrontendApiAxiosParamCreator = function (
      * This endpoint initializes a browser-based user logout flow and a URL which can be used to log out the user.  This endpoint is NOT INTENDED for API clients and only works with browsers (Chrome, Firefox, ...). For API clients you can call the `/self-service/logout/api` URL directly with the Ory Session Token.  The URL is only valid for the currently signed in user. If no user is signed in, this endpoint returns a 401 error.  When calling this endpoint from a backend, please ensure to properly forward the HTTP cookies.
      * @summary Create a Logout URL for Browsers
      * @param {string} [cookie] HTTP Cookies  If you call this endpoint from a backend, please include the original Cookie header in the request.
+     * @param {string} [returnTo] Return to URL  The URL to which the browser should be redirected to after the logout has been performed.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     createBrowserLogoutFlow: async (
       cookie?: string,
+      returnTo?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/self-service/logout/browser`
@@ -4006,6 +4168,10 @@ export const FrontendApiAxiosParamCreator = function (
       }
       const localVarHeaderParameter = {} as any
       const localVarQueryParameter = {} as any
+
+      if (returnTo !== undefined) {
+        localVarQueryParameter["return_to"] = returnTo
+      }
 
       if (cookie != null) {
         localVarHeaderParameter["cookie"] = String(cookie)
@@ -4071,7 +4237,7 @@ export const FrontendApiAxiosParamCreator = function (
       }
     },
     /**
-     * This endpoint initializes a browser-based user registration flow. This endpoint will set the appropriate cookies and anti-CSRF measures required for browser-based flows.  :::info  This endpoint is EXPERIMENTAL and subject to potential breaking changes in the future.  :::  If this endpoint is opened as a link in the browser, it will be redirected to `selfservice.flows.registration.ui_url` with the flow ID set as the query parameter `?flow=`. If a valid user session exists already, the browser will be redirected to `urls.default_redirect_url`.  If this endpoint is called via an AJAX request, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration!  If this endpoint is called via an AJAX request, the response contains the registration flow without a redirect.  This endpoint is NOT INTENDED for clients that do not have a browser (Chrome, Firefox, ...) as cookies are needed.  More information can be found at [Ory Kratos User Login](https://www.ory.sh/docs/kratos/self-service/flows/user-login) and [User Registration Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-registration).
+     * This endpoint initializes a browser-based user registration flow. This endpoint will set the appropriate cookies and anti-CSRF measures required for browser-based flows.  If this endpoint is opened as a link in the browser, it will be redirected to `selfservice.flows.registration.ui_url` with the flow ID set as the query parameter `?flow=`. If a valid user session exists already, the browser will be redirected to `urls.default_redirect_url`.  If this endpoint is called via an AJAX request, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration!  If this endpoint is called via an AJAX request, the response contains the registration flow without a redirect.  This endpoint is NOT INTENDED for clients that do not have a browser (Chrome, Firefox, ...) as cookies are needed.  More information can be found at [Ory Kratos User Login](https://www.ory.sh/docs/kratos/self-service/flows/user-login) and [User Registration Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-registration).
      * @summary Create Registration Flow for Browsers
      * @param {string} [returnTo] The URL to return the browser to after the flow was completed.
      * @param {string} [loginChallenge] Ory OAuth 2.0 Login Challenge.  If set will cooperate with Ory OAuth2 and OpenID to act as an OAuth2 server / OpenID Provider.  The value for this parameter comes from &#x60;login_challenge&#x60; URL Query parameter sent to your application (e.g. &#x60;/registration?login_challenge&#x3D;abcde&#x60;).  This feature is compatible with Ory Hydra when not running on the Ory Network.
@@ -4295,7 +4461,7 @@ export const FrontendApiAxiosParamCreator = function (
       }
     },
     /**
-     * This endpoint initiates a recovery flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error.  If you already created a recovery, fetch the flow\'s information using the getRecoveryFlow API endpoint.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
+     * This endpoint initiates a recovery flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error.  To fetch an existing recovery flow call `/self-service/recovery/flows?flow=<flow_id>`.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
      * @summary Create Recovery Flow for Native Apps
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -5108,7 +5274,7 @@ export const FrontendApiAxiosParamCreator = function (
       }
     },
     /**
-     * Uses the HTTP Headers in the GET request to determine (e.g. by using checking the cookies) who is authenticated. Returns a session object in the body or 401 if the credentials are invalid or no credentials were sent. When the request it successful it adds the user ID to the \'X-Kratos-Authenticated-Identity-Id\' header in the response.  If you call this endpoint from a server-side application, you must forward the HTTP Cookie Header to this endpoint:  ```js pseudo-code example router.get(\'/protected-endpoint\', async function (req, res) { const session = await client.toSession(undefined, req.header(\'cookie\'))  console.log(session) }) ```  When calling this endpoint from a non-browser application (e.g. mobile app) you must include the session token:  ```js pseudo-code example ... const session = await client.toSession(\"the-session-token\")  console.log(session) ```  Depending on your configuration this endpoint might return a 403 status code if the session has a lower Authenticator Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user to sign in with the second factor or change the configuration.  This endpoint is useful for:  AJAX calls. Remember to send credentials and set up CORS correctly! Reverse proxies and API Gateways Server-side calls - use the `X-Session-Token` header!  This endpoint authenticates users by checking:  if the `Cookie` HTTP header was set containing an Ory Kratos Session Cookie; if the `Authorization: bearer <ory-session-token>` HTTP header was set with a valid Ory Kratos Session Token; if the `X-Session-Token` HTTP header was set with a valid Ory Kratos Session Token.  If none of these headers are set or the cooke or token are invalid, the endpoint returns a HTTP 401 status code.  As explained above, this request may fail due to several reasons. The `error.id` can be one of:  `session_inactive`: No active session was found in the request (e.g. no Ory Session Cookie / Ory Session Token). `session_aal2_required`: An active session was found but it does not fulfil the Authenticator Assurance Level, implying that the session must (e.g.) authenticate the second factor.
+     * Uses the HTTP Headers in the GET request to determine (e.g. by using checking the cookies) who is authenticated. Returns a session object in the body or 401 if the credentials are invalid or no credentials were sent. When the request it successful it adds the user ID to the \'X-Kratos-Authenticated-Identity-Id\' header in the response.  If you call this endpoint from a server-side application, you must forward the HTTP Cookie Header to this endpoint:  ```js pseudo-code example router.get(\'/protected-endpoint\', async function (req, res) { const session = await client.toSession(undefined, req.header(\'cookie\'))  console.log(session) }) ```  When calling this endpoint from a non-browser application (e.g. mobile app) you must include the session token:  ```js pseudo-code example ... const session = await client.toSession(\"the-session-token\")  console.log(session) ```  Depending on your configuration this endpoint might return a 403 status code if the session has a lower Authenticator Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user to sign in with the second factor or change the configuration.  This endpoint is useful for:  AJAX calls. Remember to send credentials and set up CORS correctly! Reverse proxies and API Gateways Server-side calls - use the `X-Session-Token` header!  This endpoint authenticates users by checking:  if the `Cookie` HTTP header was set containing an Ory Kratos Session Cookie; if the `Authorization: bearer <ory-session-token>` HTTP header was set with a valid Ory Kratos Session Token; if the `X-Session-Token` HTTP header was set with a valid Ory Kratos Session Token.  If none of these headers are set or the cookie or token are invalid, the endpoint returns a HTTP 401 status code.  As explained above, this request may fail due to several reasons. The `error.id` can be one of:  `session_inactive`: No active session was found in the request (e.g. no Ory Session Cookie / Ory Session Token). `session_aal2_required`: An active session was found but it does not fulfil the Authenticator Assurance Level, implying that the session must (e.g.) authenticate the second factor.
      * @summary Check Who the Current HTTP Session Belongs To
      * @param {string} [xSessionToken] Set the Session Token when calling from non-browser clients. A session token has a format of &#x60;MP2YWEMeM8MxjkGKpH4dqOQ4Q4DlSPaj&#x60;.
      * @param {string} [cookie] Set the Cookie Header. This is especially useful when calling this endpoint from a server-side application. In that scenario you must include the HTTP Cookie Header which originally was included in the request to your server. An example of a session in the HTTP Cookie Header is: &#x60;ory_kratos_session&#x3D;a19iOVAbdzdgl70Rq1QZmrKmcjDtdsviCTZx7m9a9yHIUS8Wa9T7hvqyGTsLHi6Qifn2WUfpAKx9DWp0SJGleIn9vh2YF4A16id93kXFTgIgmwIOvbVAScyrx7yVl6bPZnCx27ec4WQDtaTewC1CpgudeDV2jQQnSaCP6ny3xa8qLH-QUgYqdQuoA_LF1phxgRCUfIrCLQOkolX5nv3ze_f&#x3D;&#x3D;&#x60;.  It is ok if more than one cookie are included here as all other cookies will be ignored.
@@ -5159,7 +5325,7 @@ export const FrontendApiAxiosParamCreator = function (
       }
     },
     /**
-     * :::info  This endpoint is EXPERIMENTAL and subject to potential breaking changes in the future.  :::  Use this endpoint to complete a login flow. This endpoint behaves differently for API and browser flows.  API flows expect `application/json` to be sent in the body and responds with HTTP 200 and a application/json body with the session token on success; HTTP 410 if the original flow expired with the appropriate error messages set and optionally a `use_flow_id` parameter in the body; HTTP 400 on form validation errors.  Browser flows expect a Content-Type of `application/x-www-form-urlencoded` or `application/json` to be sent in the body and respond with a HTTP 303 redirect to the post/after login URL or the `return_to` value if it was set and if the login succeeded; a HTTP 303 redirect to the login UI URL with the flow ID containing the validation errors otherwise.  Browser flows with an accept header of `application/json` will not redirect but instead respond with HTTP 200 and a application/json body with the signed in identity and a `Set-Cookie` header on success; HTTP 303 redirect to a fresh login flow if the original flow expired with the appropriate error messages set; HTTP 400 on form validation errors.  If this endpoint is called with `Accept: application/json` in the header, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration! `browser_location_change_required`: Usually sent when an AJAX request indicates that the browser needs to open a specific URL. Most likely used in Social Sign In flows.  More information can be found at [Ory Kratos User Login](https://www.ory.sh/docs/kratos/self-service/flows/user-login) and [User Registration Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-registration).
+     * Use this endpoint to complete a login flow. This endpoint behaves differently for API and browser flows.  API flows expect `application/json` to be sent in the body and responds with HTTP 200 and a application/json body with the session token on success; HTTP 410 if the original flow expired with the appropriate error messages set and optionally a `use_flow_id` parameter in the body; HTTP 400 on form validation errors.  Browser flows expect a Content-Type of `application/x-www-form-urlencoded` or `application/json` to be sent in the body and respond with a HTTP 303 redirect to the post/after login URL or the `return_to` value if it was set and if the login succeeded; a HTTP 303 redirect to the login UI URL with the flow ID containing the validation errors otherwise.  Browser flows with an accept header of `application/json` will not redirect but instead respond with HTTP 200 and a application/json body with the signed in identity and a `Set-Cookie` header on success; HTTP 303 redirect to a fresh login flow if the original flow expired with the appropriate error messages set; HTTP 400 on form validation errors.  If this endpoint is called with `Accept: application/json` in the header, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration! `browser_location_change_required`: Usually sent when an AJAX request indicates that the browser needs to open a specific URL. Most likely used in Social Sign In flows.  More information can be found at [Ory Kratos User Login](https://www.ory.sh/docs/kratos/self-service/flows/user-login) and [User Registration Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-registration).
      * @summary Submit a Login Flow
      * @param {string} flow The Login Flow ID  The value for this parameter comes from &#x60;flow&#x60; URL Query parameter sent to your application (e.g. &#x60;/login?flow&#x3D;abcde&#x60;).
      * @param {UpdateLoginFlowBody} updateLoginFlowBody
@@ -5237,12 +5403,14 @@ export const FrontendApiAxiosParamCreator = function (
      * @summary Update Logout Flow
      * @param {string} [token] A Valid Logout Token  If you do not have a logout token because you only have a session cookie, call &#x60;/self-service/logout/browser&#x60; to generate a URL for this endpoint.
      * @param {string} [returnTo] The URL to return to after the logout was completed.
+     * @param {string} [cookie] HTTP Cookies  When using the SDK in a browser app, on the server side you must include the HTTP Cookie Header sent by the client to your server here. This ensures that CSRF and session cookies are respected.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     updateLogoutFlow: async (
       token?: string,
       returnTo?: string,
+      cookie?: string,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/self-service/logout`
@@ -5269,6 +5437,10 @@ export const FrontendApiAxiosParamCreator = function (
         localVarQueryParameter["return_to"] = returnTo
       }
 
+      if (cookie != null) {
+        localVarHeaderParameter["Cookie"] = String(cookie)
+      }
+
       setSearchParams(localVarUrlObj, localVarQueryParameter)
       let headersFromBaseOptions =
         baseOptions && baseOptions.headers ? baseOptions.headers : {}
@@ -5284,8 +5456,8 @@ export const FrontendApiAxiosParamCreator = function (
       }
     },
     /**
-     * Use this endpoint to update a recovery flow. This endpoint behaves differently for API and browser flows and has several states:  `choose_method` expects `flow` (in the URL query) and `email` (in the body) to be sent and works with API- and Browser-initiated flows. For API clients and Browser clients with HTTP Header `Accept: application/json` it either returns a HTTP 200 OK when the form is valid and HTTP 400 OK when the form is invalid. and a HTTP 303 See Other redirect with a fresh recovery flow if the flow was otherwise invalid (e.g. expired). For Browser clients without HTTP Header `Accept` or with `Accept: text/_*` it returns a HTTP 303 See Other redirect to the Recovery UI URL with the Recovery Flow ID appended. `sent_email` is the success state after `choose_method` for the `link` method and allows the user to request another recovery email. It works for both API and Browser-initiated flows and returns the same responses as the flow in `choose_method` state. `passed_challenge` expects a `token` to be sent in the URL query and given the nature of the flow (\"sending a recovery link\") does not have any API capabilities. The server responds with a HTTP 303 See Other redirect either to the Settings UI URL (if the link was valid) and instructs the user to update their password, or a redirect to the Recover UI URL with a new Recovery Flow ID which contains an error message that the recovery link was invalid.  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
-     * @summary Update Recovery Flow
+     * Use this endpoint to complete a recovery flow. This endpoint behaves differently for API and browser flows and has several states:  `choose_method` expects `flow` (in the URL query) and `email` (in the body) to be sent and works with API- and Browser-initiated flows. For API clients and Browser clients with HTTP Header `Accept: application/json` it either returns a HTTP 200 OK when the form is valid and HTTP 400 OK when the form is invalid. and a HTTP 303 See Other redirect with a fresh recovery flow if the flow was otherwise invalid (e.g. expired). For Browser clients without HTTP Header `Accept` or with `Accept: text/_*` it returns a HTTP 303 See Other redirect to the Recovery UI URL with the Recovery Flow ID appended. `sent_email` is the success state after `choose_method` for the `link` method and allows the user to request another recovery email. It works for both API and Browser-initiated flows and returns the same responses as the flow in `choose_method` state. `passed_challenge` expects a `token` to be sent in the URL query and given the nature of the flow (\"sending a recovery link\") does not have any API capabilities. The server responds with a HTTP 303 See Other redirect either to the Settings UI URL (if the link was valid) and instructs the user to update their password, or a redirect to the Recover UI URL with a new Recovery Flow ID which contains an error message that the recovery link was invalid.  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
+     * @summary Complete Recovery Flow
      * @param {string} flow The Recovery Flow ID  The value for this parameter comes from &#x60;flow&#x60; URL Query parameter sent to your application (e.g. &#x60;/recovery?flow&#x3D;abcde&#x60;).
      * @param {UpdateRecoveryFlowBody} updateRecoveryFlowBody
      * @param {string} [token] Recovery Token  The recovery token which completes the recovery request. If the token is invalid (e.g. expired) an error will be shown to the end-user.  This parameter is usually set in a link and not used by any direct API call.
@@ -5624,17 +5796,23 @@ export const FrontendApiFp = function (configuration?: Configuration) {
      * This endpoint initializes a browser-based user logout flow and a URL which can be used to log out the user.  This endpoint is NOT INTENDED for API clients and only works with browsers (Chrome, Firefox, ...). For API clients you can call the `/self-service/logout/api` URL directly with the Ory Session Token.  The URL is only valid for the currently signed in user. If no user is signed in, this endpoint returns a 401 error.  When calling this endpoint from a backend, please ensure to properly forward the HTTP cookies.
      * @summary Create a Logout URL for Browsers
      * @param {string} [cookie] HTTP Cookies  If you call this endpoint from a backend, please include the original Cookie header in the request.
+     * @param {string} [returnTo] Return to URL  The URL to which the browser should be redirected to after the logout has been performed.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async createBrowserLogoutFlow(
       cookie?: string,
+      returnTo?: string,
       options?: AxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<LogoutFlow>
     > {
       const localVarAxiosArgs =
-        await localVarAxiosParamCreator.createBrowserLogoutFlow(cookie, options)
+        await localVarAxiosParamCreator.createBrowserLogoutFlow(
+          cookie,
+          returnTo,
+          options,
+        )
       return createRequestFunction(
         localVarAxiosArgs,
         globalAxios,
@@ -5668,7 +5846,7 @@ export const FrontendApiFp = function (configuration?: Configuration) {
       )
     },
     /**
-     * This endpoint initializes a browser-based user registration flow. This endpoint will set the appropriate cookies and anti-CSRF measures required for browser-based flows.  :::info  This endpoint is EXPERIMENTAL and subject to potential breaking changes in the future.  :::  If this endpoint is opened as a link in the browser, it will be redirected to `selfservice.flows.registration.ui_url` with the flow ID set as the query parameter `?flow=`. If a valid user session exists already, the browser will be redirected to `urls.default_redirect_url`.  If this endpoint is called via an AJAX request, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration!  If this endpoint is called via an AJAX request, the response contains the registration flow without a redirect.  This endpoint is NOT INTENDED for clients that do not have a browser (Chrome, Firefox, ...) as cookies are needed.  More information can be found at [Ory Kratos User Login](https://www.ory.sh/docs/kratos/self-service/flows/user-login) and [User Registration Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-registration).
+     * This endpoint initializes a browser-based user registration flow. This endpoint will set the appropriate cookies and anti-CSRF measures required for browser-based flows.  If this endpoint is opened as a link in the browser, it will be redirected to `selfservice.flows.registration.ui_url` with the flow ID set as the query parameter `?flow=`. If a valid user session exists already, the browser will be redirected to `urls.default_redirect_url`.  If this endpoint is called via an AJAX request, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration!  If this endpoint is called via an AJAX request, the response contains the registration flow without a redirect.  This endpoint is NOT INTENDED for clients that do not have a browser (Chrome, Firefox, ...) as cookies are needed.  More information can be found at [Ory Kratos User Login](https://www.ory.sh/docs/kratos/self-service/flows/user-login) and [User Registration Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-registration).
      * @summary Create Registration Flow for Browsers
      * @param {string} [returnTo] The URL to return the browser to after the flow was completed.
      * @param {string} [loginChallenge] Ory OAuth 2.0 Login Challenge.  If set will cooperate with Ory OAuth2 and OpenID to act as an OAuth2 server / OpenID Provider.  The value for this parameter comes from &#x60;login_challenge&#x60; URL Query parameter sent to your application (e.g. &#x60;/registration?login_challenge&#x3D;abcde&#x60;).  This feature is compatible with Ory Hydra when not running on the Ory Network.
@@ -5795,7 +5973,7 @@ export const FrontendApiFp = function (configuration?: Configuration) {
       )
     },
     /**
-     * This endpoint initiates a recovery flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error.  If you already created a recovery, fetch the flow\'s information using the getRecoveryFlow API endpoint.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
+     * This endpoint initiates a recovery flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error.  To fetch an existing recovery flow call `/self-service/recovery/flows?flow=<flow_id>`.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
      * @summary Create Recovery Flow for Native Apps
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -6227,7 +6405,7 @@ export const FrontendApiFp = function (configuration?: Configuration) {
       )
     },
     /**
-     * Uses the HTTP Headers in the GET request to determine (e.g. by using checking the cookies) who is authenticated. Returns a session object in the body or 401 if the credentials are invalid or no credentials were sent. When the request it successful it adds the user ID to the \'X-Kratos-Authenticated-Identity-Id\' header in the response.  If you call this endpoint from a server-side application, you must forward the HTTP Cookie Header to this endpoint:  ```js pseudo-code example router.get(\'/protected-endpoint\', async function (req, res) { const session = await client.toSession(undefined, req.header(\'cookie\'))  console.log(session) }) ```  When calling this endpoint from a non-browser application (e.g. mobile app) you must include the session token:  ```js pseudo-code example ... const session = await client.toSession(\"the-session-token\")  console.log(session) ```  Depending on your configuration this endpoint might return a 403 status code if the session has a lower Authenticator Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user to sign in with the second factor or change the configuration.  This endpoint is useful for:  AJAX calls. Remember to send credentials and set up CORS correctly! Reverse proxies and API Gateways Server-side calls - use the `X-Session-Token` header!  This endpoint authenticates users by checking:  if the `Cookie` HTTP header was set containing an Ory Kratos Session Cookie; if the `Authorization: bearer <ory-session-token>` HTTP header was set with a valid Ory Kratos Session Token; if the `X-Session-Token` HTTP header was set with a valid Ory Kratos Session Token.  If none of these headers are set or the cooke or token are invalid, the endpoint returns a HTTP 401 status code.  As explained above, this request may fail due to several reasons. The `error.id` can be one of:  `session_inactive`: No active session was found in the request (e.g. no Ory Session Cookie / Ory Session Token). `session_aal2_required`: An active session was found but it does not fulfil the Authenticator Assurance Level, implying that the session must (e.g.) authenticate the second factor.
+     * Uses the HTTP Headers in the GET request to determine (e.g. by using checking the cookies) who is authenticated. Returns a session object in the body or 401 if the credentials are invalid or no credentials were sent. When the request it successful it adds the user ID to the \'X-Kratos-Authenticated-Identity-Id\' header in the response.  If you call this endpoint from a server-side application, you must forward the HTTP Cookie Header to this endpoint:  ```js pseudo-code example router.get(\'/protected-endpoint\', async function (req, res) { const session = await client.toSession(undefined, req.header(\'cookie\'))  console.log(session) }) ```  When calling this endpoint from a non-browser application (e.g. mobile app) you must include the session token:  ```js pseudo-code example ... const session = await client.toSession(\"the-session-token\")  console.log(session) ```  Depending on your configuration this endpoint might return a 403 status code if the session has a lower Authenticator Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user to sign in with the second factor or change the configuration.  This endpoint is useful for:  AJAX calls. Remember to send credentials and set up CORS correctly! Reverse proxies and API Gateways Server-side calls - use the `X-Session-Token` header!  This endpoint authenticates users by checking:  if the `Cookie` HTTP header was set containing an Ory Kratos Session Cookie; if the `Authorization: bearer <ory-session-token>` HTTP header was set with a valid Ory Kratos Session Token; if the `X-Session-Token` HTTP header was set with a valid Ory Kratos Session Token.  If none of these headers are set or the cookie or token are invalid, the endpoint returns a HTTP 401 status code.  As explained above, this request may fail due to several reasons. The `error.id` can be one of:  `session_inactive`: No active session was found in the request (e.g. no Ory Session Cookie / Ory Session Token). `session_aal2_required`: An active session was found but it does not fulfil the Authenticator Assurance Level, implying that the session must (e.g.) authenticate the second factor.
      * @summary Check Who the Current HTTP Session Belongs To
      * @param {string} [xSessionToken] Set the Session Token when calling from non-browser clients. A session token has a format of &#x60;MP2YWEMeM8MxjkGKpH4dqOQ4Q4DlSPaj&#x60;.
      * @param {string} [cookie] Set the Cookie Header. This is especially useful when calling this endpoint from a server-side application. In that scenario you must include the HTTP Cookie Header which originally was included in the request to your server. An example of a session in the HTTP Cookie Header is: &#x60;ory_kratos_session&#x3D;a19iOVAbdzdgl70Rq1QZmrKmcjDtdsviCTZx7m9a9yHIUS8Wa9T7hvqyGTsLHi6Qifn2WUfpAKx9DWp0SJGleIn9vh2YF4A16id93kXFTgIgmwIOvbVAScyrx7yVl6bPZnCx27ec4WQDtaTewC1CpgudeDV2jQQnSaCP6ny3xa8qLH-QUgYqdQuoA_LF1phxgRCUfIrCLQOkolX5nv3ze_f&#x3D;&#x3D;&#x60;.  It is ok if more than one cookie are included here as all other cookies will be ignored.
@@ -6254,7 +6432,7 @@ export const FrontendApiFp = function (configuration?: Configuration) {
       )
     },
     /**
-     * :::info  This endpoint is EXPERIMENTAL and subject to potential breaking changes in the future.  :::  Use this endpoint to complete a login flow. This endpoint behaves differently for API and browser flows.  API flows expect `application/json` to be sent in the body and responds with HTTP 200 and a application/json body with the session token on success; HTTP 410 if the original flow expired with the appropriate error messages set and optionally a `use_flow_id` parameter in the body; HTTP 400 on form validation errors.  Browser flows expect a Content-Type of `application/x-www-form-urlencoded` or `application/json` to be sent in the body and respond with a HTTP 303 redirect to the post/after login URL or the `return_to` value if it was set and if the login succeeded; a HTTP 303 redirect to the login UI URL with the flow ID containing the validation errors otherwise.  Browser flows with an accept header of `application/json` will not redirect but instead respond with HTTP 200 and a application/json body with the signed in identity and a `Set-Cookie` header on success; HTTP 303 redirect to a fresh login flow if the original flow expired with the appropriate error messages set; HTTP 400 on form validation errors.  If this endpoint is called with `Accept: application/json` in the header, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration! `browser_location_change_required`: Usually sent when an AJAX request indicates that the browser needs to open a specific URL. Most likely used in Social Sign In flows.  More information can be found at [Ory Kratos User Login](https://www.ory.sh/docs/kratos/self-service/flows/user-login) and [User Registration Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-registration).
+     * Use this endpoint to complete a login flow. This endpoint behaves differently for API and browser flows.  API flows expect `application/json` to be sent in the body and responds with HTTP 200 and a application/json body with the session token on success; HTTP 410 if the original flow expired with the appropriate error messages set and optionally a `use_flow_id` parameter in the body; HTTP 400 on form validation errors.  Browser flows expect a Content-Type of `application/x-www-form-urlencoded` or `application/json` to be sent in the body and respond with a HTTP 303 redirect to the post/after login URL or the `return_to` value if it was set and if the login succeeded; a HTTP 303 redirect to the login UI URL with the flow ID containing the validation errors otherwise.  Browser flows with an accept header of `application/json` will not redirect but instead respond with HTTP 200 and a application/json body with the signed in identity and a `Set-Cookie` header on success; HTTP 303 redirect to a fresh login flow if the original flow expired with the appropriate error messages set; HTTP 400 on form validation errors.  If this endpoint is called with `Accept: application/json` in the header, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration! `browser_location_change_required`: Usually sent when an AJAX request indicates that the browser needs to open a specific URL. Most likely used in Social Sign In flows.  More information can be found at [Ory Kratos User Login](https://www.ory.sh/docs/kratos/self-service/flows/user-login) and [User Registration Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-registration).
      * @summary Submit a Login Flow
      * @param {string} flow The Login Flow ID  The value for this parameter comes from &#x60;flow&#x60; URL Query parameter sent to your application (e.g. &#x60;/login?flow&#x3D;abcde&#x60;).
      * @param {UpdateLoginFlowBody} updateLoginFlowBody
@@ -6294,12 +6472,14 @@ export const FrontendApiFp = function (configuration?: Configuration) {
      * @summary Update Logout Flow
      * @param {string} [token] A Valid Logout Token  If you do not have a logout token because you only have a session cookie, call &#x60;/self-service/logout/browser&#x60; to generate a URL for this endpoint.
      * @param {string} [returnTo] The URL to return to after the logout was completed.
+     * @param {string} [cookie] HTTP Cookies  When using the SDK in a browser app, on the server side you must include the HTTP Cookie Header sent by the client to your server here. This ensures that CSRF and session cookies are respected.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async updateLogoutFlow(
       token?: string,
       returnTo?: string,
+      cookie?: string,
       options?: AxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
@@ -6308,6 +6488,7 @@ export const FrontendApiFp = function (configuration?: Configuration) {
         await localVarAxiosParamCreator.updateLogoutFlow(
           token,
           returnTo,
+          cookie,
           options,
         )
       return createRequestFunction(
@@ -6318,8 +6499,8 @@ export const FrontendApiFp = function (configuration?: Configuration) {
       )
     },
     /**
-     * Use this endpoint to update a recovery flow. This endpoint behaves differently for API and browser flows and has several states:  `choose_method` expects `flow` (in the URL query) and `email` (in the body) to be sent and works with API- and Browser-initiated flows. For API clients and Browser clients with HTTP Header `Accept: application/json` it either returns a HTTP 200 OK when the form is valid and HTTP 400 OK when the form is invalid. and a HTTP 303 See Other redirect with a fresh recovery flow if the flow was otherwise invalid (e.g. expired). For Browser clients without HTTP Header `Accept` or with `Accept: text/_*` it returns a HTTP 303 See Other redirect to the Recovery UI URL with the Recovery Flow ID appended. `sent_email` is the success state after `choose_method` for the `link` method and allows the user to request another recovery email. It works for both API and Browser-initiated flows and returns the same responses as the flow in `choose_method` state. `passed_challenge` expects a `token` to be sent in the URL query and given the nature of the flow (\"sending a recovery link\") does not have any API capabilities. The server responds with a HTTP 303 See Other redirect either to the Settings UI URL (if the link was valid) and instructs the user to update their password, or a redirect to the Recover UI URL with a new Recovery Flow ID which contains an error message that the recovery link was invalid.  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
-     * @summary Update Recovery Flow
+     * Use this endpoint to complete a recovery flow. This endpoint behaves differently for API and browser flows and has several states:  `choose_method` expects `flow` (in the URL query) and `email` (in the body) to be sent and works with API- and Browser-initiated flows. For API clients and Browser clients with HTTP Header `Accept: application/json` it either returns a HTTP 200 OK when the form is valid and HTTP 400 OK when the form is invalid. and a HTTP 303 See Other redirect with a fresh recovery flow if the flow was otherwise invalid (e.g. expired). For Browser clients without HTTP Header `Accept` or with `Accept: text/_*` it returns a HTTP 303 See Other redirect to the Recovery UI URL with the Recovery Flow ID appended. `sent_email` is the success state after `choose_method` for the `link` method and allows the user to request another recovery email. It works for both API and Browser-initiated flows and returns the same responses as the flow in `choose_method` state. `passed_challenge` expects a `token` to be sent in the URL query and given the nature of the flow (\"sending a recovery link\") does not have any API capabilities. The server responds with a HTTP 303 See Other redirect either to the Settings UI URL (if the link was valid) and instructs the user to update their password, or a redirect to the Recover UI URL with a new Recovery Flow ID which contains an error message that the recovery link was invalid.  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
+     * @summary Complete Recovery Flow
      * @param {string} flow The Recovery Flow ID  The value for this parameter comes from &#x60;flow&#x60; URL Query parameter sent to your application (e.g. &#x60;/recovery?flow&#x3D;abcde&#x60;).
      * @param {UpdateRecoveryFlowBody} updateRecoveryFlowBody
      * @param {string} [token] Recovery Token  The recovery token which completes the recovery request. If the token is invalid (e.g. expired) an error will be shown to the end-user.  This parameter is usually set in a link and not used by any direct API call.
@@ -6504,7 +6685,11 @@ export const FrontendApiFactory = function (
       options?: AxiosRequestConfig,
     ): AxiosPromise<LogoutFlow> {
       return localVarFp
-        .createBrowserLogoutFlow(requestParameters.cookie, options)
+        .createBrowserLogoutFlow(
+          requestParameters.cookie,
+          requestParameters.returnTo,
+          options,
+        )
         .then((request) => request(axios, basePath))
     },
     /**
@@ -6523,7 +6708,7 @@ export const FrontendApiFactory = function (
         .then((request) => request(axios, basePath))
     },
     /**
-     * This endpoint initializes a browser-based user registration flow. This endpoint will set the appropriate cookies and anti-CSRF measures required for browser-based flows.  :::info  This endpoint is EXPERIMENTAL and subject to potential breaking changes in the future.  :::  If this endpoint is opened as a link in the browser, it will be redirected to `selfservice.flows.registration.ui_url` with the flow ID set as the query parameter `?flow=`. If a valid user session exists already, the browser will be redirected to `urls.default_redirect_url`.  If this endpoint is called via an AJAX request, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration!  If this endpoint is called via an AJAX request, the response contains the registration flow without a redirect.  This endpoint is NOT INTENDED for clients that do not have a browser (Chrome, Firefox, ...) as cookies are needed.  More information can be found at [Ory Kratos User Login](https://www.ory.sh/docs/kratos/self-service/flows/user-login) and [User Registration Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-registration).
+     * This endpoint initializes a browser-based user registration flow. This endpoint will set the appropriate cookies and anti-CSRF measures required for browser-based flows.  If this endpoint is opened as a link in the browser, it will be redirected to `selfservice.flows.registration.ui_url` with the flow ID set as the query parameter `?flow=`. If a valid user session exists already, the browser will be redirected to `urls.default_redirect_url`.  If this endpoint is called via an AJAX request, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration!  If this endpoint is called via an AJAX request, the response contains the registration flow without a redirect.  This endpoint is NOT INTENDED for clients that do not have a browser (Chrome, Firefox, ...) as cookies are needed.  More information can be found at [Ory Kratos User Login](https://www.ory.sh/docs/kratos/self-service/flows/user-login) and [User Registration Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-registration).
      * @summary Create Registration Flow for Browsers
      * @param {FrontendApiCreateBrowserRegistrationFlowRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
@@ -6599,7 +6784,7 @@ export const FrontendApiFactory = function (
         .then((request) => request(axios, basePath))
     },
     /**
-     * This endpoint initiates a recovery flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error.  If you already created a recovery, fetch the flow\'s information using the getRecoveryFlow API endpoint.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
+     * This endpoint initiates a recovery flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error.  To fetch an existing recovery flow call `/self-service/recovery/flows?flow=<flow_id>`.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
      * @summary Create Recovery Flow for Native Apps
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -6871,7 +7056,7 @@ export const FrontendApiFactory = function (
         .then((request) => request(axios, basePath))
     },
     /**
-     * Uses the HTTP Headers in the GET request to determine (e.g. by using checking the cookies) who is authenticated. Returns a session object in the body or 401 if the credentials are invalid or no credentials were sent. When the request it successful it adds the user ID to the \'X-Kratos-Authenticated-Identity-Id\' header in the response.  If you call this endpoint from a server-side application, you must forward the HTTP Cookie Header to this endpoint:  ```js pseudo-code example router.get(\'/protected-endpoint\', async function (req, res) { const session = await client.toSession(undefined, req.header(\'cookie\'))  console.log(session) }) ```  When calling this endpoint from a non-browser application (e.g. mobile app) you must include the session token:  ```js pseudo-code example ... const session = await client.toSession(\"the-session-token\")  console.log(session) ```  Depending on your configuration this endpoint might return a 403 status code if the session has a lower Authenticator Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user to sign in with the second factor or change the configuration.  This endpoint is useful for:  AJAX calls. Remember to send credentials and set up CORS correctly! Reverse proxies and API Gateways Server-side calls - use the `X-Session-Token` header!  This endpoint authenticates users by checking:  if the `Cookie` HTTP header was set containing an Ory Kratos Session Cookie; if the `Authorization: bearer <ory-session-token>` HTTP header was set with a valid Ory Kratos Session Token; if the `X-Session-Token` HTTP header was set with a valid Ory Kratos Session Token.  If none of these headers are set or the cooke or token are invalid, the endpoint returns a HTTP 401 status code.  As explained above, this request may fail due to several reasons. The `error.id` can be one of:  `session_inactive`: No active session was found in the request (e.g. no Ory Session Cookie / Ory Session Token). `session_aal2_required`: An active session was found but it does not fulfil the Authenticator Assurance Level, implying that the session must (e.g.) authenticate the second factor.
+     * Uses the HTTP Headers in the GET request to determine (e.g. by using checking the cookies) who is authenticated. Returns a session object in the body or 401 if the credentials are invalid or no credentials were sent. When the request it successful it adds the user ID to the \'X-Kratos-Authenticated-Identity-Id\' header in the response.  If you call this endpoint from a server-side application, you must forward the HTTP Cookie Header to this endpoint:  ```js pseudo-code example router.get(\'/protected-endpoint\', async function (req, res) { const session = await client.toSession(undefined, req.header(\'cookie\'))  console.log(session) }) ```  When calling this endpoint from a non-browser application (e.g. mobile app) you must include the session token:  ```js pseudo-code example ... const session = await client.toSession(\"the-session-token\")  console.log(session) ```  Depending on your configuration this endpoint might return a 403 status code if the session has a lower Authenticator Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user to sign in with the second factor or change the configuration.  This endpoint is useful for:  AJAX calls. Remember to send credentials and set up CORS correctly! Reverse proxies and API Gateways Server-side calls - use the `X-Session-Token` header!  This endpoint authenticates users by checking:  if the `Cookie` HTTP header was set containing an Ory Kratos Session Cookie; if the `Authorization: bearer <ory-session-token>` HTTP header was set with a valid Ory Kratos Session Token; if the `X-Session-Token` HTTP header was set with a valid Ory Kratos Session Token.  If none of these headers are set or the cookie or token are invalid, the endpoint returns a HTTP 401 status code.  As explained above, this request may fail due to several reasons. The `error.id` can be one of:  `session_inactive`: No active session was found in the request (e.g. no Ory Session Cookie / Ory Session Token). `session_aal2_required`: An active session was found but it does not fulfil the Authenticator Assurance Level, implying that the session must (e.g.) authenticate the second factor.
      * @summary Check Who the Current HTTP Session Belongs To
      * @param {FrontendApiToSessionRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
@@ -6890,7 +7075,7 @@ export const FrontendApiFactory = function (
         .then((request) => request(axios, basePath))
     },
     /**
-     * :::info  This endpoint is EXPERIMENTAL and subject to potential breaking changes in the future.  :::  Use this endpoint to complete a login flow. This endpoint behaves differently for API and browser flows.  API flows expect `application/json` to be sent in the body and responds with HTTP 200 and a application/json body with the session token on success; HTTP 410 if the original flow expired with the appropriate error messages set and optionally a `use_flow_id` parameter in the body; HTTP 400 on form validation errors.  Browser flows expect a Content-Type of `application/x-www-form-urlencoded` or `application/json` to be sent in the body and respond with a HTTP 303 redirect to the post/after login URL or the `return_to` value if it was set and if the login succeeded; a HTTP 303 redirect to the login UI URL with the flow ID containing the validation errors otherwise.  Browser flows with an accept header of `application/json` will not redirect but instead respond with HTTP 200 and a application/json body with the signed in identity and a `Set-Cookie` header on success; HTTP 303 redirect to a fresh login flow if the original flow expired with the appropriate error messages set; HTTP 400 on form validation errors.  If this endpoint is called with `Accept: application/json` in the header, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration! `browser_location_change_required`: Usually sent when an AJAX request indicates that the browser needs to open a specific URL. Most likely used in Social Sign In flows.  More information can be found at [Ory Kratos User Login](https://www.ory.sh/docs/kratos/self-service/flows/user-login) and [User Registration Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-registration).
+     * Use this endpoint to complete a login flow. This endpoint behaves differently for API and browser flows.  API flows expect `application/json` to be sent in the body and responds with HTTP 200 and a application/json body with the session token on success; HTTP 410 if the original flow expired with the appropriate error messages set and optionally a `use_flow_id` parameter in the body; HTTP 400 on form validation errors.  Browser flows expect a Content-Type of `application/x-www-form-urlencoded` or `application/json` to be sent in the body and respond with a HTTP 303 redirect to the post/after login URL or the `return_to` value if it was set and if the login succeeded; a HTTP 303 redirect to the login UI URL with the flow ID containing the validation errors otherwise.  Browser flows with an accept header of `application/json` will not redirect but instead respond with HTTP 200 and a application/json body with the signed in identity and a `Set-Cookie` header on success; HTTP 303 redirect to a fresh login flow if the original flow expired with the appropriate error messages set; HTTP 400 on form validation errors.  If this endpoint is called with `Accept: application/json` in the header, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration! `browser_location_change_required`: Usually sent when an AJAX request indicates that the browser needs to open a specific URL. Most likely used in Social Sign In flows.  More information can be found at [Ory Kratos User Login](https://www.ory.sh/docs/kratos/self-service/flows/user-login) and [User Registration Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-registration).
      * @summary Submit a Login Flow
      * @param {FrontendApiUpdateLoginFlowRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
@@ -6925,13 +7110,14 @@ export const FrontendApiFactory = function (
         .updateLogoutFlow(
           requestParameters.token,
           requestParameters.returnTo,
+          requestParameters.cookie,
           options,
         )
         .then((request) => request(axios, basePath))
     },
     /**
-     * Use this endpoint to update a recovery flow. This endpoint behaves differently for API and browser flows and has several states:  `choose_method` expects `flow` (in the URL query) and `email` (in the body) to be sent and works with API- and Browser-initiated flows. For API clients and Browser clients with HTTP Header `Accept: application/json` it either returns a HTTP 200 OK when the form is valid and HTTP 400 OK when the form is invalid. and a HTTP 303 See Other redirect with a fresh recovery flow if the flow was otherwise invalid (e.g. expired). For Browser clients without HTTP Header `Accept` or with `Accept: text/_*` it returns a HTTP 303 See Other redirect to the Recovery UI URL with the Recovery Flow ID appended. `sent_email` is the success state after `choose_method` for the `link` method and allows the user to request another recovery email. It works for both API and Browser-initiated flows and returns the same responses as the flow in `choose_method` state. `passed_challenge` expects a `token` to be sent in the URL query and given the nature of the flow (\"sending a recovery link\") does not have any API capabilities. The server responds with a HTTP 303 See Other redirect either to the Settings UI URL (if the link was valid) and instructs the user to update their password, or a redirect to the Recover UI URL with a new Recovery Flow ID which contains an error message that the recovery link was invalid.  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
-     * @summary Update Recovery Flow
+     * Use this endpoint to complete a recovery flow. This endpoint behaves differently for API and browser flows and has several states:  `choose_method` expects `flow` (in the URL query) and `email` (in the body) to be sent and works with API- and Browser-initiated flows. For API clients and Browser clients with HTTP Header `Accept: application/json` it either returns a HTTP 200 OK when the form is valid and HTTP 400 OK when the form is invalid. and a HTTP 303 See Other redirect with a fresh recovery flow if the flow was otherwise invalid (e.g. expired). For Browser clients without HTTP Header `Accept` or with `Accept: text/_*` it returns a HTTP 303 See Other redirect to the Recovery UI URL with the Recovery Flow ID appended. `sent_email` is the success state after `choose_method` for the `link` method and allows the user to request another recovery email. It works for both API and Browser-initiated flows and returns the same responses as the flow in `choose_method` state. `passed_challenge` expects a `token` to be sent in the URL query and given the nature of the flow (\"sending a recovery link\") does not have any API capabilities. The server responds with a HTTP 303 See Other redirect either to the Settings UI URL (if the link was valid) and instructs the user to update their password, or a redirect to the Recover UI URL with a new Recovery Flow ID which contains an error message that the recovery link was invalid.  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
+     * @summary Complete Recovery Flow
      * @param {FrontendApiUpdateRecoveryFlowRequest} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -7069,6 +7255,13 @@ export interface FrontendApiCreateBrowserLogoutFlowRequest {
    * @memberof FrontendApiCreateBrowserLogoutFlow
    */
   readonly cookie?: string
+
+  /**
+   * Return to URL  The URL to which the browser should be redirected to after the logout has been performed.
+   * @type {string}
+   * @memberof FrontendApiCreateBrowserLogoutFlow
+   */
+  readonly returnTo?: string
 }
 
 /**
@@ -7545,6 +7738,13 @@ export interface FrontendApiUpdateLogoutFlowRequest {
    * @memberof FrontendApiUpdateLogoutFlow
    */
   readonly returnTo?: string
+
+  /**
+   * HTTP Cookies  When using the SDK in a browser app, on the server side you must include the HTTP Cookie Header sent by the client to your server here. This ensures that CSRF and session cookies are respected.
+   * @type {string}
+   * @memberof FrontendApiUpdateLogoutFlow
+   */
+  readonly cookie?: string
 }
 
 /**
@@ -7724,7 +7924,11 @@ export class FrontendApi extends BaseAPI {
     options?: AxiosRequestConfig,
   ) {
     return FrontendApiFp(this.configuration)
-      .createBrowserLogoutFlow(requestParameters.cookie, options)
+      .createBrowserLogoutFlow(
+        requestParameters.cookie,
+        requestParameters.returnTo,
+        options,
+      )
       .then((request) => request(this.axios, this.basePath))
   }
 
@@ -7746,7 +7950,7 @@ export class FrontendApi extends BaseAPI {
   }
 
   /**
-   * This endpoint initializes a browser-based user registration flow. This endpoint will set the appropriate cookies and anti-CSRF measures required for browser-based flows.  :::info  This endpoint is EXPERIMENTAL and subject to potential breaking changes in the future.  :::  If this endpoint is opened as a link in the browser, it will be redirected to `selfservice.flows.registration.ui_url` with the flow ID set as the query parameter `?flow=`. If a valid user session exists already, the browser will be redirected to `urls.default_redirect_url`.  If this endpoint is called via an AJAX request, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration!  If this endpoint is called via an AJAX request, the response contains the registration flow without a redirect.  This endpoint is NOT INTENDED for clients that do not have a browser (Chrome, Firefox, ...) as cookies are needed.  More information can be found at [Ory Kratos User Login](https://www.ory.sh/docs/kratos/self-service/flows/user-login) and [User Registration Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-registration).
+   * This endpoint initializes a browser-based user registration flow. This endpoint will set the appropriate cookies and anti-CSRF measures required for browser-based flows.  If this endpoint is opened as a link in the browser, it will be redirected to `selfservice.flows.registration.ui_url` with the flow ID set as the query parameter `?flow=`. If a valid user session exists already, the browser will be redirected to `urls.default_redirect_url`.  If this endpoint is called via an AJAX request, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration!  If this endpoint is called via an AJAX request, the response contains the registration flow without a redirect.  This endpoint is NOT INTENDED for clients that do not have a browser (Chrome, Firefox, ...) as cookies are needed.  More information can be found at [Ory Kratos User Login](https://www.ory.sh/docs/kratos/self-service/flows/user-login) and [User Registration Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-registration).
    * @summary Create Registration Flow for Browsers
    * @param {FrontendApiCreateBrowserRegistrationFlowRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
@@ -7830,7 +8034,7 @@ export class FrontendApi extends BaseAPI {
   }
 
   /**
-   * This endpoint initiates a recovery flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error.  If you already created a recovery, fetch the flow\'s information using the getRecoveryFlow API endpoint.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
+   * This endpoint initiates a recovery flow for API clients such as mobile devices, smart TVs, and so on.  If a valid provided session cookie or session token is provided, a 400 Bad Request error.  To fetch an existing recovery flow call `/self-service/recovery/flows?flow=<flow_id>`.  You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make you vulnerable to a variety of CSRF attacks.  This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
    * @summary Create Recovery Flow for Native Apps
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
@@ -8126,7 +8330,7 @@ export class FrontendApi extends BaseAPI {
   }
 
   /**
-   * Uses the HTTP Headers in the GET request to determine (e.g. by using checking the cookies) who is authenticated. Returns a session object in the body or 401 if the credentials are invalid or no credentials were sent. When the request it successful it adds the user ID to the \'X-Kratos-Authenticated-Identity-Id\' header in the response.  If you call this endpoint from a server-side application, you must forward the HTTP Cookie Header to this endpoint:  ```js pseudo-code example router.get(\'/protected-endpoint\', async function (req, res) { const session = await client.toSession(undefined, req.header(\'cookie\'))  console.log(session) }) ```  When calling this endpoint from a non-browser application (e.g. mobile app) you must include the session token:  ```js pseudo-code example ... const session = await client.toSession(\"the-session-token\")  console.log(session) ```  Depending on your configuration this endpoint might return a 403 status code if the session has a lower Authenticator Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user to sign in with the second factor or change the configuration.  This endpoint is useful for:  AJAX calls. Remember to send credentials and set up CORS correctly! Reverse proxies and API Gateways Server-side calls - use the `X-Session-Token` header!  This endpoint authenticates users by checking:  if the `Cookie` HTTP header was set containing an Ory Kratos Session Cookie; if the `Authorization: bearer <ory-session-token>` HTTP header was set with a valid Ory Kratos Session Token; if the `X-Session-Token` HTTP header was set with a valid Ory Kratos Session Token.  If none of these headers are set or the cooke or token are invalid, the endpoint returns a HTTP 401 status code.  As explained above, this request may fail due to several reasons. The `error.id` can be one of:  `session_inactive`: No active session was found in the request (e.g. no Ory Session Cookie / Ory Session Token). `session_aal2_required`: An active session was found but it does not fulfil the Authenticator Assurance Level, implying that the session must (e.g.) authenticate the second factor.
+   * Uses the HTTP Headers in the GET request to determine (e.g. by using checking the cookies) who is authenticated. Returns a session object in the body or 401 if the credentials are invalid or no credentials were sent. When the request it successful it adds the user ID to the \'X-Kratos-Authenticated-Identity-Id\' header in the response.  If you call this endpoint from a server-side application, you must forward the HTTP Cookie Header to this endpoint:  ```js pseudo-code example router.get(\'/protected-endpoint\', async function (req, res) { const session = await client.toSession(undefined, req.header(\'cookie\'))  console.log(session) }) ```  When calling this endpoint from a non-browser application (e.g. mobile app) you must include the session token:  ```js pseudo-code example ... const session = await client.toSession(\"the-session-token\")  console.log(session) ```  Depending on your configuration this endpoint might return a 403 status code if the session has a lower Authenticator Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user to sign in with the second factor or change the configuration.  This endpoint is useful for:  AJAX calls. Remember to send credentials and set up CORS correctly! Reverse proxies and API Gateways Server-side calls - use the `X-Session-Token` header!  This endpoint authenticates users by checking:  if the `Cookie` HTTP header was set containing an Ory Kratos Session Cookie; if the `Authorization: bearer <ory-session-token>` HTTP header was set with a valid Ory Kratos Session Token; if the `X-Session-Token` HTTP header was set with a valid Ory Kratos Session Token.  If none of these headers are set or the cookie or token are invalid, the endpoint returns a HTTP 401 status code.  As explained above, this request may fail due to several reasons. The `error.id` can be one of:  `session_inactive`: No active session was found in the request (e.g. no Ory Session Cookie / Ory Session Token). `session_aal2_required`: An active session was found but it does not fulfil the Authenticator Assurance Level, implying that the session must (e.g.) authenticate the second factor.
    * @summary Check Who the Current HTTP Session Belongs To
    * @param {FrontendApiToSessionRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
@@ -8147,7 +8351,7 @@ export class FrontendApi extends BaseAPI {
   }
 
   /**
-   * :::info  This endpoint is EXPERIMENTAL and subject to potential breaking changes in the future.  :::  Use this endpoint to complete a login flow. This endpoint behaves differently for API and browser flows.  API flows expect `application/json` to be sent in the body and responds with HTTP 200 and a application/json body with the session token on success; HTTP 410 if the original flow expired with the appropriate error messages set and optionally a `use_flow_id` parameter in the body; HTTP 400 on form validation errors.  Browser flows expect a Content-Type of `application/x-www-form-urlencoded` or `application/json` to be sent in the body and respond with a HTTP 303 redirect to the post/after login URL or the `return_to` value if it was set and if the login succeeded; a HTTP 303 redirect to the login UI URL with the flow ID containing the validation errors otherwise.  Browser flows with an accept header of `application/json` will not redirect but instead respond with HTTP 200 and a application/json body with the signed in identity and a `Set-Cookie` header on success; HTTP 303 redirect to a fresh login flow if the original flow expired with the appropriate error messages set; HTTP 400 on form validation errors.  If this endpoint is called with `Accept: application/json` in the header, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration! `browser_location_change_required`: Usually sent when an AJAX request indicates that the browser needs to open a specific URL. Most likely used in Social Sign In flows.  More information can be found at [Ory Kratos User Login](https://www.ory.sh/docs/kratos/self-service/flows/user-login) and [User Registration Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-registration).
+   * Use this endpoint to complete a login flow. This endpoint behaves differently for API and browser flows.  API flows expect `application/json` to be sent in the body and responds with HTTP 200 and a application/json body with the session token on success; HTTP 410 if the original flow expired with the appropriate error messages set and optionally a `use_flow_id` parameter in the body; HTTP 400 on form validation errors.  Browser flows expect a Content-Type of `application/x-www-form-urlencoded` or `application/json` to be sent in the body and respond with a HTTP 303 redirect to the post/after login URL or the `return_to` value if it was set and if the login succeeded; a HTTP 303 redirect to the login UI URL with the flow ID containing the validation errors otherwise.  Browser flows with an accept header of `application/json` will not redirect but instead respond with HTTP 200 and a application/json body with the signed in identity and a `Set-Cookie` header on success; HTTP 303 redirect to a fresh login flow if the original flow expired with the appropriate error messages set; HTTP 400 on form validation errors.  If this endpoint is called with `Accept: application/json` in the header, the response contains the flow without a redirect. In the case of an error, the `error.id` of the JSON response body can be one of:  `session_already_available`: The user is already signed in. `security_csrf_violation`: Unable to fetch the flow because a CSRF violation occurred. `security_identity_mismatch`: The requested `?return_to` address is not allowed to be used. Adjust this in the configuration! `browser_location_change_required`: Usually sent when an AJAX request indicates that the browser needs to open a specific URL. Most likely used in Social Sign In flows.  More information can be found at [Ory Kratos User Login](https://www.ory.sh/docs/kratos/self-service/flows/user-login) and [User Registration Documentation](https://www.ory.sh/docs/kratos/self-service/flows/user-registration).
    * @summary Submit a Login Flow
    * @param {FrontendApiUpdateLoginFlowRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
@@ -8185,14 +8389,15 @@ export class FrontendApi extends BaseAPI {
       .updateLogoutFlow(
         requestParameters.token,
         requestParameters.returnTo,
+        requestParameters.cookie,
         options,
       )
       .then((request) => request(this.axios, this.basePath))
   }
 
   /**
-   * Use this endpoint to update a recovery flow. This endpoint behaves differently for API and browser flows and has several states:  `choose_method` expects `flow` (in the URL query) and `email` (in the body) to be sent and works with API- and Browser-initiated flows. For API clients and Browser clients with HTTP Header `Accept: application/json` it either returns a HTTP 200 OK when the form is valid and HTTP 400 OK when the form is invalid. and a HTTP 303 See Other redirect with a fresh recovery flow if the flow was otherwise invalid (e.g. expired). For Browser clients without HTTP Header `Accept` or with `Accept: text/_*` it returns a HTTP 303 See Other redirect to the Recovery UI URL with the Recovery Flow ID appended. `sent_email` is the success state after `choose_method` for the `link` method and allows the user to request another recovery email. It works for both API and Browser-initiated flows and returns the same responses as the flow in `choose_method` state. `passed_challenge` expects a `token` to be sent in the URL query and given the nature of the flow (\"sending a recovery link\") does not have any API capabilities. The server responds with a HTTP 303 See Other redirect either to the Settings UI URL (if the link was valid) and instructs the user to update their password, or a redirect to the Recover UI URL with a new Recovery Flow ID which contains an error message that the recovery link was invalid.  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
-   * @summary Update Recovery Flow
+   * Use this endpoint to complete a recovery flow. This endpoint behaves differently for API and browser flows and has several states:  `choose_method` expects `flow` (in the URL query) and `email` (in the body) to be sent and works with API- and Browser-initiated flows. For API clients and Browser clients with HTTP Header `Accept: application/json` it either returns a HTTP 200 OK when the form is valid and HTTP 400 OK when the form is invalid. and a HTTP 303 See Other redirect with a fresh recovery flow if the flow was otherwise invalid (e.g. expired). For Browser clients without HTTP Header `Accept` or with `Accept: text/_*` it returns a HTTP 303 See Other redirect to the Recovery UI URL with the Recovery Flow ID appended. `sent_email` is the success state after `choose_method` for the `link` method and allows the user to request another recovery email. It works for both API and Browser-initiated flows and returns the same responses as the flow in `choose_method` state. `passed_challenge` expects a `token` to be sent in the URL query and given the nature of the flow (\"sending a recovery link\") does not have any API capabilities. The server responds with a HTTP 303 See Other redirect either to the Settings UI URL (if the link was valid) and instructs the user to update their password, or a redirect to the Recover UI URL with a new Recovery Flow ID which contains an error message that the recovery link was invalid.  More information can be found at [Ory Kratos Account Recovery Documentation](../self-service/flows/account-recovery).
+   * @summary Complete Recovery Flow
    * @param {FrontendApiUpdateRecoveryFlowRequest} requestParameters Request parameters.
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
@@ -8782,13 +8987,15 @@ export const IdentityApiAxiosParamCreator = function (
      * Return an [identity](https://www.ory.sh/docs/kratos/concepts/identity-user-model) by its ID. You can optionally include credentials (e.g. social sign in connections) in the response by using the `include_credential` query parameter.
      * @summary Get an Identity
      * @param {string} id ID must be set to the ID of identity you want to get
-     * @param {Array<string>} [includeCredential] Include Credentials in Response  Currently, only &#x60;oidc&#x60; is supported. This will return the initial OAuth 2.0 Access, Refresh and (optionally) OpenID Connect ID Token.
+     * @param {Array<'password' | 'totp' | 'oidc' | 'webauthn' | 'lookup_secret' | 'code'>} [includeCredential] Include Credentials in Response  Include any credential, for example &#x60;password&#x60; or &#x60;oidc&#x60;, in the response. When set to &#x60;oidc&#x60;, This will return the initial OAuth 2.0 Access Token, OAuth 2.0 Refresh Token and the OpenID Connect ID Token if available.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     getIdentity: async (
       id: string,
-      includeCredential?: Array<string>,
+      includeCredential?: Array<
+        "password" | "totp" | "oidc" | "webauthn" | "lookup_secret" | "code"
+      >,
       options: AxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
@@ -8946,7 +9153,7 @@ export const IdentityApiAxiosParamCreator = function (
      * Lists all [identities](https://www.ory.sh/docs/kratos/concepts/identity-user-model) in the system.
      * @summary List Identities
      * @param {number} [perPage] Items per Page  This is the number of items per page.
-     * @param {number} [page] Pagination Page  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist.
+     * @param {number} [page] Pagination Page  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist. The first page can be retrieved by omitting this parameter. Following page pointers will be returned in the &#x60;Link&#x60; header.
      * @param {string} [credentialsIdentifier] CredentialsIdentifier is the identifier (username, email) of the credentials to look up.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -9010,7 +9217,7 @@ export const IdentityApiAxiosParamCreator = function (
      * Returns a list of all identity schemas currently in use.
      * @summary Get all Identity Schemas
      * @param {number} [perPage] Items per Page  This is the number of items per page.
-     * @param {number} [page] Pagination Page  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist.
+     * @param {number} [page] Pagination Page  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist. The first page can be retrieved by omitting this parameter. Following page pointers will be returned in the &#x60;Link&#x60; header.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -9062,7 +9269,7 @@ export const IdentityApiAxiosParamCreator = function (
      * @summary List an Identity\'s Sessions
      * @param {string} id ID is the identity\&#39;s ID.
      * @param {number} [perPage] Items per Page  This is the number of items per page.
-     * @param {number} [page] Pagination Page  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist.
+     * @param {number} [page] Pagination Page  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist. The first page can be retrieved by omitting this parameter. Following page pointers will be returned in the &#x60;Link&#x60; header.
      * @param {boolean} [active] Active is a boolean flag that filters out sessions based on the state. If no value is provided, all sessions are returned.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -9477,7 +9684,7 @@ export const IdentityApiFp = function (configuration?: Configuration) {
       type: "totp" | "webauthn" | "lookup",
       options?: AxiosRequestConfig,
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Identity>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.deleteIdentityCredentials(
@@ -9566,13 +9773,15 @@ export const IdentityApiFp = function (configuration?: Configuration) {
      * Return an [identity](https://www.ory.sh/docs/kratos/concepts/identity-user-model) by its ID. You can optionally include credentials (e.g. social sign in connections) in the response by using the `include_credential` query parameter.
      * @summary Get an Identity
      * @param {string} id ID must be set to the ID of identity you want to get
-     * @param {Array<string>} [includeCredential] Include Credentials in Response  Currently, only &#x60;oidc&#x60; is supported. This will return the initial OAuth 2.0 Access, Refresh and (optionally) OpenID Connect ID Token.
+     * @param {Array<'password' | 'totp' | 'oidc' | 'webauthn' | 'lookup_secret' | 'code'>} [includeCredential] Include Credentials in Response  Include any credential, for example &#x60;password&#x60; or &#x60;oidc&#x60;, in the response. When set to &#x60;oidc&#x60;, This will return the initial OAuth 2.0 Access Token, OAuth 2.0 Refresh Token and the OpenID Connect ID Token if available.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async getIdentity(
       id: string,
-      includeCredential?: Array<string>,
+      includeCredential?: Array<
+        "password" | "totp" | "oidc" | "webauthn" | "lookup_secret" | "code"
+      >,
       options?: AxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<Identity>
@@ -9642,7 +9851,7 @@ export const IdentityApiFp = function (configuration?: Configuration) {
      * Lists all [identities](https://www.ory.sh/docs/kratos/concepts/identity-user-model) in the system.
      * @summary List Identities
      * @param {number} [perPage] Items per Page  This is the number of items per page.
-     * @param {number} [page] Pagination Page  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist.
+     * @param {number} [page] Pagination Page  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist. The first page can be retrieved by omitting this parameter. Following page pointers will be returned in the &#x60;Link&#x60; header.
      * @param {string} [credentialsIdentifier] CredentialsIdentifier is the identifier (username, email) of the credentials to look up.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -9675,7 +9884,7 @@ export const IdentityApiFp = function (configuration?: Configuration) {
      * Returns a list of all identity schemas currently in use.
      * @summary Get all Identity Schemas
      * @param {number} [perPage] Items per Page  This is the number of items per page.
-     * @param {number} [page] Pagination Page  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist.
+     * @param {number} [page] Pagination Page  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist. The first page can be retrieved by omitting this parameter. Following page pointers will be returned in the &#x60;Link&#x60; header.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -9707,7 +9916,7 @@ export const IdentityApiFp = function (configuration?: Configuration) {
      * @summary List an Identity\'s Sessions
      * @param {string} id ID is the identity\&#39;s ID.
      * @param {number} [perPage] Items per Page  This is the number of items per page.
-     * @param {number} [page] Pagination Page  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist.
+     * @param {number} [page] Pagination Page  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist. The first page can be retrieved by omitting this parameter. Following page pointers will be returned in the &#x60;Link&#x60; header.
      * @param {boolean} [active] Active is a boolean flag that filters out sessions based on the state. If no value is provided, all sessions are returned.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -9928,7 +10137,7 @@ export const IdentityApiFactory = function (
     deleteIdentityCredentials(
       requestParameters: IdentityApiDeleteIdentityCredentialsRequest,
       options?: AxiosRequestConfig,
-    ): AxiosPromise<Identity> {
+    ): AxiosPromise<void> {
       return localVarFp
         .deleteIdentityCredentials(
           requestParameters.id,
@@ -10300,11 +10509,13 @@ export interface IdentityApiGetIdentityRequest {
   readonly id: string
 
   /**
-   * Include Credentials in Response  Currently, only &#x60;oidc&#x60; is supported. This will return the initial OAuth 2.0 Access, Refresh and (optionally) OpenID Connect ID Token.
-   * @type {Array<string>}
+   * Include Credentials in Response  Include any credential, for example &#x60;password&#x60; or &#x60;oidc&#x60;, in the response. When set to &#x60;oidc&#x60;, This will return the initial OAuth 2.0 Access Token, OAuth 2.0 Refresh Token and the OpenID Connect ID Token if available.
+   * @type {Array<'password' | 'totp' | 'oidc' | 'webauthn' | 'lookup_secret' | 'code'>}
    * @memberof IdentityApiGetIdentity
    */
-  readonly includeCredential?: Array<string>
+  readonly includeCredential?: Array<
+    "password" | "totp" | "oidc" | "webauthn" | "lookup_secret" | "code"
+  >
 }
 
 /**
@@ -10356,7 +10567,7 @@ export interface IdentityApiListIdentitiesRequest {
   readonly perPage?: number
 
   /**
-   * Pagination Page  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist.
+   * Pagination Page  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist. The first page can be retrieved by omitting this parameter. Following page pointers will be returned in the &#x60;Link&#x60; header.
    * @type {number}
    * @memberof IdentityApiListIdentities
    */
@@ -10384,7 +10595,7 @@ export interface IdentityApiListIdentitySchemasRequest {
   readonly perPage?: number
 
   /**
-   * Pagination Page  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist.
+   * Pagination Page  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist. The first page can be retrieved by omitting this parameter. Following page pointers will be returned in the &#x60;Link&#x60; header.
    * @type {number}
    * @memberof IdentityApiListIdentitySchemas
    */
@@ -10412,7 +10623,7 @@ export interface IdentityApiListIdentitySessionsRequest {
   readonly perPage?: number
 
   /**
-   * Pagination Page  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist.
+   * Pagination Page  This value is currently an integer, but it is not sequential. The value is not the page number, but a reference. The next page can be any number and some numbers might return an empty list.  For example, page 2 might not follow after page 1. And even if page 3 and 5 exist, but page 4 might not exist. The first page can be retrieved by omitting this parameter. Following page pointers will be returned in the &#x60;Link&#x60; header.
    * @type {number}
    * @memberof IdentityApiListIdentitySessions
    */

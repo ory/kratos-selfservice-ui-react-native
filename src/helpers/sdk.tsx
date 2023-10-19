@@ -28,7 +28,7 @@ export const newOrySdk = (project: string) =>
         // which causes problems with Ory Kratos' security detection.
         withCredentials: false,
 
-        // Timeout after 5 seconds.
+        // Timeout after 10 seconds.
         timeout: 10000,
       },
     }),

@@ -1,12 +1,17 @@
 // This file renders the registration screen.
-import { RegistrationFlow, UpdateRegistrationFlowBody } from "@ory/client"
-import { useFocusEffect, useNavigation } from "@react-navigation/native"
+import {
+  RegistrationFlow,
+  SuccessfulNativeRegistration,
+  UpdateRegistrationFlowBody,
+} from "@ory/client"
+import { useFocusEffect } from "@react-navigation/native"
 import { StackScreenProps } from "@react-navigation/stack"
+import axios, { AxiosResponse } from "axios"
 import React, { useCallback, useContext, useState } from "react"
 import { Platform } from "react-native"
 import { SessionContext } from "../../helpers/auth"
 import { getNodeId, handleFormSubmitError } from "../../helpers/form"
-import { newOrySdk } from "../../helpers/sdk"
+import { registerWithApple } from "../../helpers/oidc/apple"
 import { AuthContext } from "../AuthProvider"
 import AuthLayout from "../Layout/AuthLayout"
 import ProjectPicker from "../Layout/ProjectPicker"
@@ -23,11 +28,11 @@ type Props = StackScreenProps<RootStackParamList, "Registration">
 
 const Registration = ({ navigation }: Props) => {
   const [flow, setFlow] = useState<RegistrationFlow | undefined>(undefined)
-  const { project } = useContext(ProjectContext)
+  const { sdk } = useContext(ProjectContext)
   const { setSession, isAuthenticated } = useContext(AuthContext)
 
   const initializeFlow = () =>
-    newOrySdk(project)
+    sdk
       .createNativeRegistrationFlow({
         // If you do use social sign in, please add the following URLs to your allowed return to URLs.
         //   If you the app is running on an emulator or physical device: exp://localhost:8081
@@ -43,7 +48,7 @@ const Registration = ({ navigation }: Props) => {
       // The flow was initialized successfully, let's set the form data:
       .then(({ data: flow }) => {
         setFlow(flow)
-        console.log("Setting registration flow", flow)
+        console.log("Setting registration flow", JSON.stringify(flow))
       })
       .catch(logSDKError)
 
@@ -57,11 +62,11 @@ const Registration = ({ navigation }: Props) => {
       initializeFlow()
 
       return () => setFlow(undefined)
-    }, [project]),
+    }, [sdk]),
   )
 
   const refetchFlow = () =>
-    newOrySdk(project)
+    sdk
       .getRegistrationFlow({ id: flow!.id })
       .then(({ data: f }) => setFlow({ ...flow, ...f })) // merging ensures we don't lose the code
       .catch(logSDKError)
@@ -81,67 +86,83 @@ const Registration = ({ navigation }: Props) => {
       return
     }
 
-    newOrySdk(project)
-      .updateRegistrationFlow({
-        flow: flow.id,
-        updateRegistrationFlowBody: payload,
-      })
-      .then(({ data }) => {
-        // Ory Kratos can be configured in such a way that it requires a login after
-        // registration. You could handle that case by navigating to the Login screen
-        // but for simplicity we'll just print an error here:
-        if (!data.session_token || !data.session) {
-          const err = new Error(
-            "It looks like you configured Ory Idnetities to not issue a session automatically after registration. This edge-case is currently not supported in this example app. You can find more information on enabling this feature here: https://www.ory.sh/kratos/docs/next/self-service/flows/user-registration#successful-registration",
-          )
-          return Promise.reject(err)
-        }
+    console.log("Submitting registration form", payload)
+    let res: AxiosResponse<SuccessfulNativeRegistration>
+    try {
+      if (
+        Platform.OS === "ios" &&
+        "provider" in payload &&
+        payload.provider === "apple"
+      ) {
+        res = await registerWithApple(sdk, flow.id)
+      } else {
+        res = await sdk.updateRegistrationFlow({
+          flow: flow.id,
+          updateRegistrationFlowBody: payload,
+        })
+      }
+    } catch (e) {
+      if (!axios.isAxiosError(e)) {
+        throw e
+      }
+      handleFormSubmitError(
+        flow,
+        setFlow,
+        initializeFlow,
+        setSessionAndRedirect,
+        refetchFlow,
+      )(e)
+      return
+    }
 
-        const s: SessionContext = {
-          session: data.session,
-          session_token: data.session_token,
-        }
+    const { data } = res
 
-        let verificationFlow = false
-        if (data.continue_with) {
-          for (const c of data.continue_with) {
-            switch (c.action) {
-              case "show_verification_ui": {
-                console.log("got a verfification flow, navigating to it", c)
-                verificationFlow = true
-                navigation.navigate("Verification", {
-                  flowId: c.flow.id,
-                })
-                break
-              }
-              case "set_ory_session_token": {
-                // Right now, this is redundant, and is just supposed to show that the session token is also included
-                // in the continue_with elements.
-                console.log(
-                  "found an ory session token, storing it for further use",
-                )
-                s.session_token = c.ory_session_token
-                break
-              }
-            }
+    console.log(data)
+    // Ory Kratos can be configured in such a way that it requires a login after
+    // registration. You could handle that case by navigating to the Login screen
+    // but for simplicity we'll just print an error here:
+    if (!data.session_token || !data.session) {
+      console.error(
+        "It looks like you configured Ory Identities to not issue a session automatically after registration. This edge-case is currently not supported in this example app. You can find more information on enabling this feature here: https://www.ory.sh/kratos/docs/next/self-service/flows/user-registration#successful-registration",
+      )
+      return
+    }
+
+    const s: SessionContext = {
+      session: data.session,
+      session_token: data.session_token,
+    }
+
+    let verificationFlow = false
+    if (data.continue_with) {
+      for (const c of data.continue_with) {
+        switch (c.action) {
+          case "show_verification_ui": {
+            console.log("got a verfication flow, navigating to it", c)
+            verificationFlow = true
+            navigation.navigate("Verification", {
+              flowId: c.flow.id,
+            })
+            break
+          }
+          case "set_ory_session_token": {
+            // Right now, this is redundant, and is just supposed to show that the session token is also included
+            // in the continue_with elements.
+            console.log(
+              "found an ory session token, storing it for further use",
+            )
+            s.session_token = c.ory_session_token
+            break
           }
         }
+      }
+    }
 
-        // Let's log the user in!
-        setSession(s)
-        if (!verificationFlow) {
-          navigation.navigate("Home")
-        }
-      })
-      .catch(
-        handleFormSubmitError(
-          flow,
-          setFlow,
-          initializeFlow,
-          setSessionAndRedirect,
-          refetchFlow,
-        ),
-      )
+    // Let's log the user in!
+    setSession(s)
+    if (!verificationFlow) {
+      navigation.navigate("Home")
+    }
   }
 
   if (!flow) {
