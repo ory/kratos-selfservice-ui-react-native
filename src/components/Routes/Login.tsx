@@ -1,18 +1,13 @@
 // This file renders the login screen.
-import {
-  LoginFlow,
-  SuccessfulNativeLogin,
-  UpdateLoginFlowBody,
-} from "@ory/client"
+import { LoginFlow, UpdateLoginFlowBody } from "@ory/client"
 import { useFocusEffect } from "@react-navigation/native"
 import { StackScreenProps } from "@react-navigation/stack"
-import axios, { AxiosResponse } from "axios"
 import React, { useContext, useState } from "react"
-import { Platform } from "react-native"
+
 import { SessionContext } from "../../helpers/auth"
 import { logSDKError } from "../../helpers/axios"
 import { handleFormSubmitError } from "../../helpers/form"
-import { signInWithApple } from "../../helpers/oidc/apple"
+import { newOrySdk } from "../../helpers/sdk"
 import { AuthContext } from "../AuthProvider"
 import AuthLayout from "../Layout/AuthLayout"
 import ProjectPicker from "../Layout/ProjectPicker"
@@ -27,12 +22,12 @@ import * as AuthSession from "expo-auth-session"
 type Props = StackScreenProps<RootStackParamList, "Login">
 
 const Login = ({ navigation, route }: Props) => {
-  const { sdk } = useContext(ProjectContext)
+  const { project } = useContext(ProjectContext)
   const { setSession, sessionToken } = useContext(AuthContext)
   const [flow, setFlow] = useState<LoginFlow | undefined>(undefined)
 
   const initializeFlow = () =>
-    sdk
+    newOrySdk(project)
       .createNativeLoginFlow({
         aal: route.params.aal,
         refresh: route.params.refresh,
@@ -52,7 +47,7 @@ const Login = ({ navigation, route }: Props) => {
       .catch(logSDKError)
 
   const refetchFlow = () =>
-    sdk
+    newOrySdk(project)
       .getLoginFlow({ id: flow!.id })
       .then(({ data: f }) => setFlow({ ...flow, ...f })) // merging ensures we don't lose the code
       .catch(logSDKError)
@@ -65,7 +60,7 @@ const Login = ({ navigation, route }: Props) => {
       return () => {
         setFlow(undefined)
       }
-    }, [sdk]),
+    }, [project]),
   )
 
   const setSessionAndRedirect = (session: SessionContext) => {
@@ -76,41 +71,27 @@ const Login = ({ navigation, route }: Props) => {
   }
 
   // This will update the login flow with the user provided input:
-  const onSubmit = async (payload: UpdateLoginFlowBody) => {
-    if (!flow) {
-      return
-    }
-
-    let res: AxiosResponse<SuccessfulNativeLogin, any>
-    try {
-      if (
-        Platform.OS === "ios" &&
-        "provider" in payload &&
-        payload.provider === "apple"
-      ) {
-        res = await signInWithApple(sdk, flow.id)
-      } else {
-        res = await sdk.updateLoginFlow({
-          flow: flow.id,
-          updateLoginFlowBody: payload,
-        })
-      }
-
-      setSessionAndRedirect(res.data as SessionContext)
-    } catch (e) {
-      if (!axios.isAxiosError(e)) {
-        throw e
-      }
-
-      handleFormSubmitError(
-        flow,
-        setFlow,
-        initializeFlow,
-        setSessionAndRedirect,
-        refetchFlow,
-      )(e)
-    }
-  }
+  const onSubmit = (payload: UpdateLoginFlowBody) =>
+    flow
+      ? newOrySdk(project)
+          .updateLoginFlow({
+            flow: flow.id,
+            updateLoginFlowBody: payload,
+            xSessionToken: sessionToken,
+          })
+          .then(({ data }) => Promise.resolve(data as SessionContext))
+          // Looks like everything worked and we have a session!
+          .then(setSessionAndRedirect)
+          .catch(
+            handleFormSubmitError(
+              flow,
+              setFlow,
+              initializeFlow,
+              setSessionAndRedirect,
+              refetchFlow,
+            ),
+          )
+      : Promise.resolve()
 
   return (
     <AuthLayout>
