@@ -22,15 +22,19 @@ function collectRecoveryActions(items?: ContinueWith[]) {
     (acc, curr) => {
       switch (curr.action) {
         case "show_settings_ui":
-          return { ...acc, settingsFlow: curr.flow.id }
+          return { ...acc, settingsFlowId: curr.flow.id }
 
         case "set_ory_session_token": {
           return { ...acc, sessionToken: curr.ory_session_token }
         }
+
+        case "show_recovery_ui": {
+          return { ...acc, recoveryFlowId: curr.flow.id }
+        }
       }
       return acc
     },
-    { settingsFlow: "", sessionToken: "" },
+    { settingsFlowId: "", sessionToken: "", recoveryFlowId: "" },
   )
 }
 
@@ -39,19 +43,34 @@ export default function Recovery({ navigation }: Props) {
   const { setSession, syncSession } = useContext(AuthContext)
   const { sdk } = useContext(ProjectContext)
 
-  async function initializeFlow(): Promise<RecoveryFlow> {
-    return await sdk.createNativeRecoveryFlow().then(({ data: flow }) => flow)
+  async function initializeFlow(): Promise<void> {
+    await sdk
+      .createNativeRecoveryFlow()
+      .then(({ data: flow }) => flow)
+      .then(setFlow)
+      .catch(logSDKError)
   }
 
   useFocusEffect(
     useCallback(() => {
-      initializeFlow().then(setFlow).catch(logSDKError)
+      initializeFlow()
 
       return () => {
         setFlow(undefined)
       }
     }, [sdk]),
   )
+
+  const handleContinueWith = async (c: ContinueWith[]): Promise<void> => {
+    const actions = collectRecoveryActions(c)
+
+    if (actions?.recoveryFlowId) {
+      const { data: flow } = await sdk.getRecoveryFlow({
+        id: actions.recoveryFlowId,
+      })
+      setFlow(flow)
+    }
+  }
 
   const onSubmit = async (body: UpdateRecoveryFlowBody) => {
     if (!flow) {
@@ -74,7 +93,7 @@ export default function Recovery({ navigation }: Props) {
           await syncSession()
 
           navigation.navigate("Settings", {
-            flowId: actions.settingsFlow,
+            flowId: actions.settingsFlowId,
           })
         }
       } else {
@@ -88,6 +107,8 @@ export default function Recovery({ navigation }: Props) {
           initializeFlow,
           () => {},
           async () => {},
+          () => {},
+          handleContinueWith,
         )(err)
       }
     }

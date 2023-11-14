@@ -1,4 +1,5 @@
 import {
+  ContinueWith,
   ErrorBrowserLocationChangeRequired,
   FrontendApiExchangeSessionTokenRequest,
   GenericError,
@@ -104,10 +105,11 @@ export function handleFormSubmitError<
 >(
   flow: T,
   setFlow: (p: T) => void,
-  initializeFlow: () => void,
+  initializeFlow: (fId?: string) => void,
   setSession: (p: SessionContext) => void,
   refetchFlow: () => Promise<void>,
   logout?: () => void,
+  handleContinueWith?: (c: ContinueWith[]) => Promise<void>,
 ) {
   return (err: AxiosError) => {
     logSDKError(err)
@@ -131,10 +133,21 @@ export function handleFormSubmitError<
           setFlow(err.response.data)
           return Promise.resolve()
         case 404:
+          console.debug("Flow could not be found, re-initializing the flow.")
+          initializeFlow()
+          return Promise.resolve()
         case 410:
           // This happens when the flow is, for example, expired or was deleted.
-          // We simply re-initialize the flow if that happens!
-          console.debug("Flow could not be found, re-initializing the flow.")
+          // Sometimes, Ory returns a replacement flow here
+          console.debug("The flow expired, re-initializing the flow.")
+          if (
+            err.response.data.error?.details &&
+            ".continue_with" in err.response.data.error?.details
+          ) {
+            return handleContinueWith?.(
+              err.response.data.error.details.continue_with,
+            )
+          }
           initializeFlow()
           return Promise.resolve()
         case 403:
