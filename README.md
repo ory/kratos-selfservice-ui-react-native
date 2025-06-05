@@ -17,7 +17,7 @@ Additionally:
 ## Quickstart
 
 There is an excellent write-up available on implementing
-[Mobile Login with Username / Email and Password in React Native](https://www.ory.sh/react-native-authentication-login-signup/)
+[Mobile Login with Username / Email and Password in React Native](https://www.ory.sh/blog/login-react-native-authentication-example-api)
 but if you want to go ahead and just try it out, do the following:
 
 1. Run the [Ory Kratos quickstart](http://ory.sh/docs/kratos/quickstart) on your
