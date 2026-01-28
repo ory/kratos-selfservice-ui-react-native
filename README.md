@@ -17,11 +17,11 @@ Additionally:
 ## Quickstart
 
 There is an excellent write-up available on implementing
-[Mobile Login with Username / Email and Password in React Native](https://www.ory.sh/blog/login-react-native-authentication-example-api)
+[Mobile Login with Username / Email and Password in React Native](https://www.ory.com/blog/login-react-native-authentication-example-api)
 but if you want to go ahead and just try it out, do the following:
 
-1. Run the [Ory Kratos quickstart](http://ory.sh/docs/kratos/quickstart) on your
-   local machine.
+1. Run the [Ory Kratos quickstart](https://ory.com/docs/kratos/quickstart) on
+   your local machine.
 1. Use [`ngrok`](http://ngrok.com) to expose the Ory Kratos public port to the
    public internet (`ngrok http 4433`).
 1. Install this project's dependencies with `npm i`.
