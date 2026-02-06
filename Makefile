@@ -20,20 +20,23 @@ node_modules: package-lock.json
 	touch node_modules
 
 
-.DEFAULT_GOAL := help
-
 .PHONY: build-sdk
-build-sdk:
-	(cd $$KRATOS_DIR; make sdk)
-	cp $$KRATOS_DIR/spec/api.json ./contrib/sdk/api.json
+build-sdk: node_modules  # generates and builds the local SDK
+ifdef KRATOS_DIR
+	(cd $(KRATOS_DIR); make sdk)
+	cp $(KRATOS_DIR)/spec/api.json ./contrib/sdk/api.json
+endif
+	rm -rf ./contrib/sdk/generated
 	npx @openapitools/openapi-generator-cli generate -i "./contrib/sdk/api.json" \
-					-g typescript-axios \
-					-o "./contrib/sdk/generated" \
-					--git-user-id ory \
-					--git-repo-id sdk \
-					--git-host github.com \
-					-c ./contrib/sdk/typescript.yml
-	(cd ./contrib/sdk/generated; npm i; npm run build; npm link)
-	make format
-	npm i
-	npm link @ory/client
+		-g typescript-fetch \
+		-o "./contrib/sdk/generated" \
+		--git-user-id ory \
+		--git-repo-id sdk \
+		--git-host github.com \
+		-c ./contrib/sdk/typescript-fetch.yml
+	(cd ./contrib/sdk/generated; npm i; npm run build)
+
+.PHONY: sdk
+sdk: build-sdk  # alias for build-sdk
+
+.DEFAULT_GOAL := help

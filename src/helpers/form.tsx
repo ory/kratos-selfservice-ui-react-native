@@ -1,25 +1,20 @@
 import {
   ContinueWith,
   ErrorBrowserLocationChangeRequired,
-  FrontendApiExchangeSessionTokenRequest,
+  ExchangeSessionTokenRequest,
   GenericError,
+  instanceOfUiNodeInputAttributes,
   LoginFlow,
   RecoveryFlow,
   RegistrationFlow,
   UiNode,
-  UiNodeAnchorAttributes,
-  UiNodeAttributes,
-  UiNodeImageAttributes,
-  UiNodeInputAttributes,
-  UiNodeTextAttributes,
   VerificationFlow,
-} from "@ory/client"
-import { AxiosError } from "axios"
+} from "@ory/client-fetch"
 import * as AuthSession from "expo-auth-session"
 import * as WebBrowser from "expo-web-browser"
 import { showMessage } from "react-native-flash-message"
 import { SessionContext } from "./auth"
-import { logSDKError } from "./axios"
+import { logSDKError, HttpError, isResponseError, parseResponseError } from "./errors"
 import { newOrySdk } from "./sdk"
 
 type Flow = LoginFlow | RegistrationFlow | VerificationFlow | RecoveryFlow
@@ -28,32 +23,8 @@ export function camelize<T>(str: string) {
   return str.replace(/_([a-z])/g, (g) => g[1].toUpperCase()) as keyof T
 }
 
-export function isUiNodeAnchorAttributes(
-  pet: UiNodeAttributes,
-): pet is UiNodeAnchorAttributes {
-  return (pet as UiNodeAnchorAttributes).href !== undefined
-}
-
-export function isUiNodeImageAttributes(
-  pet: UiNodeAttributes,
-): pet is UiNodeImageAttributes {
-  return (pet as UiNodeImageAttributes).src !== undefined
-}
-
-export function isUiNodeInputAttributes(
-  pet: UiNodeAttributes,
-): pet is UiNodeInputAttributes {
-  return (pet as UiNodeInputAttributes).name !== undefined
-}
-
-export function isUiNodeTextAttributes(
-  pet: UiNodeAttributes,
-): pet is UiNodeTextAttributes {
-  return (pet as UiNodeTextAttributes).text !== undefined
-}
-
 export function getNodeId({ attributes }: UiNode) {
-  if (isUiNodeInputAttributes(attributes)) {
+  if (instanceOfUiNodeInputAttributes(attributes)) {
     return attributes.name
   } else {
     return attributes.id
@@ -61,7 +32,7 @@ export function getNodeId({ attributes }: UiNode) {
 }
 
 export function getNodeValue({ attributes }: UiNode) {
-  if (isUiNodeInputAttributes(attributes)) {
+  if (instanceOfUiNodeInputAttributes(attributes)) {
     return attributes.value
   }
 
@@ -69,7 +40,7 @@ export function getNodeValue({ attributes }: UiNode) {
 }
 
 export const getNodeTitle = ({ attributes, meta }: UiNode): string => {
-  if (isUiNodeInputAttributes(attributes)) {
+  if (instanceOfUiNodeInputAttributes(attributes)) {
     if (meta?.label?.text) {
       return meta.label.text
     }
@@ -111,7 +82,8 @@ export function handleFormSubmitError<
   logout?: () => void,
   handleContinueWith?: (c: ContinueWith[]) => Promise<void>,
 ) {
-  return (err: AxiosError) => {
+  // Inner function that handles HttpError
+  const handleHttpError = (err: HttpError) => {
     logSDKError(err)
     if (err.response) {
       switch (err.response.status) {
@@ -130,33 +102,31 @@ export function handleFormSubmitError<
             "Form validation failed:",
             JSON.stringify(err.response.data),
           )
-          setFlow(err.response.data)
+          setFlow(err.response.data as T)
           return Promise.resolve()
         case 404:
           console.debug("Flow could not be found, re-initializing the flow.")
           initializeFlow()
           return Promise.resolve()
-        case 410:
+        case 410: {
           // This happens when the flow is, for example, expired or was deleted.
           // Sometimes, Ory returns a replacement flow here
           console.debug("The flow expired, re-initializing the flow.")
-          if (
-            err.response.data.error?.details &&
-            ".continue_with" in err.response.data.error?.details
-          ) {
-            return handleContinueWith?.(
-              err.response.data.error.details.continue_with,
-            )
+          const errorData = err.response.data as { error?: { details?: { continue_with?: ContinueWith[] } } } | undefined
+          const continueWith = errorData?.error?.details?.continue_with
+          if (Array.isArray(continueWith) && handleContinueWith) {
+            return handleContinueWith(continueWith)
           }
           initializeFlow()
           return Promise.resolve()
+        }
         case 403:
         case 401:
           if (!logout) {
             console.error(
               `Received unexpected 401/403 status code: `,
               err,
-              err.response.data,
+              err.response.data as unknown,
             )
             return Promise.resolve()
           }
@@ -194,6 +164,15 @@ export function handleFormSubmitError<
 
     return Promise.resolve()
   }
+
+  // Return async function that handles both ResponseError and HttpError
+  return async (err: unknown) => {
+    if (isResponseError(err)) {
+      const httpError = await parseResponseError(err)
+      return handleHttpError(httpError)
+    }
+    return handleHttpError(err as HttpError)
+  }
 }
 
 async function handleRedirectBrowserTo(
@@ -202,13 +181,13 @@ async function handleRedirectBrowserTo(
   setSession: (p: SessionContext) => void,
   refetchFlow: () => Promise<void>,
 ) {
-  const fetchToken = (params: FrontendApiExchangeSessionTokenRequest) =>
+  const fetchToken = (params: ExchangeSessionTokenRequest) =>
     newOrySdk("").exchangeSessionToken(params)
   const setToken = (res: Awaited<ReturnType<typeof fetchToken>>) =>
-    res?.data.session_token &&
+    res?.session_token &&
     setSession({
-      session: res.data.session,
-      session_token: res.data.session_token,
+      session: res.session,
+      session_token: res.session_token,
     })
 
   const result = await WebBrowser.openAuthSessionAsync(

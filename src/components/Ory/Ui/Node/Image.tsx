@@ -1,4 +1,4 @@
-import { UiNode, UiNodeImageAttributes } from "@ory/client"
+import { UiNode, UiNodeImageAttributes } from "@ory/client-fetch"
 import React from "react"
 import { View } from "react-native"
 import styled from "styled-components/native"

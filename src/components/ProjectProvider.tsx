@@ -1,6 +1,6 @@
 // This file defines a React Context which keeps track of the authenticated session.
 
-import { FrontendApi } from "@ory/client"
+import { FrontendApi } from "@ory/client-fetch"
 import React, {
   createContext,
   PropsWithChildren,

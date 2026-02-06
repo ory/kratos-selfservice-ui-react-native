@@ -1,6 +1,19 @@
-import { Configuration, FrontendApi } from "@ory/client"
-import axios from "axios"
+import { Configuration, FrontendApi } from "@ory/client-fetch"
 import Constants from "expo-constants"
+
+const REQUEST_TIMEOUT_MS = 30000
+
+// fetchWithTimeout wraps fetch with an AbortController to prevent requests
+// from hanging indefinitely on flaky networks.
+const fetchWithTimeout: typeof fetch = (input, init) => {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+
+  return fetch(input, {
+    ...init,
+    signal: controller.signal,
+  }).finally(() => clearTimeout(timeoutId))
+}
 
 // canonicalize removes the trailing slash from URLs.
 const canonicalize = (url: string = "") => url.replace(/\/+$/, "")
@@ -23,16 +36,14 @@ export const newOrySdk = (project: string) =>
   new FrontendApi(
     new Configuration({
       basePath: kratosUrl(project),
-      baseOptions: {
-        // Setting this is very important as axios will send the CSRF cookie otherwise
-        // which causes problems with Ory Kratos' security detection.
-        withCredentials: false,
-
-        // Timeout after 5 seconds.
-        timeout: 10000,
+      // Setting credentials to 'omit' is important as fetch will send cookies otherwise
+      // which causes problems with Ory Kratos' security detection.
+      credentials: "omit",
+      // Accept header is required to receive JSON responses from Kratos.
+      // Without it, Kratos treats requests as browser requests and returns HTML redirects.
+      headers: {
+        Accept: "application/json",
       },
+      fetchApi: fetchWithTimeout,
     }),
-    "",
-    // Ensure that we are using the axios client with retry.
-    axios,
   )

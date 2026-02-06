@@ -1,6 +1,6 @@
 // This file renders the registration screen.
-import { RegistrationFlow, UpdateRegistrationFlowBody } from "@ory/client"
-import { useFocusEffect, useNavigation } from "@react-navigation/native"
+import { RegistrationFlow, UpdateRegistrationFlowBody } from "@ory/client-fetch"
+import { useFocusEffect } from "@react-navigation/native"
 import { StackScreenProps } from "@react-navigation/stack"
 import React, { useCallback, useContext, useState } from "react"
 import { Platform } from "react-native"
@@ -17,7 +17,7 @@ import AuthSubTitle from "../Styled/AuthSubTitle"
 import NavigationCard from "../Styled/NavigationCard"
 import StyledCard from "../Styled/StyledCard"
 import * as AuthSession from "expo-auth-session"
-import { logSDKError } from "../../helpers/axios"
+import { logSDKError } from "../../helpers/errors"
 
 type Props = StackScreenProps<RootStackParamList, "Registration">
 
@@ -41,7 +41,7 @@ const Registration = ({ navigation }: Props) => {
         returnSessionTokenExchangeCode: true,
       })
       // The flow was initialized successfully, let's set the form data:
-      .then(({ data: flow }) => {
+      .then((flow) => {
         setFlow(flow)
         console.log("Setting registration flow", flow)
       })
@@ -63,7 +63,18 @@ const Registration = ({ navigation }: Props) => {
   const refetchFlow = () =>
     newOrySdk(project)
       .getRegistrationFlow({ id: flow!.id })
-      .then(({ data: f }) => setFlow({ ...flow, ...f })) // merging ensures we don't lose the code
+      .then((f) =>
+        setFlow({
+          ...flow,
+          ...f,
+          // The GET response may not include the exchange code, and the
+          // client-fetch deserializer explicitly sets missing fields to
+          // undefined which would override the original value via spread.
+          session_token_exchange_code:
+            f.session_token_exchange_code ??
+            flow?.session_token_exchange_code,
+        }),
+      )
       .catch(logSDKError)
 
   const setSessionAndRedirect = (session: SessionContext) => {
@@ -86,13 +97,13 @@ const Registration = ({ navigation }: Props) => {
         flow: flow.id,
         updateRegistrationFlowBody: payload,
       })
-      .then(({ data }) => {
+      .then((data) => {
         // Ory Kratos can be configured in such a way that it requires a login after
         // registration. You could handle that case by navigating to the Login screen
         // but for simplicity we'll just print an error here:
         if (!data.session_token || !data.session) {
           const err = new Error(
-            "It looks like you configured Ory Idnetities to not issue a session automatically after registration. This edge-case is currently not supported in this example app. You can find more information on enabling this feature here: https://www.ory.sh/kratos/docs/next/self-service/flows/user-registration#successful-registration",
+            "It looks like you configured Ory Identities to not issue a session automatically after registration. This edge-case is currently not supported in this example app. You can find more information on enabling this feature here: https://www.ory.sh/kratos/docs/next/self-service/flows/user-registration#successful-registration",
           )
           return Promise.reject(err)
         }
@@ -171,7 +182,7 @@ function RegistrationUI({ flow, onSubmit, navigation }: RegistrationUIProps) {
               case "traits.email":
                 return {
                   autoCapitalize: "none",
-                  autoCompleteType: "email",
+                  autoComplete: "email",
                   textContentType: "username",
                   autoCorrect: false,
                 }

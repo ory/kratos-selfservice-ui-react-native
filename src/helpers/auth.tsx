@@ -1,6 +1,6 @@
 // This file handles the authentication state.
 
-import { Session } from "@ory/client"
+import { Session } from "@ory/client-fetch" 
 import AsyncStore from "@react-native-async-storage/async-storage"
 import * as SecureStore from "expo-secure-store"
 import { Platform } from "react-native"

@@ -5,12 +5,12 @@ import {
   SettingsFlow,
   SettingsFlowState,
   UpdateSettingsFlowBody,
-} from "@ory/client"
+} from "@ory/client-fetch"
 import { StackScreenProps } from "@react-navigation/stack"
 import React, { useContext, useEffect, useState } from "react"
 import { showMessage } from "react-native-flash-message"
 import styled from "styled-components/native"
-import { logSDKError } from "../../helpers/axios"
+import { logSDKError } from "../../helpers/errors"
 import { handleFormSubmitError } from "../../helpers/form"
 import { AuthContext } from "../AuthProvider"
 import Layout from "../Layout/Layout"
@@ -25,7 +25,7 @@ const CardTitle = styled.View`
 `
 
 async function initializeFlow(sdk: FrontendApi, sessionToken: string) {
-  const { data: flow } = await sdk.createNativeSettingsFlow({
+  const flow = await sdk.createNativeSettingsFlow({
     xSessionToken: sessionToken,
   })
   return flow
@@ -36,7 +36,7 @@ async function fetchFlow(
   sessionToken: string,
   flowId: string,
 ) {
-  const { data: flow } = await sdk.getSettingsFlow({
+  const flow = await sdk.getSettingsFlow({
     id: flowId,
     xSessionToken: sessionToken,
   })
@@ -47,7 +47,7 @@ type Props = StackScreenProps<RootStackParamList, "Settings">
 
 const Settings = ({ navigation, route }: Props) => {
   const { sdk } = useContext(ProjectContext)
-  const { isAuthenticated, sessionToken, setSession, syncSession } =
+  const { isAuthenticated, sessionToken, setSession } =
     useContext(AuthContext)
   const [flow, setFlow] = useState<SettingsFlow | undefined>(undefined)
 
@@ -84,11 +84,9 @@ const Settings = ({ navigation, route }: Props) => {
       }
     }
     if (result.state === SettingsFlowState.Success) {
-      syncSession().then(() => {
-        showMessage({
-          message: "Your changes have been saved",
-          type: "success",
-        })
+      showMessage({
+        message: "Your changes have been saved",
+        type: "success",
       })
     }
     setFlow(result)
@@ -101,14 +99,16 @@ const Settings = ({ navigation, route }: Props) => {
         xSessionToken: sessionToken,
         updateSettingsFlowBody: payload,
       })
-      .then(({ data }) => {
+      .then((data) => {
         onSuccess(data)
       })
       .catch(
         handleFormSubmitError(
           undefined,
           setFlow,
-          () => initializeFlow(sdk, sessionToken).then,
+          () => {
+            initializeFlow(sdk, sessionToken).then(setFlow).catch(logSDKError)
+          },
           () => setSession(null),
           async () => {},
         ),

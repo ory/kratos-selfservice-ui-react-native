@@ -1,33 +1,25 @@
-## @ory/client@v0.0.1
+## @ory/client-fetch@v0.0.1
 
-This generator creates TypeScript/JavaScript client that utilizes
-[axios](https://github.com/axios/axios). The generated Node module can be used
-in the following environments:
+This generator creates TypeScript/JavaScript client that utilizes [Fetch API](https://fetch.spec.whatwg.org/). The generated Node module can be used in the following environments:
 
 Environment
-
-- Node.js
-- Webpack
-- Browserify
+* Node.js
+* Webpack
+* Browserify
 
 Language level
-
-- ES5 - you must have a Promises/A+ library installed
-- ES6
+* ES5 - you must have a Promises/A+ library installed
+* ES6
 
 Module system
+* CommonJS
+* ES6 module system
 
-- CommonJS
-- ES6 module system
-
-It can be used in both TypeScript and JavaScript. In TypeScript, the definition
-should be automatically resolved via `package.json`.
-([Reference](http://www.typescriptlang.org/docs/handbook/typings-for-npm-packages.html))
+It can be used in both TypeScript and JavaScript. In TypeScript, the definition will be automatically resolved via `package.json`. ([Reference](https://www.typescriptlang.org/docs/handbook/declaration-files/consumption.html))
 
 ### Building
 
 To build and compile the typescript sources to javascript use:
-
 ```
 npm install
 npm run build
@@ -39,13 +31,12 @@ First build the package then run `npm publish`
 
 ### Consuming
 
-navigate to the folder of your consuming project and run one of the following
-commands.
+navigate to the folder of your consuming project and run one of the following commands.
 
 _published:_
 
 ```
-npm install @ory/client@v0.0.1 --save
+npm install @ory/client-fetch@v0.0.1 --save
 ```
 
 _unPublished (not recommended):_

@@ -1,7 +1,6 @@
 // This file defines a React Context which keeps track of the authenticated session.
 
-import { Session } from "@ory/client"
-import { AxiosError } from "axios"
+import { Session } from "@ory/client-fetch"
 import React, {
   createContext,
   ReactNode,
@@ -55,7 +54,7 @@ export default function AuthContextProvider({ children }: AuthContextProps) {
     }
 
     try {
-      const { data: session } = await sdk
+      const session = await sdk
         // whoami() returns the session belonging to the session_token:
         .toSession({ xSessionToken: auth.session_token })
 
@@ -84,7 +83,7 @@ export default function AuthContextProvider({ children }: AuthContextProps) {
       return killAuthenticatedSession().then(() => setSessionContext(session))
     }
 
-    setAuthenticatedSession(session).then(() => syncSession(session))
+    setAuthenticatedSession(session).then(() => setSessionContext(session))
   }
 
   if (sessionContext === undefined) {

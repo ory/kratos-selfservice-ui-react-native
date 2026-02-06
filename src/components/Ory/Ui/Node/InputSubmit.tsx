@@ -1,4 +1,4 @@
-import { UiNode, UiNodeInputAttributes } from "@ory/client"
+import { UiNode, UiNodeInputAttributes } from "@ory/client-fetch"
 import React from "react"
 import { View } from "react-native"
 import { getNodeId, getNodeTitle } from "../../../../helpers/form"

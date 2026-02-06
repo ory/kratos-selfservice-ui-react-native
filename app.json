@@ -4,19 +4,21 @@
     "slug": "kratos-selfservice-ui-react-native",
     "scheme": "kratos-selfservice-ui-react-native",
     "version": "0.5.14",
+    "newArchEnabled": true,
     "orientation": "portrait",
     "githubUrl": "https://github.com/ory/kratos-selfservice-ui-react-native",
     "icon": "./assets/icon.png",
-    "privacy": "public",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#f0f0f1"
     },
-    "updates": {
-      "fallbackToCacheTimeout": 1000
-    },
-    "assetBundlePatterns": ["src/assets/*", "src/assets/**/*", "assets/*"],
+    "updates": {},
+    "assetBundlePatterns": [
+      "src/assets/*",
+      "src/assets/**/*",
+      "assets/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.ory.kratos-selfservice-ui-react-native"
@@ -29,19 +31,21 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "description": "An example app demonstrating login, registration, profile settings, 2fa, account recovery, and more using the Ory Kratos open source project.",
-    "plugins": ["sentry-expo"],
-    "hooks": {
-      "postPublish": [
+    "plugins": [
+      [
+        "@sentry/react-native/expo",
         {
-          "file": "sentry-expo/upload-sourcemaps",
-          "config": {
-            "organization": "ory-corp",
-            "project": "ory-profile-app"
-          }
+          "organization": "ory-corp",
+          "project": "ory-profile-app"
         }
-      ]
-    }
+      ],
+      "expo-secure-store"
+    ]
   }
 }

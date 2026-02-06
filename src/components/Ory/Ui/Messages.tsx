@@ -1,4 +1,4 @@
-import { UiText } from "@ory/client"
+import { UiText } from "@ory/client-fetch"
 import { messageStyles } from "@ory/themes"
 import React from "react"
 import { View } from "react-native"

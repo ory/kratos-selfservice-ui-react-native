@@ -6,8 +6,8 @@ import React from "react"
 import { ThemeProvider } from "styled-components"
 import { ThemeProvider as NativeThemeProvider } from "styled-components/native"
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"
-import * as Sentry from "sentry-expo"
-import { CaptureConsole } from "@sentry/integrations"
+import * as Sentry from "@sentry/react-native"
+import { captureConsoleIntegration } from "@sentry/core"
 
 import { theme } from "@ory/themes"
 import {
@@ -29,10 +29,9 @@ import ProjectProvider from "./src/components/ProjectProvider"
 
 Sentry.init({
   dsn: "https://8be94c41dbe34ce1b244935c68165eab@o481709.ingest.sentry.io/5530799",
-  enableInExpoDevelopment: true,
   debug: false,
   integrations: [
-    new CaptureConsole({
+    captureConsoleIntegration({
       levels: ["error", "warn", "log"],
     }),
   ],

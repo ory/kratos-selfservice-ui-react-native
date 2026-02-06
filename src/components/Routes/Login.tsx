@@ -1,11 +1,11 @@
 // This file renders the login screen.
-import { LoginFlow, UpdateLoginFlowBody } from "@ory/client"
+import { LoginFlow, UpdateLoginFlowBody } from "@ory/client-fetch"
 import { useFocusEffect } from "@react-navigation/native"
 import { StackScreenProps } from "@react-navigation/stack"
 import React, { useContext, useState } from "react"
 
 import { SessionContext } from "../../helpers/auth"
-import { logSDKError } from "../../helpers/axios"
+import { logSDKError } from "../../helpers/errors"
 import { handleFormSubmitError } from "../../helpers/form"
 import { newOrySdk } from "../../helpers/sdk"
 import { AuthContext } from "../AuthProvider"
@@ -43,13 +43,24 @@ const Login = ({ navigation, route }: Props) => {
         }),
         returnSessionTokenExchangeCode: true,
       })
-      .then(({ data: f }) => setFlow(f))
+      .then((f) => setFlow(f))
       .catch(logSDKError)
 
   const refetchFlow = () =>
     newOrySdk(project)
       .getLoginFlow({ id: flow!.id })
-      .then(({ data: f }) => setFlow({ ...flow, ...f })) // merging ensures we don't lose the code
+      .then((f) =>
+        setFlow({
+          ...flow,
+          ...f,
+          // The GET response may not include the exchange code, and the
+          // client-fetch deserializer explicitly sets missing fields to
+          // undefined which would override the original value via spread.
+          session_token_exchange_code:
+            f.session_token_exchange_code ??
+            flow?.session_token_exchange_code,
+        }),
+      )
       .catch(logSDKError)
 
   // When the component is mounted, we initialize a new use login flow:
@@ -79,7 +90,15 @@ const Login = ({ navigation, route }: Props) => {
             updateLoginFlowBody: payload,
             xSessionToken: sessionToken,
           })
-          .then(({ data }) => Promise.resolve(data as SessionContext))
+          .then((data) => {
+            // For refresh/aal2 logins, Kratos may not return a new session_token
+            // (the token is unchanged). In that case, preserve the existing token.
+            const result: SessionContext = {
+              session: data.session,
+              session_token: data.session_token || sessionToken || "",
+            }
+            return result
+          })
           // Looks like everything worked and we have a session!
           .then(setSessionAndRedirect)
           .catch(

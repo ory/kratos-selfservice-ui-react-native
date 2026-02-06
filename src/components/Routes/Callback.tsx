@@ -1,6 +1,7 @@
 import { StackScreenProps } from "@react-navigation/stack"
 import * as WebBrowser from "expo-web-browser"
 import React, { useEffect } from "react"
+import { View, Text } from "react-native"
 import { RootStackParamList } from "../Navigation"
 
 type Props = StackScreenProps<RootStackParamList, "Callback">
@@ -14,17 +15,17 @@ const Callback = (props: Props) => {
     })
   }, [])
   return (
-    <div>
+    <View>
       {props.route.params?.code ? (
-        <>
-          Hello Callback! Your code is <code>{props.route.params?.code}</code>
-        </>
+        <Text>
+          Hello Callback! Your code is <Text style={{ fontFamily: "monospace" }}>{props.route.params?.code}</Text>
+        </Text>
       ) : (
-        <>
-          Missing query parameter <code>?code=...</code>
-        </>
+        <Text>
+          Missing query parameter <Text style={{ fontFamily: "monospace" }}>?code=...</Text>
+        </Text>
       )}
-    </div>
+    </View>
   )
 }
 

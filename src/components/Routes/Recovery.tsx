@@ -1,4 +1,4 @@
-import { ContinueWith, RecoveryFlow, UpdateRecoveryFlowBody } from "@ory/client"
+import { ContinueWith, RecoveryFlow, UpdateRecoveryFlowBody } from "@ory/client-fetch"
 import { useFocusEffect } from "@react-navigation/native"
 import { StackScreenProps } from "@react-navigation/stack"
 import React, { useCallback, useContext, useState } from "react"
@@ -12,8 +12,7 @@ import StyledCard from "../Styled/StyledCard"
 import { AuthContext } from "../AuthProvider"
 import NavigationCard from "../Styled/NavigationCard"
 import { handleFormSubmitError } from "../../helpers/form"
-import { logSDKError } from "../../helpers/axios"
-import axios from "axios"
+import { logSDKError } from "../../helpers/errors"
 
 type Props = StackScreenProps<RootStackParamList, "Recovery">
 
@@ -46,7 +45,6 @@ export default function Recovery({ navigation }: Props) {
   async function initializeFlow(): Promise<void> {
     await sdk
       .createNativeRecoveryFlow()
-      .then(({ data: flow }) => flow)
       .then(setFlow)
       .catch(logSDKError)
   }
@@ -65,7 +63,7 @@ export default function Recovery({ navigation }: Props) {
     const actions = collectRecoveryActions(c)
 
     if (actions?.recoveryFlowId) {
-      const { data: flow } = await sdk.getRecoveryFlow({
+      const flow = await sdk.getRecoveryFlow({
         id: actions.recoveryFlowId,
       })
       setFlow(flow)
@@ -78,7 +76,7 @@ export default function Recovery({ navigation }: Props) {
       return
     }
     try {
-      const { data: updatedFlow } = await sdk.updateRecoveryFlow({
+      const updatedFlow = await sdk.updateRecoveryFlow({
         flow: flow?.id,
         updateRecoveryFlowBody: body,
       })
@@ -86,7 +84,7 @@ export default function Recovery({ navigation }: Props) {
         const actions = collectRecoveryActions(updatedFlow.continue_with)
 
         if (actions?.sessionToken) {
-          const { data: session } = await sdk.toSession({
+          const session = await sdk.toSession({
             xSessionToken: actions.sessionToken,
           })
           setSession({ session, session_token: actions.sessionToken })
@@ -100,17 +98,15 @@ export default function Recovery({ navigation }: Props) {
         setFlow(updatedFlow)
       }
     } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        handleFormSubmitError(
-          flow,
-          setFlow,
-          initializeFlow,
-          () => {},
-          async () => {},
-          () => {},
-          handleContinueWith,
-        )(err)
-      }
+      await handleFormSubmitError(
+        flow,
+        setFlow,
+        initializeFlow,
+        () => {},
+        async () => {},
+        () => {},
+        handleContinueWith,
+      )(err)
     }
   }
 
@@ -125,7 +121,7 @@ export default function Recovery({ navigation }: Props) {
         testID="nav-login"
         description="Remember your password?"
         cta="Login!"
-        onPress={() => navigation.navigate("Recovery")}
+        onPress={() => navigation.navigate("Login", {})}
       />
 
       <ProjectPicker />

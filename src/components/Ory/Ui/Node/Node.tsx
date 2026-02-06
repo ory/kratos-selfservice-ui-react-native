@@ -1,11 +1,11 @@
-import { UiNode } from "@ory/client"
-import React from "react"
 import {
-  isUiNodeAnchorAttributes,
-  isUiNodeImageAttributes,
-  isUiNodeInputAttributes,
-  isUiNodeTextAttributes,
-} from "../../../../helpers/form"
+  instanceOfUiNodeAnchorAttributes,
+  instanceOfUiNodeImageAttributes,
+  instanceOfUiNodeInputAttributes,
+  instanceOfUiNodeTextAttributes,
+  UiNode,
+} from "@ory/client-fetch"
+import React from "react"
 import { NodeImage } from "./Image"
 import { InputProps, NodeInput } from "./Input"
 import { InputSubmitProps, NodeInputSubmit } from "./InputSubmit"
@@ -17,16 +17,16 @@ interface Props extends InputSubmitProps, InputProps {
 
 export const Node = (props: Props) => {
   const { node } = props
-  if (isUiNodeImageAttributes(node.attributes)) {
+  if (instanceOfUiNodeImageAttributes(node.attributes)) {
     return <NodeImage node={node} attributes={node.attributes} />
-  } else if (isUiNodeTextAttributes(node.attributes)) {
+  } else if (instanceOfUiNodeTextAttributes(node.attributes)) {
     return <NodeText node={node} attributes={node.attributes} />
-  } else if (isUiNodeInputAttributes(node.attributes)) {
+  } else if (instanceOfUiNodeInputAttributes(node.attributes)) {
     if (node.attributes.type === "submit") {
       return <NodeInputSubmit {...props} attributes={node.attributes} />
     }
     return <NodeInput {...props} attributes={node.attributes} />
-  } else if (isUiNodeAnchorAttributes(node.attributes)) {
+  } else if (instanceOfUiNodeAnchorAttributes(node.attributes)) {
     // Ignore anchor elements for now.
     // TODO: Implement anchor elements.
     return null

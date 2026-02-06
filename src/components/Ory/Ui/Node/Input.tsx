@@ -1,13 +1,13 @@
-import { UiNode, UiNodeInputAttributes } from "@ory/client"
+import {
+  instanceOfUiNodeInputAttributes,
+  UiNode,
+  UiNodeInputAttributes,
+} from "@ory/client-fetch"
 import { textInputSubtitleStyles, textInputTitleStyles } from "@ory/themes"
 import React from "react"
 import { TextInputProps, View } from "react-native"
 import styled from "styled-components/native"
-import {
-  getNodeId,
-  getNodeTitle,
-  isUiNodeInputAttributes,
-} from "../../../../helpers/form"
+import { getNodeId, getNodeTitle } from "../../../../helpers/form"
 import StyledTextInput from "../../../Styled/StyledTextInput"
 import Checkbox from "../../../Styled/Checkbox"
 
@@ -29,7 +29,7 @@ export type TextInputOverride = (
 ) => TextInputProps
 
 const guessVariant = ({ attributes }: UiNode) => {
-  if (!isUiNodeInputAttributes(attributes)) {
+  if (!instanceOfUiNodeInputAttributes(attributes)) {
     return "text"
   }
 
@@ -122,14 +122,13 @@ export const NodeInput = ({
       {variant === "checkbox" ? (
         <Checkbox
           testID={name}
-          onClick={() => onChange(!value)}
+          onValueChange={() => onChange(!value)}
           value={value}
           disabled={disabled}
         />
       ) : (
         <StyledTextInput
           testID={name}
-          onChange={onChange}
           value={value ? String(value) : ""}
           editable={!disabled}
           onChangeText={onChange}

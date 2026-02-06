@@ -1,4 +1,4 @@
-import { UiNode, UiNodeTextAttributes } from "@ory/client"
+import { UiNode, UiNodeTextAttributes } from "@ory/client-fetch"
 import React from "react"
 import styled from "styled-components/native"
 

@@ -1,4 +1,4 @@
-import { UpdateVerificationFlowBody, VerificationFlow } from "@ory/client"
+import { UpdateVerificationFlowBody, VerificationFlow } from "@ory/client-fetch"
 import { useFocusEffect } from "@react-navigation/native"
 import { StackScreenProps } from "@react-navigation/stack"
 import React, { useCallback, useContext, useState } from "react"
@@ -12,7 +12,7 @@ import AuthSubTitle from "../Styled/AuthSubTitle"
 import NavigationCard from "../Styled/NavigationCard"
 import StyledButton from "../Styled/StyledButton"
 import StyledCard from "../Styled/StyledCard"
-import { logSDKError } from "../../helpers/axios"
+import { logSDKError } from "../../helpers/errors"
 
 type Props = StackScreenProps<RootStackParamList, "Verification">
 
@@ -24,7 +24,7 @@ export default function Verification({ navigation, route }: Props) {
     sdk
       .createNativeVerificationFlow()
       // The flow was initialized successfully, let's set the form data:
-      .then(({ data: flow }) => {
+      .then((flow) => {
         setFlow(flow)
       })
       .catch(logSDKError)
@@ -32,10 +32,14 @@ export default function Verification({ navigation, route }: Props) {
   const fetchFlow = (id: string) =>
     sdk
       .getVerificationFlow({ id })
-      .then(({ data }) => {
+      .then((data) => {
         setFlow(data)
       })
-      .catch(logSDKError)
+      .catch((err) => {
+        logSDKError(err)
+        // If flow not found, create a new one
+        initializeFlow()
+      })
 
   // When the component is mounted, we initialize a new verification flow
   // or use the id provided by the route params to fetch that flow:
@@ -66,7 +70,7 @@ export default function Verification({ navigation, route }: Props) {
         flow: flow.id,
         updateVerificationFlowBody: payload,
       })
-      .then(({ data }) => {
+      .then((data) => {
         setFlow(data)
       })
       .catch(
@@ -90,7 +94,7 @@ export default function Verification({ navigation, route }: Props) {
               case "traits.email":
                 return {
                   autoCapitalize: "none",
-                  autoCompleteType: "email",
+                  autoComplete: "email",
                   textContentType: "username",
                   autoCorrect: false,
                 }
@@ -112,7 +116,7 @@ export default function Verification({ navigation, route }: Props) {
       <NavigationCard
         description="Already have an account?"
         cta="Sign in!"
-        onPress={() => navigation.navigate({ key: "Login" })}
+        onPress={() => navigation.navigate("Login", {})}
       />
 
       <ProjectPicker />
