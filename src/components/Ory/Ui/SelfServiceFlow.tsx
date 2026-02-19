@@ -14,6 +14,7 @@ import React, { useLayoutEffect, useState } from "react"
 import { getNodeId } from "../../../helpers/form"
 import Messages from "./Messages"
 import { Node, TextInputOverride } from "./Node"
+import { NodePasskey } from "./Node/Passkey"
 
 // Convert flat dot-notation keys to nested objects
 // e.g., {"traits.email": "x", "traits.name.first": "y"} => {traits: {email: "x", name: {first: "y"}}}
@@ -37,7 +38,7 @@ function unflattenObject(obj: Record<string, any>): Record<string, any> {
 interface Props<T> {
   flow?: LoginFlow | RegistrationFlow | SettingsFlow | VerificationFlow
   onSubmit: (payload: T) => Promise<void>
-  only?: "password" | "profile" | "totp" | "lookup_secret"
+  only?: "password" | "profile" | "totp" | "lookup_secret" | "passkey"
   textInputOverride?: TextInputOverride
 }
 
@@ -56,21 +57,31 @@ export const SelfServiceFlow = <
   const [inProgress, setInProgress] = useState(false)
   const [values, setValues] = useState<T>({} as T)
   const [nodes, setNodes] = useState<Array<UiNode>>([])
+  const [passkeyNodes, setPasskeyNodes] = useState<Array<UiNode>>([])
 
   useLayoutEffect(() => {
     if (!flow) {
       return
     }
 
-    const nodes = flow.ui.nodes.filter(({ group }) => {
+    const filtered = flow.ui.nodes.filter(({ group }) => {
       if (only) {
         return group === only || group === "default"
       }
       return true
     })
 
+    // Separate passkey nodes — they are rendered by NodePasskey instead
+    // of the generic Node component.
+    const passkey = filtered.filter((n) => n.group === "passkey")
+    const nonPasskey = only === "passkey"
+      ? filtered.filter((n) => n.group === "default")
+      : filtered.filter((n) => n.group !== "passkey")
+
     const values: Partial<T> = {}
-    nodes.forEach((node: UiNode) => {
+    // Extract initial values from all filtered nodes (including passkey hidden
+    // fields like csrf_token from the default group).
+    filtered.forEach((node: UiNode) => {
       const name = getNodeId(node)
 
       const key = name as keyof T
@@ -89,7 +100,8 @@ export const SelfServiceFlow = <
     })
 
     setValues(values as T)
-    setNodes(nodes)
+    setNodes(nonPasskey)
+    setPasskeyNodes(passkey)
   }, [flow])
 
   if (!flow) {
@@ -101,6 +113,17 @@ export const SelfServiceFlow = <
       ...values,
       [name]: value,
     }))
+  }
+
+  // Passkey submit handler: merges hidden field values (e.g. csrf_token)
+  // with the credential response from the passkey ceremony.
+  const onPasskeySubmit = (passkeyValues: Record<string, any>) => {
+    const flatPayload: Record<string, any> = { ...values, ...passkeyValues }
+    const payload = unflattenObject(flatPayload) as T
+    setInProgress(true)
+    onSubmit(payload)
+      .then(() => setInProgress(false))
+      .catch(() => setInProgress(false))
   }
 
   const getValue = (name: string) => values[name as keyof T]
@@ -172,6 +195,13 @@ export const SelfServiceFlow = <
           />
         )
       })}
+      {passkeyNodes.length > 0 && (
+        <NodePasskey
+          nodes={passkeyNodes}
+          onSubmit={onPasskeySubmit}
+          disabled={inProgress}
+        />
+      )}
     </>
   )
 }

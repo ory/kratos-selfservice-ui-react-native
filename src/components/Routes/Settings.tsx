@@ -151,6 +151,15 @@ const Settings = ({ navigation, route }: Props) => {
           />
         </StyledCard>
       ) : null}
+
+      {flow?.ui.nodes.find(({ group }) => group === "passkey") ? (
+        <StyledCard testID={"settings-passkey"}>
+          <CardTitle>
+            <StyledText variant={"h2"}>Passkeys</StyledText>
+          </CardTitle>
+          <SelfServiceFlow flow={flow} only="passkey" onSubmit={onSubmit} />
+        </StyledCard>
+      ) : null}
     </Layout>
   )
 }
