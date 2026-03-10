@@ -104,13 +104,16 @@ const Settings = ({ navigation, route }: Props) => {
       })
       .catch(
         handleFormSubmitError(
-          undefined,
+          flow,
           setFlow,
           () => {
             initializeFlow(sdk, sessionToken).then(setFlow).catch(logSDKError)
           },
           () => setSession(null),
-          async () => {},
+          async () => {
+            const refreshed = await fetchFlow(sdk, sessionToken, flow.id)
+            setFlow(refreshed)
+          },
         ),
       )
 
@@ -158,6 +161,15 @@ const Settings = ({ navigation, route }: Props) => {
             <StyledText variant={"h2"}>Passkeys</StyledText>
           </CardTitle>
           <SelfServiceFlow flow={flow} only="passkey" onSubmit={onSubmit} />
+        </StyledCard>
+      ) : null}
+
+      {flow?.ui.nodes.find(({ group }) => group === "oidc") ? (
+        <StyledCard testID={"settings-oidc"}>
+          <CardTitle>
+            <StyledText variant={"h2"}>Social connections</StyledText>
+          </CardTitle>
+          <SelfServiceFlow flow={flow} only="oidc" onSubmit={onSubmit} />
         </StyledCard>
       ) : null}
     </Layout>

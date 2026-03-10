@@ -7,6 +7,7 @@ import {
   LoginFlow,
   RecoveryFlow,
   RegistrationFlow,
+  SettingsFlow,
   UiNode,
   VerificationFlow,
 } from "@ory/client-fetch"
@@ -72,7 +73,7 @@ function isRedirectBrowserToError(
 }
 
 export function handleFormSubmitError<
-  T extends RegistrationFlow | LoginFlow | VerificationFlow | undefined,
+  T extends RegistrationFlow | LoginFlow | VerificationFlow | SettingsFlow | undefined,
 >(
   flow: T,
   setFlow: (p: T) => void,
@@ -177,7 +178,7 @@ export function handleFormSubmitError<
 
 async function handleRedirectBrowserTo(
   url: string,
-  flow: LoginFlow | RegistrationFlow | undefined,
+  flow: LoginFlow | RegistrationFlow | SettingsFlow | undefined,
   setSession: (p: SessionContext) => void,
   refetchFlow: () => Promise<void>,
 ) {

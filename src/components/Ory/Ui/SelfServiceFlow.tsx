@@ -38,7 +38,7 @@ function unflattenObject(obj: Record<string, any>): Record<string, any> {
 interface Props<T> {
   flow?: LoginFlow | RegistrationFlow | SettingsFlow | VerificationFlow
   onSubmit: (payload: T) => Promise<void>
-  only?: "password" | "profile" | "totp" | "lookup_secret" | "passkey"
+  only?: "password" | "profile" | "totp" | "lookup_secret" | "passkey" | "oidc"
   textInputOverride?: TextInputOverride
 }
 
