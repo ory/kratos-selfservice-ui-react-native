@@ -72,5 +72,10 @@
     "license-checker": "25.0.1",
     "prettier": "3.8.1",
     "typescript": "5.9.3"
+  },
+  "overrides": {
+    "node-forge": "^1.4.0",
+    "path-to-regexp": "^0.1.13",
+    "tar": "^7.5.11"
   }
 }
