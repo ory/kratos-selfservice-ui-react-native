@@ -95,6 +95,7 @@
     "webpack-dev-server": {
       "ws": "8.20.1"
     },
-    "yaml": "2.8.3"
+    "yaml": "2.8.3",
+    "shell-quote": "1.8.4"
   }
 }
