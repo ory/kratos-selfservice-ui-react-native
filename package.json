@@ -63,7 +63,7 @@
     "url": "0.11.4"
   },
   "devDependencies": {
-    "@babel/core": "7.28.6",
+    "@babel/core": "7.29.7",
     "@openapitools/openapi-generator-cli": "2.30.2",
     "@types/node": "25.0.10",
     "@types/react": "18.3.12",
@@ -75,7 +75,10 @@
   },
   "overrides": {
     "@expo/cli": {
-      "ws": "8.20.1"
+      "ws": "8.21.0"
+    },
+    "@react-native/dev-middleware": {
+      "ws": "6.2.4"
     },
     "@nestjs/core": "11.1.19",
     "@xmldom/xmldom": "0.9.10",
@@ -90,10 +93,10 @@
     "postcss": "8.5.12",
     "qs": "6.15.2",
     "serialize-javascript": "7.0.5",
-    "tar": "7.5.13",
+    "tar": "7.5.16",
     "uuid": "14.0.0",
     "webpack-dev-server": {
-      "ws": "8.20.1"
+      "ws": "8.21.0"
     },
     "yaml": "2.8.3",
     "shell-quote": "1.8.4"
